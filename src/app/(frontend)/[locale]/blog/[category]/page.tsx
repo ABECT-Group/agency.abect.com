@@ -3,23 +3,14 @@ import { notFound } from 'next/navigation';
 import { getAllPosts, getAllCategories, getCategoryBySlug, getPostsByCategory } from '@/client/lib/blog';
 import BlogPage from '@/client/modules/blog/BlogPage/BlogPage';
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/client/config/site';
 
 export const dynamicParams = true;
 
-export async function generateStaticParams({ params }: { params: { locale: string } }) {
-	try {
-		const { getPayload } = await import('payload');
-		const { default: config } = await import('@payload-config');
-		const payload = await getPayload({ config });
-		const { docs } = await payload.find({
-			collection: 'categories',
-			limit: 1000,
-			locale: params.locale as 'uk' | 'en',
-		});
-		return docs.filter(c => c.slug).map(c => ({ category: c.slug }));
-	} catch {
-		return [];
-	}
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Кожна сторінка рендериться при першому запиті й кешується до revalidateTag('all') (ISS-022).
+export function generateStaticParams() {
+	return [];
 }
 
 type Params = {
@@ -45,27 +36,25 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 	const description = category.seo?.metaDescription || category.description;
 	const keywords = category.seo?.metaKeywords || category.name;
 
-	const imageUrl = locale === 'ua' ? 'https://agency.abect.com/seo/og.jpg' : 'https://agency.abect.com/seo/en-og.jpg';
+	const imageUrl = locale === 'ua' ? `${SITE_URL}/seo/og.jpg` : `${SITE_URL}/seo/en-og.jpg`;
 
 	const fullUrl =
 		locale === 'ua'
-			? `https://agency.abect.com/blog/${categorySlug}`
-			: `https://agency.abect.com/${locale}/blog/${categorySlug}`;
+			? `${SITE_URL}/blog/${categorySlug}`
+			: `${SITE_URL}/${locale}/blog/${categorySlug}`;
 
 	return {
 		title,
 		description,
 		keywords,
-		metadataBase: new URL('https://agency.abect.com'),
 		alternates: {
 			canonical: fullUrl,
 			languages: {
-				'uk-UA': `https://agency.abect.com/blog/${categorySlug}`,
-				'en-US': `https://agency.abect.com/en/blog/${categorySlug}`,
-				'x-default': `https://agency.abect.com/en/blog/${categorySlug}`
+				'uk-UA': `${SITE_URL}/blog/${categorySlug}`,
+				'en-US': `${SITE_URL}/en/blog/${categorySlug}`,
+				'x-default': `${SITE_URL}/en/blog/${categorySlug}`
 			}
 		},
-		authors: [{ name: 'ABECT', url: 'https://agency.abect.com' }],
 		robots: {
 			index: true,
 			follow: true,
@@ -93,15 +82,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 			title,
 			description,
 			images: [imageUrl]
-		},
-		icons: {
-			icon: [
-				{ url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-				{ url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
-			],
-			apple: '/apple-touch-icon.png'
-		},
-		manifest: '/site.webmanifest'
+		}
 	};
 }
 
@@ -137,14 +118,14 @@ export default async function CategoryPage({ params }: Params) {
 						name: category.name,
 						description: category.description,
 						url: locale === 'ua'
-							? `https://agency.abect.com/blog/${categorySlug}`
-							: `https://agency.abect.com/${locale}/blog/${categorySlug}`,
+							? `${SITE_URL}/blog/${categorySlug}`
+							: `${SITE_URL}/${locale}/blog/${categorySlug}`,
 						isPartOf: {
 							'@type': 'Blog',
 							name: 'ABECT Blog',
 							url: locale === 'ua'
-								? 'https://agency.abect.com/blog'
-								: `https://agency.abect.com/${locale}/blog`
+								? `${SITE_URL}/blog`
+								: `${SITE_URL}/${locale}/blog`
 						},
 						numberOfItems: posts.length
 					})

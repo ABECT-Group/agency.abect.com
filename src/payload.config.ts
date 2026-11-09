@@ -9,7 +9,6 @@ import { Users } from './collections/Users'
 import { Posts } from './collections/Posts'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
-import { Comments } from './collections/Comments'
 import { Portfolio } from './collections/Portfolio'
 import { Services } from './collections/Services'
 import { ServiceTypes } from './collections/ServiceTypes'
@@ -43,7 +42,6 @@ export default buildConfig({
     Posts,
     Categories,
     Media,
-    Comments,
     Leads,
     Users
   ],
@@ -52,6 +50,11 @@ export default buildConfig({
   ],
   editor: fullRichEditor,
   secret: process.env.PAYLOAD_SECRET,
+  // Сайт і адмінка працюють через REST / Local API. GraphQL не використовується,
+  // а відкритий ендпоінт лише збільшує поверхню атаки.
+  graphQL: {
+    disable: true,
+  },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

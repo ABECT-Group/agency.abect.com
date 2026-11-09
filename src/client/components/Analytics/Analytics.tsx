@@ -1,26 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Script from 'next/script';
+import { useCookieConsent } from '@/client/hooks/useCookieConsent';
 
-const STORAGE_KEY = 'abect_cookie_consent';
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function Analytics() {
-  const [consented, setConsented] = useState(false);
+  const consent = useCookieConsent();
 
-  useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === 'accepted') {
-      setConsented(true);
-    }
-
-    const onConsent = () => setConsented(true);
-    window.addEventListener('cookieConsentAccepted', onConsent);
-    return () => window.removeEventListener('cookieConsentAccepted', onConsent);
-  }, []);
-
-  if (!consented) return null;
+  if (consent !== 'accepted') return null;
 
   return (
     <>

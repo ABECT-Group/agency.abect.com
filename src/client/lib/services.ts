@@ -1,15 +1,5 @@
 import type { Service, ServiceType } from '@/payload-types';
-
-/**
- * Типізація відповіді Payload CMS API
- */
-interface PayloadResponse<T> {
-  docs: T[];
-  totalDocs?: number;
-  totalPages?: number;
-  page?: number;
-  limit?: number;
-}
+import { payloadFind } from './payload-fetch';
 
 /**
  * Утиліта для сортування сервісів за order → createdAt
@@ -22,112 +12,58 @@ function sortByOrderAndDate(a: Service, b: Service): number {
   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
+/** featured → order → createdAt */
+function sortByFeaturedOrderAndDate(a: Service, b: Service): number {
+  if (a.featured && !b.featured) return -1;
+  if (!a.featured && b.featured) return 1;
+  return sortByOrderAndDate(a, b);
+}
+
+function findPublished(locale: string, where: Record<string, string | number> = {}): Promise<Service[]> {
+  return payloadFind<Service>('services', {
+    'where[status][equals]': 'published',
+    ...where,
+    locale,
+    limit: 100,
+    depth: 2,
+  });
+}
+
 /**
  * Отримує featured сервіси для головної сторінки
  * Повертає до 4 сервісів (featured + найкращі не-featured якщо потрібно)
  */
 export async function getFeaturedServices(locale: string = 'uk'): Promise<Service[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/services?where[status][equals]=published&locale=${locale}&limit=100&depth=2`;
+  const services = await findPublished(locale);
+  if (services.length === 0) return [];
 
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
+  const featuredServices = services.filter(s => s.featured === true).sort(sortByOrderAndDate);
+  if (featuredServices.length >= 4) return featuredServices.slice(0, 4);
 
-    if (!response.ok) {
-      console.error('Failed to fetch services:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Service> = await response.json();
-    const services = data.docs ?? [];
-
-    if (services.length === 0) return [];
-
-    // Фільтруємо featured сервіси
-    const featuredServices = services.filter(s => s.featured === true).sort(sortByOrderAndDate);
-
-    if (featuredServices.length >= 4) return featuredServices.slice(0, 4);
-
-    // Якщо featured менше 4, беремо решту з не-featured
-    const nonFeaturedServices = services
-      .filter(s => !s.featured)
-      .sort(sortByOrderAndDate);
-
-    const combined = [...featuredServices, ...nonFeaturedServices];
-    return combined.slice(0, 4); // завжди 4 сервіси
-  } catch (error) {
-    console.error('Error fetching featured services:', error);
-    return [];
-  }
+  const nonFeaturedServices = services.filter(s => !s.featured).sort(sortByOrderAndDate);
+  return [...featuredServices, ...nonFeaturedServices].slice(0, 4);
 }
 
 /**
  * Отримує всі опубліковані сервіси для сторінки /services
  */
 export async function getAllServices(locale: string = 'uk'): Promise<Service[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/services?where[status][equals]=published&locale=${locale}&limit=100&depth=2`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch all services:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Service> = await response.json();
-    const services = data.docs ?? [];
-
-    return services.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return sortByOrderAndDate(a, b);
-    });
-  } catch (error) {
-    console.error('Error fetching all services:', error);
-    return [];
-  }
+  const services = await findPublished(locale);
+  return services.sort(sortByFeaturedOrderAndDate);
 }
 
 /**
  * Отримує один сервіс по slug для сторінки /services/[type]/[slug]
  */
 export async function getServiceBySlug(slug: string, locale: string = 'uk'): Promise<Service | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/services?where[slug][equals]=${slug}&where[status][equals]=published&locale=${locale}&limit=1&depth=2`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch service by slug:', response.statusText);
-      return null;
-    }
-
-    const data: PayloadResponse<Service> = await response.json();
-    const services = data.docs ?? [];
-
-    return services[0] ?? null;
-  } catch (error) {
-    console.error('Error fetching service by slug:', error);
-    return null;
-  }
+  const services = await payloadFind<Service>('services', {
+    'where[slug][equals]': slug,
+    'where[status][equals]': 'published',
+    locale,
+    limit: 1,
+    depth: 2,
+  });
+  return services[0] ?? null;
 }
 
 /**
@@ -140,152 +76,45 @@ export async function getRelatedServices(
   locale: string = 'uk',
   limit: number = 3
 ): Promise<Service[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/services?where[status][equals]=published&where[serviceType][equals]=${serviceTypeId}&locale=${locale}&limit=100&depth=2`;
+  let services = (await findPublished(locale, { 'where[serviceType][equals]': serviceTypeId }))
+    .filter(s => s.id != null && s.id !== currentServiceId);
 
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch related services:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Service> = await response.json();
-    let services = data.docs ?? [];
-
-    // Виключити поточний сервіс
-    services = services.filter(s => s.id != null && s.id !== currentServiceId);
-
-    // Якщо менше ніж потрібно, додати сервіси з інших типів
-    if (services.length < limit) {
-      const otherApiUrl = `${resolvedUrl}/api/services?where[status][equals]=published&where[serviceType][not_equals]=${serviceTypeId}&locale=${locale}&limit=100&depth=2`;
-
-      const otherResponse = await fetch(otherApiUrl, {
-        next: { tags: ['all'] },
-        cache: 'force-cache',
-      });
-
-      if (otherResponse.ok) {
-        const otherData: PayloadResponse<Service> = await otherResponse.json();
-        const otherServices = otherData.docs ?? [];
-
-        // Виключити поточний сервіс з інших типів теж
-        const filteredOtherServices = otherServices.filter(s => s.id !== currentServiceId);
-
-        services = [...services, ...filteredOtherServices];
-      }
-    }
-
-    // Сортування: featured → order → createdAt
-    const sorted = services.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return sortByOrderAndDate(a, b);
-    });
-
-    return sorted.slice(0, limit);
-  } catch (error) {
-    console.error('Error fetching related services:', error);
-    return [];
+  // Якщо менше ніж потрібно — додаємо сервіси інших типів
+  if (services.length < limit) {
+    const others = (await findPublished(locale, { 'where[serviceType][not_equals]': serviceTypeId }))
+      .filter(s => s.id !== currentServiceId);
+    services = [...services, ...others];
   }
+
+  return services.sort(sortByFeaturedOrderAndDate).slice(0, limit);
 }
 
 /**
  * Отримує всі типи послуг для фільтра
  */
 export async function getAllServiceTypes(locale: string = 'uk'): Promise<ServiceType[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/service-types?locale=${locale}&limit=100&sort=order`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch service types:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<ServiceType> = await response.json();
-    return data.docs ?? [];
-  } catch (error) {
-    console.error('Error fetching service types:', error);
-    return [];
-  }
+  return payloadFind<ServiceType>('service-types', { locale, limit: 100, sort: 'order' });
 }
 
 /**
  * Отримує тип послуги по slug
  */
 export async function getServiceTypeBySlug(slug: string, locale: string = 'uk'): Promise<ServiceType | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/service-types?where[slug][equals]=${slug}&locale=${locale}&limit=1`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch service type by slug:', response.statusText);
-      return null;
-    }
-
-    const data: PayloadResponse<ServiceType> = await response.json();
-    return data.docs?.[0] ?? null;
-  } catch (error) {
-    console.error('Error fetching service type by slug:', error);
-    return null;
-  }
+  const types = await payloadFind<ServiceType>('service-types', {
+    'where[slug][equals]': slug,
+    locale,
+    limit: 1,
+  });
+  return types[0] ?? null;
 }
 
 /**
  * Отримує сервіси по типу (slug)
  */
 export async function getServicesByType(typeSlug: string, locale: string = 'uk'): Promise<Service[]> {
-  try {
-    // Спочатку отримуємо тип по slug
-    const serviceType = await getServiceTypeBySlug(typeSlug, locale);
-    if (!serviceType) return [];
+  const serviceType = await getServiceTypeBySlug(typeSlug, locale);
+  if (!serviceType) return [];
 
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/services] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/services?where[status][equals]=published&where[serviceType][equals]=${serviceType.id}&locale=${locale}&limit=100&depth=2`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch services by type:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Service> = await response.json();
-    const services = data.docs ?? [];
-
-    return services.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return sortByOrderAndDate(a, b);
-    });
-  } catch (error) {
-    console.error('Error fetching services by type:', error);
-    return [];
-  }
+  const services = await findPublished(locale, { 'where[serviceType][equals]': serviceType.id });
+  return services.sort(sortByFeaturedOrderAndDate);
 }

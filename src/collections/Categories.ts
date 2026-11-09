@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { revalidateTag } from 'next/cache'
-
-const revalidateAll = async () => { revalidateTag('all') }
+import { revalidateAll } from '../hooks/revalidate'
+import { authenticated } from '../access'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -16,6 +15,9 @@ export const Categories: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     {

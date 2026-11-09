@@ -4,24 +4,14 @@ import type { Metadata } from 'next';
 import { getPortfolioBySlug, getRelatedProjects } from '@/client/lib/portfolio';
 import Project from '@/client/modules/project/Project';
 import type { Media } from '@/payload-types';
+import { SITE_URL } from '@/client/config/site';
 
 export const dynamicParams = true;
 
-export async function generateStaticParams({ params }: { params: { locale: string } }) {
-	try {
-		const { getPayload } = await import('payload');
-		const { default: config } = await import('@payload-config');
-		const payload = await getPayload({ config });
-		const { docs } = await payload.find({
-			collection: 'portfolio',
-			where: { status: { equals: 'published' } },
-			limit: 1000,
-			locale: params.locale as 'uk' | 'en',
-		});
-		return docs.filter(p => p.slug).map(p => ({ slug: p.slug }));
-	} catch {
-		return [];
-	}
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Кожна сторінка рендериться при першому запиті й кешується до revalidateTag('all') (ISS-022).
+export function generateStaticParams() {
+	return [];
 }
 
 type Params = {
@@ -44,27 +34,25 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 	}
 
 	const ogImage = project.seo.ogImage as Media | null;
-	const imageUrl = ogImage?.url || (locale === 'ua' ? 'https://agency.abect.com/seo/portfolio-og.jpg' : 'https://agency.abect.com/seo/en-portfolio-og.jpg');
+	const imageUrl = ogImage?.url || (locale === 'ua' ? `${SITE_URL}/seo/portfolio-og.jpg` : `${SITE_URL}/seo/en-portfolio-og.jpg`);
 
 	const fullUrl =
 		locale === 'ua'
-			? `https://agency.abect.com/portfolio/${slug}`
-			: `https://agency.abect.com/${locale}/portfolio/${slug}`;
+			? `${SITE_URL}/portfolio/${slug}`
+			: `${SITE_URL}/${locale}/portfolio/${slug}`;
 
 	return {
 		title: project.seo.metaTitle,
 		description: project.seo.metaDescription,
 		keywords: project.seo.metaKeywords,
-		metadataBase: new URL('https://agency.abect.com'),
 		alternates: {
 			canonical: fullUrl,
 			languages: {
-				'uk-UA': `https://agency.abect.com/portfolio/${slug}`,
-				'en-US': `https://agency.abect.com/en/portfolio/${slug}`,
-				'x-default': `https://agency.abect.com/en/portfolio/${slug}`
+				'uk-UA': `${SITE_URL}/portfolio/${slug}`,
+				'en-US': `${SITE_URL}/en/portfolio/${slug}`,
+				'x-default': `${SITE_URL}/en/portfolio/${slug}`
 			}
 		},
-		authors: [{ name: 'ABECT', url: 'https://agency.abect.com' }],
 		robots: {
 			index: true,
 			follow: true,
@@ -95,15 +83,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 			title: project.seo.metaTitle,
 			description: project.seo.metaDescription,
 			images: [imageUrl]
-		},
-		icons: {
-			icon: [
-				{ url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-				{ url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
-			],
-			apple: '/apple-touch-icon.png'
-		},
-		manifest: '/site.webmanifest'
+		}
 	};
 }
 
@@ -134,25 +114,25 @@ export default async function ProjectPage({ params }: Params) {
 						'@type': 'CreativeWork',
 						headline: project.title,
 						description: project.shortDescription,
-						image: (project.seo.ogImage as Media | null)?.url || (locale === 'ua' ? 'https://agency.abect.com/seo/portfolio-og.jpg' : 'https://agency.abect.com/seo/en-portfolio-og.jpg'),
+						image: (project.seo.ogImage as Media | null)?.url || (locale === 'ua' ? `${SITE_URL}/seo/portfolio-og.jpg` : `${SITE_URL}/seo/en-portfolio-og.jpg`),
 						author: {
 							'@type': 'Organization',
 							name: 'ABECT',
-							url: 'https://agency.abect.com'
+							url: SITE_URL
 						},
 						publisher: {
 							'@type': 'Organization',
 							name: 'ABECT',
 							logo: {
 								'@type': 'ImageObject',
-								url: 'https://agency.abect.com/logo.png'
+								url: `${SITE_URL}/logo.png`
 							}
 						},
 						datePublished: project.projectDate,
 						dateModified: project.updatedAt,
 						url: locale === 'ua'
-							? `https://agency.abect.com/portfolio/${slug}`
-							: `https://agency.abect.com/${locale}/portfolio/${slug}`
+							? `${SITE_URL}/portfolio/${slug}`
+							: `${SITE_URL}/${locale}/portfolio/${slug}`
 					})
 				}}
 			/>
@@ -169,23 +149,23 @@ export default async function ProjectPage({ params }: Params) {
 								'@type': 'ListItem',
 								position: 1,
 								name: locale === 'ua' ? 'Головна' : 'Home',
-								item: 'https://agency.abect.com'
+								item: SITE_URL
 							},
 							{
 								'@type': 'ListItem',
 								position: 2,
 								name: locale === 'ua' ? 'Портфоліо' : 'Portfolio',
 								item: locale === 'ua'
-									? 'https://agency.abect.com/portfolio'
-									: `https://agency.abect.com/${locale}/portfolio`
+									? `${SITE_URL}/portfolio`
+									: `${SITE_URL}/${locale}/portfolio`
 							},
 							{
 								'@type': 'ListItem',
 								position: 3,
 								name: project.title,
 								item: locale === 'ua'
-									? `https://agency.abect.com/portfolio/${slug}`
-									: `https://agency.abect.com/${locale}/portfolio/${slug}`
+									? `${SITE_URL}/portfolio/${slug}`
+									: `${SITE_URL}/${locale}/portfolio/${slug}`
 							}
 						]
 					})

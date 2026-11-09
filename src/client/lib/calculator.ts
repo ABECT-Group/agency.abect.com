@@ -1,31 +1,14 @@
 import type { CalculatorConfig } from '@/payload-types';
+import { payloadFetch } from './payload-fetch';
 
 /**
- * Отримує конфігурацію калькулятора з API
+ * Отримує конфігурацію калькулятора з CMS.
+ * Помилка запиту прокидається далі (сторінка з помилкою не кешується);
+ * `null` — лише якщо global ще не заповнений.
  */
 export async function getCalculatorConfig(locale: string = 'uk'): Promise<CalculatorConfig | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/calculator] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/globals/calculator-config?locale=${locale}&depth=1`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch calculator config:', response.statusText);
-      return null;
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching calculator config:', error);
-    return null;
-  }
+  const data = await payloadFetch<CalculatorConfig | null>('/api/globals/calculator-config', { locale, depth: 1 });
+  return data ?? null;
 }
 
 /**

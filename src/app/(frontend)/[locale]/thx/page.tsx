@@ -8,6 +8,9 @@ type Params = {
   searchParams: Promise<{ form?: string; token?: string }>;
 };
 
+// Сторінка залежить від query (?form=&token=) — рендеримо на кожен запит, не кешуємо.
+export const dynamic = 'force-dynamic';
+
 const VALID_FORMS = ['simple', 'calculator'] as const;
 const MAX_AGE_MS = 10 * 60 * 1000;
 const TOKEN_RE = /^(\d{13})-[a-z0-9]{9}$/;

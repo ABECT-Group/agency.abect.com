@@ -122,7 +122,7 @@ export default function Header() {
 			clearTimeout(timer);
 			window.removeEventListener('resize', updateIndicator);
 		};
-	}, [pathname]);
+	}, [pathname, navItems]);
 
 	// Handle touch events for swipe
 	const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {

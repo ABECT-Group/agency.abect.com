@@ -1,17 +1,19 @@
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/client/i18n/routing';
 import Home from '@/client/modules/home/Home';
 import { Metadata } from 'next';
 import { Fragment } from 'react';
+import { SITE_URL } from '@/client/config/site';
 
 type Params = {
 	params: Promise<{
 		locale: string;
 	}>;
 };
-// Генерація статичних параметрів для локалей
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Кожна сторінка рендериться при першому запиті й кешується до revalidateTag('all') (ISS-022).
 export function generateStaticParams() {
-	return routing.locales.map((locale) => ({ locale }));
+	return [];
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -30,22 +32,21 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 		? 'сайт, Next.js, розробка сайтів, створення сайтів, веб-дизайн, SEO оптимізація, бізнес сайт, корпоративний сайт, інтернет-магазин, landing page, WordPress, React'
 		: 'website, Next.js, web development, website creation, web design, SEO optimization, business website, corporate website, online store, landing page, WordPress, React';
 
-	const fullUrl = locale === "ua" ? `https://agency.abect.com` : `https://agency.abect.com/${locale}`;
-	const ogImage = locale === 'ua' ? 'https://agency.abect.com/seo/og.jpg' : 'https://agency.abect.com/seo/en-og.jpg';
+	const fullUrl = locale === "ua" ? `${SITE_URL}` : `${SITE_URL}/${locale}`;
+	const ogImage = locale === 'ua' ? `${SITE_URL}/seo/og.jpg` : `${SITE_URL}/seo/en-og.jpg`;
 
 	return {
 		title,
 		description,
-		metadataBase: new URL('https://agency.abect.com'),
 		alternates: {
 			canonical: fullUrl,
 			languages: {
-				'uk-UA': 'https://agency.abect.com',
-				'en-US': 'https://agency.abect.com/en',
-				'x-default': 'https://agency.abect.com/en',
+				'uk-UA': SITE_URL,
+				'en-US': `${SITE_URL}/en`,
+				'x-default': `${SITE_URL}/en`,
 			},
 		},
-		authors: [{ name: 'Abect', url: 'https://agency.abect.com' }],
+		authors: [{ name: 'Abect', url: SITE_URL }],
 		robots: {
 			index: true,
 			follow: true,
@@ -71,15 +72,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 			title,
 			description,
 			images: [ogImage],
-		},
-		icons: {
-			icon: [
-				{ url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-				{ url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-			],
-			apple: '/apple-touch-icon.png',
-		},
-		manifest: '/site.webmanifest',
+		}
 	};
 }
 
@@ -93,8 +86,8 @@ export default async function HomePage({ params }: Params) {
 		'@context': 'https://schema.org',
 		'@type': ['Organization', 'ProfessionalService'],
 		name: 'ABECT',
-		url: 'https://agency.abect.com',
-		logo: 'https://agency.abect.com/seo/og.jpg',
+		url: SITE_URL,
+		logo: `${SITE_URL}/seo/og.jpg`,
 		email: 'support@agency.abect.com',
 		telephone: '+380980275819',
 		priceRange: '₴₴',
@@ -114,7 +107,7 @@ export default async function HomePage({ params }: Params) {
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
 		name: 'ABECT',
-		url: 'https://agency.abect.com',
+		url: SITE_URL,
 		description: isUa
 			? 'Професійна розробка сайтів для бізнесу'
 			: 'Professional website development for business',

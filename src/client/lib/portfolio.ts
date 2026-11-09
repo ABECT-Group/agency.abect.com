@@ -1,15 +1,5 @@
 import type { Portfolio } from '@/payload-types';
-
-/**
- * Типізація відповіді Payload CMS API
- */
-interface PayloadResponse<T> {
-  docs: T[];
-  totalDocs?: number;
-  totalPages?: number;
-  page?: number;
-  limit?: number;
-}
+import { payloadFind } from './payload-fetch';
 
 /**
  * Утиліта для сортування проєктів за order → createdAt
@@ -22,109 +12,55 @@ function sortByOrderAndDate(a: Portfolio, b: Portfolio): number {
   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
-export async function getFeaturedPortfolio(locale: string = 'uk'): Promise<Portfolio[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/portfolio] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/portfolio?where[status][equals]=published&locale=${locale}&limit=100`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch portfolio:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Portfolio> = await response.json();
-    const projects = data.docs ?? [];
-
-    if (projects.length === 0) return [];
-
-    // Фільтруємо featured проєкти
-    const featuredProjects = projects.filter(p => p.featured === true).sort(sortByOrderAndDate);
-
-    if (featuredProjects.length >= 4) return featuredProjects.slice(0, 4);
-
-    // Якщо featured менше 4, беремо решту з не-featured
-    const nonFeaturedProjects = projects
-      .filter(p => !p.featured)
-      .sort(sortByOrderAndDate);
-
-    const combined = [...featuredProjects, ...nonFeaturedProjects];
-    return combined.slice(0, 4); // завжди 4 проєкти
-  } catch (error) {
-    console.error('Error fetching featured portfolio:', error);
-    return [];
-  }
+/** featured → order → createdAt */
+function sortByFeaturedOrderAndDate(a: Portfolio, b: Portfolio): number {
+  if (a.featured && !b.featured) return -1;
+  if (!a.featured && b.featured) return 1;
+  return sortByOrderAndDate(a, b);
 }
 
+function findPublished(locale: string, where: Record<string, string | number> = {}): Promise<Portfolio[]> {
+  return payloadFind<Portfolio>('portfolio', {
+    'where[status][equals]': 'published',
+    ...where,
+    locale,
+    limit: 100,
+  });
+}
+
+/**
+ * 4 проєкти для головної: спершу featured, далі решта.
+ */
+export async function getFeaturedPortfolio(locale: string = 'uk'): Promise<Portfolio[]> {
+  const projects = await findPublished(locale);
+  if (projects.length === 0) return [];
+
+  const featuredProjects = projects.filter(p => p.featured === true).sort(sortByOrderAndDate);
+  if (featuredProjects.length >= 4) return featuredProjects.slice(0, 4);
+
+  const nonFeaturedProjects = projects.filter(p => !p.featured).sort(sortByOrderAndDate);
+  return [...featuredProjects, ...nonFeaturedProjects].slice(0, 4);
+}
 
 /**
  * Отримує всі опубліковані проєкти для сторінки /portfolio
  */
 export async function getAllPortfolio(locale: string = 'uk'): Promise<Portfolio[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/portfolio] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/portfolio?where[status][equals]=published&locale=${locale}&limit=100`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch all portfolio:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Portfolio> = await response.json();
-    const projects = data.docs ?? [];
-
-    return projects.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return sortByOrderAndDate(a, b);
-    });
-  } catch (error) {
-    console.error('Error fetching all portfolio:', error);
-    return [];
-  }
+  const projects = await findPublished(locale);
+  return projects.sort(sortByFeaturedOrderAndDate);
 }
 
 /**
  * Отримує один проєкт по slug для сторінки /portfolio/[slug]
  */
 export async function getPortfolioBySlug(slug: string, locale: string = 'uk'): Promise<Portfolio | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/portfolio] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/portfolio?where[slug][equals]=${slug}&where[status][equals]=published&locale=${locale}&limit=1`;
-
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch portfolio by slug:', response.statusText);
-      return null;
-    }
-
-    const data: PayloadResponse<Portfolio> = await response.json();
-    const projects = data.docs ?? [];
-
-    return projects[0] ?? null;
-  } catch (error) {
-    console.error('Error fetching portfolio by slug:', error);
-    return null;
-  }
+  const projects = await payloadFind<Portfolio>('portfolio', {
+    'where[slug][equals]': slug,
+    'where[status][equals]': 'published',
+    locale,
+    limit: 1,
+  });
+  return projects[0] ?? null;
 }
 
 /**
@@ -137,58 +73,16 @@ export async function getRelatedProjects(
   locale: string = 'uk',
   limit: number = 3
 ): Promise<Portfolio[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    if (!baseUrl) console.warn('[lib/portfolio] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-    const resolvedUrl = baseUrl || 'http://localhost:3000';
-    const apiUrl = `${resolvedUrl}/api/portfolio?where[status][equals]=published&where[service][equals]=${service}&locale=${locale}&limit=100`;
+  const serviceValue = String(service ?? '');
+  let projects = (await findPublished(locale, { 'where[service][equals]': serviceValue }))
+    .filter(p => p.id != null && p.id !== currentProjectId);
 
-    const response = await fetch(apiUrl, {
-      next: { tags: ['all'] },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch related projects:', response.statusText);
-      return [];
-    }
-
-    const data: PayloadResponse<Portfolio> = await response.json();
-    let projects = data.docs ?? [];
-
-    // Виключити поточний проєкт
-    projects = projects.filter(p => p.id != null && p.id !== currentProjectId);
-
-    // Якщо менше ніж потрібно, додати проєкти з інших категорій
-    if (projects.length < limit) {
-      const otherApiUrl = `${baseUrl}/api/portfolio?where[status][equals]=published&where[service][not_equals]=${service}&locale=${locale}&limit=100`;
-
-      const otherResponse = await fetch(otherApiUrl, {
-        next: { tags: ['all'] },
-        cache: 'force-cache',
-      });
-
-      if (otherResponse.ok) {
-        const otherData: PayloadResponse<Portfolio> = await otherResponse.json();
-        const otherProjects = otherData.docs ?? [];
-
-        // Виключити поточний проєкт з інших категорій теж
-        const filteredOtherProjects = otherProjects.filter(p => p.id !== currentProjectId);
-
-        projects = [...projects, ...filteredOtherProjects];
-      }
-    }
-
-    // Сортування: featured → order → createdAt
-    const sorted = projects.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return sortByOrderAndDate(a, b);
-    });
-
-    return sorted.slice(0, limit);
-  } catch (error) {
-    console.error('Error fetching related projects:', error);
-    return [];
+  // Якщо менше ніж потрібно — додаємо проєкти інших напрямів
+  if (projects.length < limit) {
+    const others = (await findPublished(locale, { 'where[service][not_equals]': serviceValue }))
+      .filter(p => p.id !== currentProjectId);
+    projects = [...projects, ...others];
   }
+
+  return projects.sort(sortByFeaturedOrderAndDate).slice(0, limit);
 }

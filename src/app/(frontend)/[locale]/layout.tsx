@@ -11,6 +11,7 @@ import CookieBanner from "@/client/components/CookieBanner";
 import Analytics from "@/client/components/Analytics/Analytics";
 import { ModalProvider } from "@/client/providers/ModalProvider";
 import { Metadata } from "next";
+import { SITE_URL } from "@/client/config/site";
 
 import "./globals.scss";
 
@@ -19,14 +20,28 @@ const victorMono = Victor_Mono({
   subsets: ["cyrillic", "latin"],
 });
 
+// Спільні метадані для всіх сторінок (сторінки задають лише title/description/OG/alternates)
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  authors: [{ name: "ABECT", url: SITE_URL }],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
   verification: {
     google: "ne6y1sQrac-nHCrsgVZ2t7svM3vh_B-PK7ZjaIhiahk",
   },
 };
 
+// Нічого не пререндеримо на білді (у Docker-білді немає БД) — сторінки рендеряться
+// при першому запиті й кешуються до revalidateTag('all'). Див. ISS-022.
 export function generateStaticParams(): { locale: string }[] {
-  return routing.locales.map((locale) => ({ locale }));
+  return [];
 }
 
 type LocaleLayoutProps = {

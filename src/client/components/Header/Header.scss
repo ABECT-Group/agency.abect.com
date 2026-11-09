@@ -212,11 +212,6 @@
 	margin: 2px 0;
 }
 
-/* Fixed body when menu is open */
-:global(.fixed-body) {
-	overflow: hidden;
-}
-
 /* Mobile Styles - переход на 1180px */
 @media (max-width: 1240px) {
 	.header__burger {

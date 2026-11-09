@@ -73,7 +73,6 @@ export interface Config {
     posts: Post;
     categories: Category;
     media: Media;
-    comments: Comment;
     leads: Lead;
     users: User;
     'payload-kv': PayloadKv;
@@ -89,7 +88,6 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    comments: CommentsSelect<false> | CommentsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -108,9 +106,10 @@ export interface Config {
     'calculator-config': CalculatorConfigSelect<false> | CalculatorConfigSelect<true>;
   };
   locale: 'uk' | 'en';
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -465,7 +464,7 @@ export interface User {
   firstName: string;
   lastName: string;
   /**
-   * Визначає рівень доступу користувача
+   * Суперадмін — усе, включно з користувачами. Адмін — усе, крім користувачів. Модератор — контент і заявки.
    */
   role: 'superadmin' | 'admin' | 'moderator';
   updatedAt: string;
@@ -475,6 +474,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -485,6 +485,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -503,29 +504,6 @@ export interface Category {
     metaDescription: string;
     metaKeywords: string;
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "comments".
- */
-export interface Comment {
-  id: string;
-  author: string | User;
-  /**
-   * До якої статті відноситься коментар
-   */
-  post: string | Post;
-  content: string;
-  /**
-   * Модерація коментарів адміністратором
-   */
-  status: 'pending' | 'approved' | 'spam';
-  /**
-   * Для вкладених відповідей (необов'язково)
-   */
-  parent?: (string | null) | Comment;
   updatedAt: string;
   createdAt: string;
 }
@@ -614,10 +592,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'comments';
-        value: string | Comment;
       } | null)
     | ({
         relationTo: 'leads';
@@ -814,8 +788,6 @@ export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
-  color?: T;
-  cover?: T;
   seo?:
     | T
     | {
@@ -845,19 +817,6 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "comments_select".
- */
-export interface CommentsSelect<T extends boolean = true> {
-  author?: T;
-  post?: T;
-  content?: T;
-  status?: T;
-  parent?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -907,6 +866,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1099,6 +1059,16 @@ export interface CalculatorConfigSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

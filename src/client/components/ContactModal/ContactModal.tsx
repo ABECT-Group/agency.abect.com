@@ -140,6 +140,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps): JS
     });
 
     if (result.success) {
+      resetForm();
       onClose();
       const token = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       router.push(`/thx?form=simple&token=${token}`);

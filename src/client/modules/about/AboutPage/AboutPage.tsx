@@ -15,7 +15,7 @@ interface AboutPageProps {
 	locale: string;
 }
 
-export default function AboutPage({ locale }: AboutPageProps): JSX.Element {
+export default function AboutPage({ locale: _locale }: AboutPageProps): JSX.Element {
 	return (
 		<section
 			className="about-page"

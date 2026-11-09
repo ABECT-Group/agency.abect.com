@@ -2,7 +2,7 @@
 
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { Service } from '@/payload-types';
 import './PricingComparison.scss';
 
@@ -11,7 +11,7 @@ interface PricingComparisonProps {
 	locale: string;
 }
 
-export default function PricingComparison({ service, locale }: PricingComparisonProps): JSX.Element {
+export default function PricingComparison({ service, locale: _locale }: PricingComparisonProps): JSX.Element {
 	const t = useTranslations('ServiceDetail.pricing');
 
 	return (

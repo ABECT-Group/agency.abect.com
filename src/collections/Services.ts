@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { revalidateTag } from 'next/cache'
-
-const revalidateAll = async () => { revalidateTag('all') }
+import { revalidateAll } from '../hooks/revalidate'
+import { authenticated, publishedOrAuthenticated } from '../access'
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -16,7 +15,10 @@ export const Services: CollectionConfig = {
     group: 'Послуги',
   },
   access: {
-    read: () => true,
+    read: publishedOrAuthenticated, // чернетки й архів — лише в адмінці
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     // ============ БАЗОВА ІНФОРМАЦІЯ ============

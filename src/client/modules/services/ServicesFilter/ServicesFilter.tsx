@@ -2,7 +2,7 @@
 
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/client/i18n/navigation';
+import { Link, useRouter } from '@/client/i18n/navigation';
 import type { ServiceType } from '@/payload-types';
 import './ServicesFilter.scss';
 
@@ -18,6 +18,7 @@ export default function ServicesFilter({
 	counts
 }: ServicesFilterProps): JSX.Element {
 	const t = useTranslations('ServicesPage.filter');
+	const router = useRouter();
 
 	return (
 		<aside className="services-filter" aria-label={t('ariaLabel')}>
@@ -65,11 +66,8 @@ export default function ServicesFilter({
 					value={activeType || 'all'}
 					onChange={(e) => {
 						const value = e.target.value;
-						if (value === 'all') {
-							window.location.href = '/services';
-						} else {
-							window.location.href = `/services/${value}`;
-						}
+						// router з next-intl зберігає поточну мову (раніше EN-користувача кидало на UA)
+						router.push(value === 'all' ? '/services' : `/services/${value}`);
 					}}
 					aria-label={t('selectAriaLabel')}
 				>

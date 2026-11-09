@@ -10,7 +10,7 @@ interface ContactsPageProps {
 	locale: string;
 }
 
-export default function ContactsPage({ locale }: ContactsPageProps): JSX.Element {
+export default function ContactsPage({ locale: _locale }: ContactsPageProps): JSX.Element {
 	const t = useTranslations('ContactsPage');
 
 	const socialLinks = [

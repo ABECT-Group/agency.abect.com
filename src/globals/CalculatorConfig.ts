@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
-import { revalidateTag } from 'next/cache'
-
-const revalidateAll = async () => { revalidateTag('all') }
+import { revalidateAll } from '../hooks/revalidate'
+import { adminOnly } from '../access'
 
 export const CalculatorConfig: GlobalConfig = {
   slug: 'calculator-config',
@@ -14,6 +13,7 @@ export const CalculatorConfig: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: adminOnly, // ціни калькулятора змінюють лише admin і superadmin
   },
   fields: [
     // ============ ТИПИ ПРОЕКТІВ ============

@@ -4,32 +4,14 @@ import type { Metadata } from 'next';
 import { getPostBySlug, getRelatedPosts } from '@/client/lib/blog';
 import Article from '@/client/modules/article/Article';
 import type { Media, User, Category } from '@/payload-types';
+import { SITE_URL } from '@/client/config/site';
 
 export const dynamicParams = true;
 
-export async function generateStaticParams({ params }: { params: { locale: string; category: string } }) {
-	try {
-		const { getPayload } = await import('payload');
-		const { default: config } = await import('@payload-config');
-		const payload = await getPayload({ config });
-
-		const { docs: cats } = await payload.find({
-			collection: 'categories',
-			where: { slug: { equals: params.category } },
-			limit: 1,
-		});
-		if (cats.length === 0) return [];
-
-		const { docs } = await payload.find({
-			collection: 'posts',
-			where: { status: { equals: 'published' }, category: { equals: cats[0].id } },
-			limit: 1000,
-			locale: params.locale as 'uk' | 'en',
-		});
-		return docs.filter(p => p.slug).map(p => ({ slug: p.slug }));
-	} catch {
-		return [];
-	}
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Кожна сторінка рендериться при першому запиті й кешується до revalidateTag('all') (ISS-022).
+export function generateStaticParams() {
+	return [];
 }
 
 type Params = {
@@ -53,15 +35,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 	}
 
 	const cover = post.cover as Media | null;
-	const imageUrl = cover?.url || (locale === 'ua' ? 'https://agency.abect.com/seo/blog-og.jpg' : 'https://agency.abect.com/seo/en-blog-og.jpg');
+	const imageUrl = cover?.url || (locale === 'ua' ? `${SITE_URL}/seo/blog-og.jpg` : `${SITE_URL}/seo/en-blog-og.jpg`);
 
 	const category = post.category as Category | null;
 	const categorySlug = category?.slug || 'uncategorized';
 
 	const fullUrl =
 		locale === 'ua'
-			? `https://agency.abect.com/blog/${categorySlug}/${slug}`
-			: `https://agency.abect.com/${locale}/blog/${categorySlug}/${slug}`;
+			? `${SITE_URL}/blog/${categorySlug}/${slug}`
+			: `${SITE_URL}/${locale}/blog/${categorySlug}/${slug}`;
 
 	const author = post.author as User | null;
 	const authorName = author ? `${author.firstName} ${author.lastName}` : 'ABECT';
@@ -70,16 +52,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 		title: post.seo.metaTitle,
 		description: post.seo.metaDescription,
 		keywords: post.seo.metaKeywords,
-		metadataBase: new URL('https://agency.abect.com'),
 		alternates: {
 			canonical: fullUrl,
 			languages: {
-				'uk-UA': `https://agency.abect.com/blog/${categorySlug}/${slug}`,
-				'en-US': `https://agency.abect.com/en/blog/${categorySlug}/${slug}`,
-				'x-default': `https://agency.abect.com/en/blog/${categorySlug}/${slug}`
+				'uk-UA': `${SITE_URL}/blog/${categorySlug}/${slug}`,
+				'en-US': `${SITE_URL}/en/blog/${categorySlug}/${slug}`,
+				'x-default': `${SITE_URL}/en/blog/${categorySlug}/${slug}`
 			}
 		},
-		authors: [{ name: authorName, url: 'https://agency.abect.com' }],
+		authors: [{ name: authorName, url: SITE_URL }],
 		robots: {
 			index: true,
 			follow: true,
@@ -110,15 +91,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 			title: post.seo.metaTitle,
 			description: post.seo.metaDescription,
 			images: [imageUrl]
-		},
-		icons: {
-			icon: [
-				{ url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-				{ url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
-			],
-			apple: '/apple-touch-icon.png'
-		},
-		manifest: '/site.webmanifest'
+		}
 	};
 }
 
@@ -169,7 +142,7 @@ export default async function ArticlePage({ params }: Params) {
 						'@type': 'BlogPosting',
 						headline: post.title,
 						description: post.description,
-						image: cover?.url || (locale === 'ua' ? 'https://agency.abect.com/seo/blog-og.jpg' : 'https://agency.abect.com/seo/en-blog-og.jpg'),
+						image: cover?.url || (locale === 'ua' ? `${SITE_URL}/seo/blog-og.jpg` : `${SITE_URL}/seo/en-blog-og.jpg`),
 						author: {
 							'@type': 'Person',
 							name: authorName
@@ -179,14 +152,14 @@ export default async function ArticlePage({ params }: Params) {
 							name: 'ABECT',
 							logo: {
 								'@type': 'ImageObject',
-								url: 'https://agency.abect.com/logo.png'
+								url: `${SITE_URL}/logo.png`
 							}
 						},
 						datePublished: post.date,
 						dateModified: post.updatedAt,
 						url: locale === 'ua'
-							? `https://agency.abect.com/blog/${categorySlug}/${slug}`
-							: `https://agency.abect.com/${locale}/blog/${categorySlug}/${slug}`,
+							? `${SITE_URL}/blog/${categorySlug}/${slug}`
+							: `${SITE_URL}/${locale}/blog/${categorySlug}/${slug}`,
 						articleSection: category?.name,
 						keywords: category?.name,
 						wordCount: post.readTime * 200,
@@ -207,31 +180,31 @@ export default async function ArticlePage({ params }: Params) {
 								'@type': 'ListItem',
 								position: 1,
 								name: locale === 'ua' ? 'Головна' : 'Home',
-								item: 'https://agency.abect.com'
+								item: SITE_URL
 							},
 							{
 								'@type': 'ListItem',
 								position: 2,
 								name: locale === 'ua' ? 'Блог' : 'Blog',
 								item: locale === 'ua'
-									? 'https://agency.abect.com/blog'
-									: `https://agency.abect.com/${locale}/blog`
+									? `${SITE_URL}/blog`
+									: `${SITE_URL}/${locale}/blog`
 							},
 							{
 								'@type': 'ListItem',
 								position: 3,
 								name: category?.name || 'Category',
 								item: locale === 'ua'
-									? `https://agency.abect.com/blog/${categorySlug}`
-									: `https://agency.abect.com/${locale}/blog/${categorySlug}`
+									? `${SITE_URL}/blog/${categorySlug}`
+									: `${SITE_URL}/${locale}/blog/${categorySlug}`
 							},
 							{
 								'@type': 'ListItem',
 								position: 4,
 								name: post.title,
 								item: locale === 'ua'
-									? `https://agency.abect.com/blog/${categorySlug}/${slug}`
-									: `https://agency.abect.com/${locale}/blog/${categorySlug}/${slug}`
+									? `${SITE_URL}/blog/${categorySlug}/${slug}`
+									: `${SITE_URL}/${locale}/blog/${categorySlug}/${slug}`
 							}
 						]
 					})

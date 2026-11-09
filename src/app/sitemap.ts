@@ -2,7 +2,13 @@ import { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-const BASE_URL = 'https://agency.abect.com'
+import { SITE_URL } from '@/client/config/site'
+
+// Генерується при кожному запиті (у Docker-білді немає БД, і статичний sitemap
+// назавжди лишався б без динамічних сторінок — ISS-007). Payload-запити дешеві.
+export const dynamic = 'force-dynamic'
+
+const BASE_URL = SITE_URL
 
 function url(path: string, locale: 'ua' | 'en'): string {
   const prefix = locale === 'en' ? '/en' : ''
@@ -70,8 +76,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       payload.find({ collection: 'posts', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
       payload.find({ collection: 'portfolio', where: { status: { equals: 'published' } }, limit: 500, locale: 'uk' as never }),
       payload.find({ collection: 'portfolio', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
-      payload.find({ collection: 'services', limit: 500, locale: 'uk' as never }),
-      payload.find({ collection: 'services', limit: 500, locale: 'en' as never }),
+      payload.find({ collection: 'services', where: { status: { equals: 'published' } }, limit: 500, locale: 'uk' as never }),
+      payload.find({ collection: 'services', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
     ])
 
     const postUrls: MetadataRoute.Sitemap = [

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly, authenticated } from '../access'
 
 export const Leads: CollectionConfig = {
   slug: 'leads',
@@ -8,9 +9,13 @@ export const Leads: CollectionConfig = {
     defaultColumns: ['name', 'contact', 'type', 'status', 'createdAt'],
     group: 'Ліди',
   },
+  // Заявки містять персональні дані: публічного доступу немає.
+  // Створення — лише через POST /api/leads (Local API з overrideAccess, після валідації й rate limit).
   access: {
-    read: () => true,
-    create: () => true,
+    read: authenticated,
+    create: () => false,
+    update: authenticated,
+    delete: adminOnly,
   },
   fields: [
     // ============ КОНТАКТНІ ДАНІ ============

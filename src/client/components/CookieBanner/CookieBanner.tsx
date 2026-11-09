@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from '@/client/i18n/navigation';
+import { setCookieConsent, useCookieConsent } from '@/client/hooks/useCookieConsent';
 import './CookieBanner.scss';
-
-const STORAGE_KEY = 'abect_cookie_consent';
 
 interface CookieBannerProps {
   locale: string;
@@ -26,23 +25,17 @@ const content = {
 };
 
 export default function CookieBanner({ locale }: CookieBannerProps) {
-  const [visible, setVisible] = useState(false);
+  const consent = useCookieConsent();
+  const [dismissed, setDismissed] = useState(false);
   const t = content[locale as keyof typeof content] ?? content.ua;
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) setVisible(true);
-  }, []);
-
   const handle = (decision: 'accepted' | 'declined') => {
-    localStorage.setItem(STORAGE_KEY, decision);
-    setVisible(false);
-    if (decision === 'accepted') {
-      window.dispatchEvent(new Event('cookieConsentAccepted'));
-    }
+    setDismissed(true);
+    setCookieConsent(decision);
   };
 
-  if (!visible) return null;
+  // Показуємо лише коли точно відомо, що рішення ще не було (не на сервері)
+  if (dismissed || consent !== null) return null;
 
   return (
     <div className="cookie-banner" role="region" aria-label="Cookie consent">

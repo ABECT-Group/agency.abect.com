@@ -1,12 +1,14 @@
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/client/i18n/routing';
 import type { Metadata } from 'next';
 import './PrivacyPolicy.scss';
+import { SITE_URL } from '@/client/config/site';
 
 type Params = { params: Promise<{ locale: string }> };
 
+// Нічого не пререндеримо на білді: у Docker-білді немає БД, і сторінки «застигали» б порожніми.
+// Кожна сторінка рендериться при першому запиті й кешується до revalidateTag('all') (ISS-022).
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+	return [];
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -16,7 +18,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const description = isUa
     ? 'Політика конфіденційності веб-студії ABECT. Які дані ми збираємо, як їх використовуємо та зберігаємо.'
     : 'Privacy Policy of ABECT web studio. What data we collect, how we use and store it.';
-  const fullUrl = isUa ? 'https://agency.abect.com/privacy-policy' : 'https://agency.abect.com/en/privacy-policy';
+  const fullUrl = isUa ? `${SITE_URL}/privacy-policy` : `${SITE_URL}/en/privacy-policy`;
 
   return {
     title,
@@ -25,9 +27,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     alternates: {
       canonical: fullUrl,
       languages: {
-        'uk-UA': 'https://agency.abect.com/privacy-policy',
-        'en-US': 'https://agency.abect.com/en/privacy-policy',
-        'x-default': 'https://agency.abect.com/en/privacy-policy',
+        'uk-UA': `${SITE_URL}/privacy-policy`,
+        'en-US': `${SITE_URL}/en/privacy-policy`,
+        'x-default': `${SITE_URL}/en/privacy-policy`,
       },
     },
     openGraph: {
@@ -38,14 +40,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       locale: isUa ? 'uk_UA' : 'en_US',
       type: 'website',
     },
-    icons: {
-      icon: [
-        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      ],
-      apple: '/apple-touch-icon.png',
-    },
-    manifest: '/site.webmanifest',
   };
 }
 

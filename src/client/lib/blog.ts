@@ -1,15 +1,5 @@
 import type { Post, Category } from '@/payload-types';
-
-/**
- * Типізація відповіді Payload CMS API
- */
-interface PayloadResponse<T> {
-	docs: T[];
-	totalDocs?: number;
-	totalPages?: number;
-	page?: number;
-	limit?: number;
-}
+import { payloadFind } from './payload-fetch';
 
 /**
  * Сортування: featured → date (новіші першими)
@@ -20,111 +10,55 @@ function sortByFeaturedAndDate(a: Post, b: Post): number {
 	return new Date(b.date).getTime() - new Date(a.date).getTime();
 }
 
+function findPublished(locale: string, where: Record<string, string | number> = {}): Promise<Post[]> {
+	return payloadFind<Post>('posts', {
+		'where[status][equals]': 'published',
+		...where,
+		locale,
+		limit: 100,
+		depth: 2,
+	});
+}
+
 /**
  * Отримує всі опубліковані статті для сторінки /blog
  */
 export async function getAllPosts(locale: string = 'uk'): Promise<Post[]> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/posts?where[status][equals]=published&locale=${locale}&limit=100&depth=2`;
-
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch all posts:', response.statusText);
-			return [];
-		}
-
-		const data: PayloadResponse<Post> = await response.json();
-		const posts = data.docs ?? [];
-
-		return posts.sort(sortByFeaturedAndDate);
-	} catch (error) {
-		console.error('Error fetching all posts:', error);
-		return [];
-	}
+	const posts = await findPublished(locale);
+	return posts.sort(sortByFeaturedAndDate);
 }
 
 /**
  * Отримує featured статті для головної сторінки (4 шт)
  */
 export async function getFeaturedPosts(locale: string = 'uk'): Promise<Post[]> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/posts?where[status][equals]=published&locale=${locale}&limit=100&depth=2`;
+	const posts = await findPublished(locale);
+	if (posts.length === 0) return [];
 
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
+	const featuredPosts = posts.filter(p => p.featured === true).sort(sortByFeaturedAndDate);
+	if (featuredPosts.length >= 4) return featuredPosts.slice(0, 4);
 
-		if (!response.ok) {
-			console.error('Failed to fetch posts:', response.statusText);
-			return [];
-		}
-
-		const data: PayloadResponse<Post> = await response.json();
-		const posts = data.docs ?? [];
-
-		if (posts.length === 0) return [];
-
-		// Фільтруємо featured статті
-		const featuredPosts = posts.filter(p => p.featured === true).sort(sortByFeaturedAndDate);
-
-		if (featuredPosts.length >= 4) return featuredPosts.slice(0, 4);
-
-		// Якщо featured менше 4, беремо решту з не-featured
-		const nonFeaturedPosts = posts
-			.filter(p => !p.featured)
-			.sort(sortByFeaturedAndDate);
-
-		const combined = [...featuredPosts, ...nonFeaturedPosts];
-		return combined.slice(0, 4);
-	} catch (error) {
-		console.error('Error fetching featured posts:', error);
-		return [];
-	}
+	// Якщо featured менше 4, беремо решту з не-featured
+	const nonFeaturedPosts = posts.filter(p => !p.featured).sort(sortByFeaturedAndDate);
+	return [...featuredPosts, ...nonFeaturedPosts].slice(0, 4);
 }
 
 /**
- * Отримує одну статтю по slug для сторінки /blog/[slug]
+ * Отримує одну статтю по slug для сторінки /blog/[category]/[slug]
  */
 export async function getPostBySlug(slug: string, locale: string = 'uk'): Promise<Post | null> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/posts?where[slug][equals]=${slug}&where[status][equals]=published&locale=${locale}&limit=1&depth=2`;
-
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch post by slug:', response.statusText);
-			return null;
-		}
-
-		const data: PayloadResponse<Post> = await response.json();
-		const posts = data.docs ?? [];
-
-		return posts[0] ?? null;
-	} catch (error) {
-		console.error('Error fetching post by slug:', error);
-		return null;
-	}
+	const posts = await payloadFind<Post>('posts', {
+		'where[slug][equals]': slug,
+		'where[status][equals]': 'published',
+		locale,
+		limit: 1,
+		depth: 2,
+	});
+	return posts[0] ?? null;
 }
 
 /**
- * Отримує схожі статті для сторінки /blog/[slug]
+ * Отримує схожі статті для сторінки /blog/[category]/[slug]
  * Логіка: та сама категорія → featured → date
  */
 export async function getRelatedPosts(
@@ -133,144 +67,45 @@ export async function getRelatedPosts(
 	locale: string = 'uk',
 	limit: number = 3
 ): Promise<Post[]> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/posts?where[status][equals]=published&where[category][equals]=${categoryId}&locale=${locale}&limit=100&depth=2`;
+	let posts = (await findPublished(locale, { 'where[category][equals]': categoryId }))
+		.filter(p => p.id != null && p.id !== currentPostId);
 
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch related posts:', response.statusText);
-			return [];
-		}
-
-		const data: PayloadResponse<Post> = await response.json();
-		let posts = data.docs ?? [];
-
-		// Виключити поточну статтю
-		posts = posts.filter(p => p.id != null && p.id !== currentPostId);
-
-		// Якщо менше ніж потрібно, додати статті з інших категорій
-		if (posts.length < limit) {
-			const otherApiUrl = `${baseUrl}/api/posts?where[status][equals]=published&where[category][not_equals]=${categoryId}&locale=${locale}&limit=100&depth=2`;
-
-			const otherResponse = await fetch(otherApiUrl, {
-				next: { tags: ['all'] },
-				cache: 'force-cache',
-			});
-
-			if (otherResponse.ok) {
-				const otherData: PayloadResponse<Post> = await otherResponse.json();
-				const otherPosts = otherData.docs ?? [];
-
-				// Виключити поточну статтю
-				const filteredOtherPosts = otherPosts.filter(p => p.id !== currentPostId);
-
-				posts = [...posts, ...filteredOtherPosts];
-			}
-		}
-
-		// Сортування: featured → date
-		const sorted = posts.sort(sortByFeaturedAndDate);
-
-		return sorted.slice(0, limit);
-	} catch (error) {
-		console.error('Error fetching related posts:', error);
-		return [];
+	// Якщо менше ніж потрібно — додаємо статті з інших категорій
+	if (posts.length < limit) {
+		const others = (await findPublished(locale, { 'where[category][not_equals]': categoryId }))
+			.filter(p => p.id !== currentPostId);
+		posts = [...posts, ...others];
 	}
+
+	return posts.sort(sortByFeaturedAndDate).slice(0, limit);
 }
 
 /**
  * Отримує всі категорії для фільтра
  */
 export async function getAllCategories(locale: string = 'uk'): Promise<Category[]> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/categories?locale=${locale}&limit=100`;
-
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch categories:', response.statusText);
-			return [];
-		}
-
-		const data: PayloadResponse<Category> = await response.json();
-		return data.docs ?? [];
-	} catch (error) {
-		console.error('Error fetching categories:', error);
-		return [];
-	}
+	return payloadFind<Category>('categories', { locale, limit: 100 });
 }
 
 /**
  * Отримує категорію по slug
  */
 export async function getCategoryBySlug(slug: string, locale: string = 'uk'): Promise<Category | null> {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/categories?where[slug][equals]=${slug}&locale=${locale}&limit=1`;
-
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch category by slug:', response.statusText);
-			return null;
-		}
-
-		const data: PayloadResponse<Category> = await response.json();
-		return data.docs?.[0] ?? null;
-	} catch (error) {
-		console.error('Error fetching category by slug:', error);
-		return null;
-	}
+	const categories = await payloadFind<Category>('categories', {
+		'where[slug][equals]': slug,
+		locale,
+		limit: 1,
+	});
+	return categories[0] ?? null;
 }
 
 /**
  * Отримує статті по категорії (slug)
  */
 export async function getPostsByCategory(categorySlug: string, locale: string = 'uk'): Promise<Post[]> {
-	try {
-		// Спочатку отримуємо категорію по slug
-		const category = await getCategoryBySlug(categorySlug, locale);
-		if (!category) return [];
+	const category = await getCategoryBySlug(categorySlug, locale);
+	if (!category) return [];
 
-		const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-		if (!baseUrl) console.warn('[lib/blog] NEXT_PUBLIC_SERVER_URL not set, using localhost:3000');
-		const resolvedUrl = baseUrl || 'http://localhost:3000';
-		const apiUrl = `${resolvedUrl}/api/posts?where[status][equals]=published&where[category][equals]=${category.id}&locale=${locale}&limit=100&depth=2`;
-
-		const response = await fetch(apiUrl, {
-			next: { tags: ['all'] },
-			cache: 'force-cache',
-		});
-
-		if (!response.ok) {
-			console.error('Failed to fetch posts by category:', response.statusText);
-			return [];
-		}
-
-		const data: PayloadResponse<Post> = await response.json();
-		const posts = data.docs ?? [];
-
-		return posts.sort(sortByFeaturedAndDate);
-	} catch (error) {
-		console.error('Error fetching posts by category:', error);
-		return [];
-	}
+	const posts = await findPublished(locale, { 'where[category][equals]': category.id });
+	return posts.sort(sortByFeaturedAndDate);
 }

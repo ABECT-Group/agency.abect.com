@@ -2,7 +2,6 @@
 
 import { JSX } from 'react';
 import Image from 'next/image';
-import { Link } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { ExternalLink, Calendar, Eye } from 'lucide-react';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';

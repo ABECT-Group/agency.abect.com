@@ -4,8 +4,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        # Заглушки для білду (БД під час білду не використовується)
         PAYLOAD_SECRET: build-placeholder-secret-not-real
         DATABASE_URI: mongodb://placeholder:placeholder@127.0.0.1:27017/placeholder?authSource=admin
+        # Підставляються з .env.frontend (restart.sh робить `source` перед білдом)
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-https://agency.abect.com}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+        NEXT_PUBLIC_CLARITY_ID: ${NEXT_PUBLIC_CLARITY_ID:-}
     restart: unless-stopped
     container_name: agency-abect-frontend
     env_file:
@@ -17,12 +22,13 @@ services:
       HOSTNAME: "0.0.0.0"
       NEXT_TELEMETRY_DISABLED: 1
     ports:
-      - "3333:3000"
+      # Лише localhost: ззовні доступ тільки через nginx (HTTPS). Docker обходить ufw,
+      # тому "3333:3000" відкривав застосунок і адмінку по HTTP в інтернет (ISS-002).
+      - "127.0.0.1:3333:3000"
     volumes:
       - ./media:/app/media
     networks:
       - abect-shared
-      - mongodb-net
     deploy:
       resources:
         limits:
@@ -36,6 +42,3 @@ networks:
   abect-shared:
     external: true
     name: abect-shared
-  mongodb-net:
-    external: true
-    name: mongodb-net
