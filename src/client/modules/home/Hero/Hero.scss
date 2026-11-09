@@ -474,8 +474,167 @@
 	}
 }
 
+/*
+ * Вступна анімація (лише CSS, без JS — hero серверний; стартує одразу при завантаженні).
+ * Каскад: фон → ноутбук → опис → кнопка → теги → заголовок → плашки; по «СУЧАСНИЙ САЙТ» один раз
+ * проходить відблиск. Після появи все статичне (без «плавання»). Анімуються лише opacity / translate / scale /
+ * rotate / filter — без перерахунку макета. Окремі властивості translate/scale/rotate не конфліктують
+ * з transform, яким ноутбук центрується.
+ */
+$hero-ease: cubic-bezier(0.22, 1, 0.36, 1); // easeOutQuint — швидкий старт, довге м'яке гальмування
+
+@keyframes hero-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+// Знизу вгору з розфокусу в різкість. Відстань / розмиття — через --rise / --blur елемента
+@keyframes hero-rise {
+	from {
+		opacity: 0;
+		translate: 0 var(--rise, 32px);
+		filter: blur(var(--blur, 8px));
+	}
+
+	to {
+		opacity: 1;
+		translate: none;
+		filter: none;
+	}
+}
+
+@keyframes hero-laptop-in {
+	from {
+		opacity: 0;
+		translate: 0 90px;
+		scale: 0.92;
+		rotate: -4deg;
+	}
+}
+
+@keyframes hero-arrow-in {
+	from {
+		opacity: 0;
+		scale: 0.4;
+		rotate: -90deg;
+	}
+}
+
+// Смуга відблиску проходить зліва направо. Лише в межах 100% → 0%: фон (250% ширини) там завжди
+// повністю покриває текст — за межами частина літер лишилася б без заливки (прозорою)
+@keyframes hero-sheen {
+	from {
+		background-position: 100% 0;
+	}
+
+	to {
+		background-position: 0% 0;
+	}
+}
+
+.hero__bg {
+	animation: hero-fade 1.4s ease-out both;
+}
+
+.hero__visual {
+	animation: hero-laptop-in 1.4s $hero-ease 0.1s both;
+}
+
+.hero__text,
+.hero__cta,
+.hero__tag,
+.hero__title-lead,
+.hero__title-accent,
+.hero__title-tail,
+.hero__price {
+	animation: hero-rise 1.1s $hero-ease var(--d, 0s) both;
+}
+
+.hero__text {
+	--d: 0.3s;
+}
+
+.hero__cta {
+	--d: 0.42s;
+}
+
+.hero__tag--modern {
+	--d: 0.5s;
+}
+
+.hero__tag--fast {
+	--d: 0.58s;
+}
+
+.hero__tag--adaptive {
+	--d: 0.66s;
+}
+
+.hero__tag--websites {
+	--d: 0.74s;
+}
+
+.hero__title-lead {
+	--d: 0.55s;
+	--rise: 40px;
+}
+
+.hero__title-accent {
+	--d: 0.68s;
+	--rise: 60px;
+	--blur: 14px;
+}
+
+.hero__title-tail {
+	--d: 0.85s;
+	--rise: 40px;
+}
+
+// Плашки зі склом — без розмиття (filter на елементі з backdrop-filter зайвий)
+.hero__price {
+	--d: 0.95s;
+	--blur: 0px;
+
+	&:nth-child(2) {
+		--d: 1.05s;
+	}
+
+	&:nth-child(3) {
+		--d: 1.15s;
+	}
+}
+
+.hero__order-arrow {
+	animation: hero-arrow-in 0.9s $hero-ease 0.75s both;
+}
+
+// Відблиск по «СУЧАСНИЙ САЙТ»: біла заливка тексту з вузькою світло-блакитною смугою, що пробігає один раз
+.hero__title-accent {
+	background: linear-gradient(105deg, var(--white) 42%, #b9ccff 50%, var(--white) 58%) 100% 0 / 250% 100%
+		no-repeat;
+	background-clip: text;
+	color: transparent;
+	animation:
+		hero-rise 1.1s $hero-ease var(--d) both,
+		hero-sheen 1.6s ease-in-out 1.7s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.hero * {
 		transition: none !important;
+	}
+
+	.hero__bg,
+	.hero__visual,
+	.hero__text,
+	.hero__cta,
+	.hero__tag,
+	.hero__title-lead,
+	.hero__title-accent,
+	.hero__title-tail,
+	.hero__price,
+	.hero__order-arrow {
+		animation: none !important;
 	}
 }
