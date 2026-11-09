@@ -26,7 +26,7 @@
 | ISS-013 | Шаблонні тести Payload Blank Template | Видалено `tests/`, конфіги vitest/playwright і 8 devDependencies |
 | ISS-015 | `X-Powered-By: Next.js, Payload` | `poweredByHeader: false` |
 | ISS-016 | Dockerfile: root, devDeps і `src` в образі, healthcheck залежав від БД | `output: 'standalone'`, `USER node`, лише standalone + static + public, healthcheck `/api/health` |
-| ISS-017 | `name: "cms"`, опис і версія з шаблону | `agency-abect` 2.1.0, `private`, `engines.node ≥ 20.9` (git-теги — ISS-031) |
+| ISS-017 | `name: "cms"`, опис і версія з шаблону | `agency-abect` 2.1.0, `private`, `engines.node` = вимога Payload (`^22.23.4 \|\| >=24.22.1`) (git-теги — ISS-031) |
 | ISS-018 | `mongodb/` і `scripts/` поза git, на сервер через SFTP | **Закрито рішенням власника:** ці папки свідомо лишаються поза репозиторієм. (Перенесення в `infra/` у коміті `1f021f2` скасовано) |
 | ISS-019 | fetch-блок скопійований у ~20 lib-функціях, icons/metadata у 13 сторінках, хардкод домену | `payloadFetch`/`payloadFind`; icons/manifest/metadataBase/authors — у layout; `SITE_URL` |
 | ISS-020 | Дубль `src/app/(frontend)/favicon.ico` | Видалено, `favicon.ico` прописано в metadata layout |

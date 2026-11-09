@@ -74,6 +74,8 @@
 ```
 frontend/
 ├── CLAUDE.md                 # правила для Claude
+├── README.md                 # опис проекту + список документації
+├── .github/                  # шаблон pull request
 ├── docs/                     # ця документація
 ├── messages/{ua,en}.json     # переклади інтерфейсу (next-intl)
 ├── public/                   # статика: favicon, logo.png, seo/*-og.jpg, llms.txt, icons/, images/
@@ -115,7 +117,7 @@ frontend/
 | `portfolio` | Кейси | так |
 | `posts` | Статті блогу (`draft` / `published` / `archived`) | так |
 | `categories` | Категорії блогу | так |
-| `media` | Файли та зображення | частково |
+| `media` | Файли та зображення (`alt`, `caption`, `folder`) | ні |
 | `leads` | Заявки з форм | ні |
 | `users` | Адміни (`superadmin` / `admin` / `moderator`) | так |
 | global `calculator-config` | Типи проектів, ціни, додаткові послуги, коефіцієнти терміновості | так |
