@@ -13,7 +13,7 @@
 
 ## Документація
 
-- [ ] Запис у `docs/changelogs/YYYY-MM-DD.md` (+ індекс `changelog.md`)
+- [ ] Запис у `docs/changelogs/YYYY-MM-DD.md` (+ короткий опис дня в `changelog.md`)
 - [ ] `docs/issues/*` оновлено (якщо щось знайдено / виправлено)
 - [ ] Інші `docs/*.md` оновлено (якщо змінились API, архітектура, патерни)
 

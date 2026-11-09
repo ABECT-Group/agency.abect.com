@@ -72,7 +72,7 @@ npm run lint                    # 0 помилок і 0 попереджень
 npm run build                   # якщо зачеплені сторінки, конфіги, залежності
 ```
 
-І оновити документацію за [`../CLAUDE.md`](../CLAUDE.md) (крок 5): запис у `docs/changelogs/YYYY-MM-DD.md` (з назвою гілки), індекс `changelog.md`, `docs/issues/*`.
+І оновити документацію за [`../CLAUDE.md`](../CLAUDE.md) (крок 5): запис у `docs/changelogs/YYYY-MM-DD.md` (з назвою гілки), короткий опис дня в індексі `changelog.md`, `docs/issues/*`.
 
 > Уже запушені гілки **не ребейзимо** й не робимо `push --force` — лише `merge origin/main`. Так історія PR не ламається.
 
