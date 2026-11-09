@@ -128,5 +128,6 @@ GET /api/globals/calculator-config?locale=uk
 | `PAYLOAD_SECRET` | `payload.config.ts` (кидає помилку, якщо немає) | runtime; на білді — заглушка |
 | `NEXT_PUBLIC_SERVER_URL` | `api/leads` (Origin) | вшивається на білді (build arg) |
 | `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_CLARITY_ID` | `Analytics.tsx` (клієнт) | вшивається на білді (build arg) |
-| `PAYLOAD_INTERNAL_URL` | `lib/payload-fetch.ts` | runtime, опційно (дефолт `http://127.0.0.1:$PORT`) |
+| `PAYLOAD_INTERNAL_URL` | `lib/payload-fetch.ts` | runtime, опційно (дефолт: на Vercel `https://$VERCEL_URL`, інакше `http://127.0.0.1:$PORT`) |
+| `APP_ENV` | `utils/env.ts`, `next.config.mjs` | `production` \| `preview`. Не задано → на Vercel `preview`, інакше `production`. `preview`: noindex (`robots.txt`, sitemap, `X-Robots-Tag`), заявки в Telegram з позначкою «ТЕСТОВЕ СЕРЕДОВИЩЕ». Заголовок `X-Robots-Tag` визначається на білді |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_THREAD_ID` | `utils/telegram.ts` | runtime |

@@ -76,7 +76,10 @@ TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 TELEGRAM_THREAD_ID=
 NEXT_TELEMETRY_DISABLED=1
+# APP_ENV=production                            # необовʼязково: без змінної на VPS і так production
 ```
+
+`APP_ENV=preview` закриває сайт від індексації й позначає заявки в Telegram як тестові — на VPS **не ставити**. Див. [`git-workflow.md`](git-workflow.md#4-превʼю-на-vercel).
 
 `NEXT_PUBLIC_*` вшиваються в бандл під час білду: `restart.sh` робить `source` цього файлу, а `docker-compose.yml` передає їх як build args. Після зміни цих змінних потрібен передеплой.
 

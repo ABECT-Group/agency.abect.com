@@ -5,6 +5,15 @@ const withNextIntl = createNextIntlPlugin('./src/client/i18n/request.ts')
 
 const isDev = process.env.NODE_ENV !== 'production'
 
+// Середовище: production (VPS) або preview (Vercel / тест). Логіка та сама, що в src/utils/env.ts:
+// APP_ENV, а якщо не задано — на Vercel `preview`, інакше `production`.
+const appEnv = ['production', 'preview'].includes(process.env.APP_ENV?.trim().toLowerCase() ?? '')
+  ? process.env.APP_ENV.trim().toLowerCase()
+  : process.env.VERCEL
+    ? 'preview'
+    : 'production'
+const isPreview = appEnv !== 'production'
+
 // CSP для публічних сторінок (адмінка Payload виключена — їй потрібні власні правила).
 // 'unsafe-eval' — лише в dev (React Refresh). Clarity вантажить скрипти з scripts.clarity.ms,
 // тому дозволено *.clarity.ms. 'unsafe-inline' потрібен для JSON-LD і inline-скриптів аналітики.
@@ -50,6 +59,10 @@ const nextConfig = {
         source: '/((?!admin).*)',
         headers: securityHeaders,
       },
+      // Превʼю / тестове середовище: заборонити індексацію всього сайту (разом з адмінкою й API)
+      ...(isPreview
+        ? [{ source: '/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] }]
+        : []),
     ]
   },
   webpack: (webpackConfig) => {

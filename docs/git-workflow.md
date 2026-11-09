@@ -120,9 +120,10 @@ git push                                        # наступні рази
 - У кожної гілки є **постійна адреса**, яка завжди показує її останній коміт:
   `https://<проект>-git-<назва-гілки>-<команда>.vercel.app` (`/` у назві гілки стає `-`).
 - Посилання видно у Vercel → *Deployments* і на GitHub біля коміту (статус ✓ → *Details*).
-- Превʼю працює на **тестовій базі** (змінні середовища Vercel для *Preview*), не на продакшн-даних. Telegram на превʼю вимкнений — тестові заявки нікуди не надсилаються.
+- Превʼю працює на **тестовій базі** (змінні середовища Vercel для *Preview*), не на продакшн-даних.
+- **Превʼю не індексується.** На Vercel `APP_ENV` автоматично `preview` (навіть якщо змінну не задано): `robots.txt` → `Disallow: /`, порожній `sitemap.xml`, заголовок `X-Robots-Tag: noindex, nofollow` на всіх сторінках (`src/utils/env.ts`, `next.config.mjs`).
+- **Заявки з превʼю** йдуть у Telegram з позначкою «🧪 ТЕСТОВЕ СЕРЕДОВИЩЕ», назвою гілки й посиланням на превʼю. Щоб вони не потрапляли в робочий чат, у Vercel можна вказати окремий тестовий `TELEGRAM_CHAT_ID` / `TELEGRAM_THREAD_ID` (або не задавати `TELEGRAM_*` зовсім — тоді заявки лише зберігаються в тестовій базі).
 - Завантажені на превʼю в адмінку файли не зберігаються (на Vercel немає постійного диска).
-
 - Деплой `main`, який Vercel робить **одноразово при імпорті проекту**, `vercel.json` не скасовує — його можна видалити в *Deployments*. Наступні пуші в `main` Vercel уже пропускає.
 - На Vercel сайт бере дані з CMS за адресою самого деплою (`VERCEL_URL`), а не `127.0.0.1` (`src/client/lib/payload-fetch.ts`). Якщо превʼю закриті *Deployment Protection*, потрібен секрет обходу — див. 5.1, п. 3.
 
@@ -139,7 +140,14 @@ git push                                        # наступні рази
    - *Enforcement status*: **Active**.
 3. **Vercel:**
    - *Add New → Project* → імпортувати `ABECT-Group/agency.abect.com` (за потреби дати Vercel GitHub App доступ до організації).
-   - *Settings → Environment Variables* для **Preview**: `DATABASE_URI` (тестова MongoDB Atlas, *Network Access* `0.0.0.0/0`), `PAYLOAD_SECRET` (не такий, як на проді). `TELEGRAM_*` не задавати.
+   - *Settings → Environment Variables* для **Preview**:
+     | Змінна | Значення |
+     |---|---|
+     | `DATABASE_URI` | тестова MongoDB Atlas (*Network Access* `0.0.0.0/0`), **не** продакшн |
+     | `PAYLOAD_SECRET` | власний випадковий рядок, **не** такий, як на проді |
+     | `APP_ENV` | `preview` (необовʼязково — на Vercel це значення за замовчуванням) |
+     | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_THREAD_ID` | за бажанням — бажано тестовий чат/гілку; заявки прийдуть з позначкою «ТЕСТОВЕ СЕРЕДОВИЩЕ» |
+   - `NEXT_PUBLIC_SERVER_URL` на Vercel **не задавати** (адреса превʼю щоразу інша; сайт визначає її сам).
    - *Settings → Deployment Protection* → **Protection Bypass for Automation** → *Add secret* (створює `VERCEL_AUTOMATION_BYPASS_SECRET`). Без цього захищене превʼю не може читати дані з самого себе й показує «Помилка сервера». Альтернатива — вимкнути *Vercel Authentication* для Preview (тоді превʼю відкриті всім, хто має посилання).
    - Після зміни змінних — *Redeploy* потрібного деплою.
 

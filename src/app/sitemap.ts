@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { SITE_URL } from '@/client/config/site'
+import { isProduction } from '@/utils/env'
 
 // Генерується при кожному запиті (у Docker-білді немає БД, і статичний sitemap
 // назавжди лишався б без динамічних сторінок — ISS-007). Payload-запити дешеві.
@@ -16,6 +17,9 @@ function url(path: string, locale: 'ua' | 'en'): string {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Превʼю / тестове середовище не індексується — sitemap порожній
+  if (!isProduction()) return []
+
   const locales = ['ua', 'en'] as const
 
   // Static routes — no lastModified (Google ignores unreliable always-changing timestamps)

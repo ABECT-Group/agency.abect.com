@@ -3,6 +3,8 @@
  * Відправляє повідомлення про нові заявки в Telegram чат
  */
 
+import { isProduction, previewLabel } from './env';
+
 interface SimpleLead {
   type: 'simple';
   name: string;
@@ -55,10 +57,26 @@ function esc(text: string | number | undefined | null): string {
 }
 
 /**
+ * Шапка для тестового середовища (APP_ENV ≠ production): щоб заявку з превʼю
+ * не сплутали зі справжньою. Порожній масив — на проді.
+ */
+function testEnvHeader(): string[] {
+  if (isProduction()) return [];
+  const { branch, url } = previewLabel();
+  return [
+    '🧪 <b>ТЕСТОВЕ СЕРЕДОВИЩЕ</b> — не справжня заявка',
+    branch ? `🌿 <b>Гілка:</b> ${esc(branch)}` : null,
+    url ? `🔗 ${esc(url)}` : null,
+    '',
+  ].filter((line): line is string => line !== null);
+}
+
+/**
  * Форматує повідомлення для простої форми
  */
 function formatSimpleMessage(lead: SimpleLead): string {
   return [
+    ...testEnvHeader(),
     '🔔 <b>Нова заявка з сайту!</b>',
     '',
     `👤 <b>Ім'я:</b> ${esc(lead.name)}`,
@@ -84,6 +102,7 @@ function formatCalculatorMessage(lead: CalculatorLead): string {
   const price = Number(calculatorData.estimatedPrice);
 
   return [
+    ...testEnvHeader(),
     '🧮 <b>Нова заявка з калькулятора!</b>',
     '',
     `👤 <b>Ім'я:</b> ${esc(lead.name)}`,
