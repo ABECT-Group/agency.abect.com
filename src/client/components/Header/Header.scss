@@ -1,25 +1,24 @@
-/* Header */
+/* Header — Figma «ABECT»: Desktop 6 (17:750), iPhone 13&14 - 1 (4:44), меню — iPhone 13&14 - 2 (7:170) */
+
 .header {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	z-index: 1000;
-	background: var(--header-bg);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
-	border-bottom: 1px solid var(--border-subtle);
-	transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-	            backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-	            box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-	            border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	padding-right: var(--scrollbar-compensation, 0px);
+	background: transparent;
+	transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+
+	// Акцентний шрифт макета на всьому хедері (глобальне правило `*` задає Montserrat кожному елементу)
+	&,
+	& * {
+		font-family: var(--font-montserrat-alt, "Montserrat Alternates"), sans-serif;
+	}
 
 	&.scrolled {
 		background: var(--header-bg-scrolled);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+		backdrop-filter: blur(16px);
 
 		.header__wrapper {
 			padding: 12px 0;
@@ -30,9 +29,7 @@
 .header__wrapper {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	padding: 16px 0;
-	gap: 40px;
+	padding: 20px 0;
 	transition: padding 0.3s ease;
 }
 
@@ -42,339 +39,381 @@
 	z-index: 2;
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	text-decoration: none;
-	color: var(--white);
+	gap: 6px;
+	flex-shrink: 0;
+	color: var(--header-text);
 	font-size: 20px;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-	transition: all 0.3s ease;
+	font-weight: 500;
+	line-height: 1.2;
+	text-decoration: none;
 
-	&:hover {
-		transform: scale(1.02);
-
-		img {
-			transform: rotate(5deg);
-		}
-	}
-
-	img {
-		width: 36px;
-		height: 36px;
-		transition: transform 0.3s ease;
+	&:hover .header__logo-mark {
+		transform: rotate(-10deg);
 	}
 }
 
-/* Menu */
+.header__logo-mark {
+	display: block;
+	width: 34px;
+	height: 34px;
+	border: 2px solid var(--logo-mark);
+	border-bottom-left-radius: 30px;
+	transition: transform 0.3s ease;
+}
+
+.header .header__logo-e {
+	font-family: var(--font-montserrat, "Montserrat"), sans-serif;
+}
+
+/* Desktop navigation */
 .header__menu {
+	margin-left: clamp(20px, 5.5vw, 80px);
+}
+
+/* Скло — глобальний клас .glass (globals.scss) */
+.header__nav {
+	position: relative;
+	padding: 5px;
+	border-radius: 30px;
+}
+
+.header__nav-list {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	align-items: center;
-	gap: 40px;
-	flex: 1;
+	list-style: none;
 }
 
-.header__menu-nav {
-	position: relative;
+.header__nav-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 46px;
+	padding: 0 21px;
+	border-radius: 30px;
+	color: var(--header-text);
+	font-size: 16px;
+	font-weight: 500;
+	white-space: nowrap;
+	text-decoration: none;
+	transition: color 0.3s ease;
 
-	ul {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		list-style: none;
+	span {
+		font-size: inherit;
 	}
 
-	a {
-		position: relative;
-		display: block;
-		padding: 8px 16px;
-		text-decoration: none;
-		color: var(--nav-text);
-		font-size: 15px;
-		font-weight: 600;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		border-radius: 8px;
+	&:hover {
+		color: var(--white);
+	}
 
-		&:hover {
-			color: var(--nav-text-hover);
-			background: var(--blue-alpha-10);
-			transform: translateY(-1px);
-		}
-
-		&.active {
-			color: var(--nav-text-active);
-		}
+	&.active {
+		color: var(--white);
+		font-size: 18px;
 	}
 }
 
-/* Navigation Indicator */
-.nav-indicator {
+.header__nav-indicator {
 	position: absolute;
-	bottom: -8px;
-	height: 3px;
-	background: linear-gradient(90deg, var(--accent), var(--accentLight));
-	border-radius: 2px;
-	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	top: 5px;
+	left: 0;
+	height: 46px;
+	border-radius: 30px;
+	background: var(--header-active);
+	box-shadow: var(--glass-pill-shadow);
 	opacity: 0;
-	transform: scaleX(0);
+	pointer-events: none;
+	transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.3s ease;
 
 	&.active {
 		opacity: 1;
-		transform: scaleX(1);
 	}
 }
 
-/* Contacts */
-.header__menu-contacts {
+/* Desktop actions: мова, «Зв'язатися» */
+.header__actions {
 	display: flex;
 	align-items: center;
+	gap: 13px;
 	margin-left: auto;
 }
 
-.contacts-list {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	list-style: none;
-
-	a {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-		background: var(--blue-alpha-10);
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		border: 1px solid var(--border-subtle);
-		color: var(--white);
-
-		&:hover {
-			background: var(--blue-alpha-20);
-			transform: translateY(-2px);
-			box-shadow: 0 4px 12px var(--shadow-dark);
-
-			img {
-				transform: scale(1.1);
-			}
-		}
-	}
-
-	svg {
-		width: 20px;
-		height: 20px;
-		transition: transform 0.3s ease;
-	}
-}
-
-/* Burger Menu */
-.header__burger {
-	display: none;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 44px;
-	height: 44px;
-	background: var(--blue-alpha-10);
-	border: 1px solid var(--border-subtle);
-	border-radius: 10px;
+.header__contact {
+	height: 46px;
+	min-width: 164px;
+	padding: 0 24px;
+	border: none;
+	border-radius: 30px;
+	background: var(--header-cta);
+	color: var(--header-text);
+	font-size: 16px;
+	font-weight: 500;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: background-color 0.3s ease, transform 0.3s ease;
 
 	&:hover {
-		background: var(--blue-alpha-20);
-		transform: scale(1.05);
+		background: var(--accentHover);
+		transform: translateY(-1px);
 	}
+}
 
-	&.active {
-		.header__burger-element {
-			&:nth-child(1) {
-				transform: translateY(7px) rotate(-45deg);
-			}
+.header__logo,
+.header__nav-link,
+.header__contact,
+.header__burger,
+.header__order {
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 3px;
+	}
+}
 
-			&:nth-child(2) {
-				opacity: 0;
-				transform: scale(0);
-			}
+/* Mobile-only elements */
+.header__menu-actions,
+.header__burger {
+	display: none;
+}
 
-			&:nth-child(3) {
-				transform: translateY(-7px) rotate(45deg);
-			}
+.header__burger {
+	position: relative;
+	z-index: 2;
+	align-items: center;
+	justify-content: flex-end;
+	width: 44px;
+	height: 44px;
+	margin-left: auto;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+}
+
+/* Бургер → хрестик. Лінії 22px; у макеті бургер злегка нахилений (≈ -2.6°),
+   хрестик — дві лінії під ±36°: біла (верхня + нижня зливаються) і блакитна (середня). */
+.header__burger-lines {
+	position: relative;
+	display: block;
+	width: 22px;
+	height: 12px;
+
+	span {
+		position: absolute;
+		left: 0;
+		width: 22px;
+		height: 1px;
+		border-radius: 1px;
+		background: var(--white);
+		transform: rotate(-2.6deg);
+		transition: transform 0.45s cubic-bezier(0.68, -0.4, 0.27, 1.4), opacity 0.2s ease;
+
+		&:nth-child(1) {
+			top: 0.5px;
+		}
+
+		&:nth-child(2) {
+			top: 5.5px;
+			background: var(--logo-mark);
+		}
+
+		&:nth-child(3) {
+			top: 10.5px;
 		}
 	}
 }
 
-.header__burger-element {
-	width: 60%;
-	height: 3px;
-	background: var(--white);
-	border-radius: 2px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	margin: 2px 0;
+.header__burger:hover .header__burger-lines span:nth-child(2) {
+	transform: rotate(-2.6deg) scaleX(0.7);
 }
 
-/* Mobile Styles - переход на 1180px */
-@media (max-width: 1240px) {
+.header__burger.active .header__burger-lines span {
+	&:nth-child(1) {
+		transform: translateY(5px) rotate(-36deg);
+	}
+
+	&:nth-child(2) {
+		transform: rotate(36deg);
+	}
+
+	&:nth-child(3) {
+		transform: translateY(-5px) rotate(-36deg);
+	}
+}
+
+/* Mobile / tablet: бургер і повноекранне меню */
+@media (max-width: 1180px) {
+	.header__actions {
+		display: none;
+	}
+
 	.header__burger {
 		display: flex;
 	}
 
-	.header__language {
-		margin-left: auto;
+	.header__logo-mark {
+		width: 24px;
+		height: 24px;
+		border-bottom-left-radius: 16px;
+	}
+
+	// Центр рядка — 32px від верху (макет: логотип 24px з y=20)
+	.header__wrapper {
+		padding: 10px 0;
+	}
+
+	.header.menu-open {
+		background: transparent;
+		backdrop-filter: none;
+
+		.header__wrapper {
+			padding: 10px 0;
+		}
+
+		.header__logo-mark {
+			transform: rotate(-10.14deg);
+		}
 	}
 
 	.header__menu {
 		position: fixed;
 		top: 0;
-		left: -100%;
-		width: min(440px, 100vw);
+		left: 0;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
 		height: 100vh;
 		height: 100dvh;
-
-		background: rgba(13, 13, 27, 0.85);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
-		background-image: linear-gradient(rgba(13, 13, 27, 0.9), rgba(13, 13, 27, 0.9));
-
-		flex-direction: column;
-		justify-content: flex-start;
-		align-items: stretch;
-		padding: 100px 32px 32px;
-		transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		border-right: 1px solid var(--border-subtle);
-
-		will-change: transform;
-		transform: translateZ(0);
-		isolation: isolate;
-
-		@supports not (backdrop-filter: blur(20px)) {
-			background: rgba(13, 13, 27, 0.95);
-			background-image: linear-gradient(135deg, rgba(13, 13, 27, 0.95) 0%, rgba(13, 13, 27, 0.98) 100%);
-		}
+		margin: 0;
+		padding: 114px 20px 40px;
+		overflow-y: auto;
+		background-color: var(--black);
+		background-image: url('/images/bg/glow.svg'), url('/images/bg/stripe.png');
+		background-repeat: no-repeat, repeat-x;
+		background-size: 1361px 1361px, 44px 100%;
+		background-position: -485px -251px, 0 0;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.3s ease, visibility 0.3s ease;
 
 		&.active {
-			left: 0;
+			opacity: 1;
+			visibility: visible;
 		}
 	}
 
-	.header__menu-nav {
+	// У мобільному меню список без капсули-скла
+	.header__nav.glass {
 		width: 100%;
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		max-width: 336px;
+		padding: 0;
+		background: none;
+		box-shadow: none;
+		backdrop-filter: none;
 
-		ul {
-			flex-direction: column;
-			gap: 12px;
-			width: 100%;
+		&::before {
+			display: none;
 		}
+	}
+
+	.header__nav-list {
+		flex-direction: column;
+		gap: 30px;
 
 		li {
 			width: 100%;
 		}
+	}
 
-		a {
-			display: block;
-			width: 100%;
-			padding: 18px 20px;
-			text-align: center;
+	.header__nav-link {
+		width: 100%;
+		height: 40px;
+
+		&.active {
 			font-size: 16px;
-			border-radius: 12px;
-			transition: all 0.3s ease;
-
-			&:hover {
-				background: var(--accent-alpha-10);
-				color: var(--white);
-			}
-
-			&.active {
-				background: var(--accent-alpha-10);
-				color: var(--accent);
-			}
+			background: var(--header-active-mobile);
+			box-shadow: var(--glass-pill-shadow);
 		}
 	}
 
-	.nav-indicator {
+	.header__nav-indicator {
 		display: none;
 	}
 
-	.header__menu-contacts {
+	.header__menu-actions {
 		display: flex;
-		justify-content: center;
-		padding-top: 24px;
-		border-top: 1px solid var(--border-subtle);
-		margin-top: auto;
-		margin-left: 0;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		max-width: 344px;
 	}
 
-	.contacts-list {
-		gap: 16px;
+	.header__menu-controls {
+		display: flex;
+		align-items: center;
+		gap: 23px;
+		margin-top: 20px;
 
-		a {
-			width: 48px;
-			height: 48px;
-			border-radius: 12px;
-			background: var(--accent-alpha-05);
-			border: 1px solid var(--border-subtle);
-			transition: all 0.3s ease;
-
-			&:hover {
-				background: var(--accent-alpha-10);
-				border-color: var(--accent);
-			}
+		.language-switcher {
+			--switch-pill-bg: var(--header-active-mobile);
 		}
+
+		.language-switcher__option {
+			color: var(--header-text);
+		}
+	}
+
+	.header__order {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		margin-top: clamp(40px, 14vh, 115px);
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: pointer;
+
+		&:hover .header__order-label {
+			background: var(--accentHover);
+		}
+	}
+
+	.header__order-label {
+		display: flex;
+		flex: 1;
+		align-items: center;
+		justify-content: center;
+		height: 46px;
+		border-radius: 30px;
+		background: var(--header-cta-mobile);
+		color: var(--header-text);
+		font-size: 18px;
+		font-weight: 500;
+		text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+		transition: background-color 0.3s ease;
+	}
+
+	// Скляне коло поверх кнопки, як у hero
+	.header__order-arrow {
+		--glass-bg: rgba(19, 36, 83, 0.35);
+		--glass-blur: 6px;
+		display: flex;
+		flex-shrink: 0;
+		margin-left: -9px;
+		border-radius: 50%;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.25);
 
 		img {
-			width: 20px;
-			height: 20px;
+			display: block;
 		}
-	}
-
-	.header__cta {
-		display: none;
 	}
 }
 
-/* Дополнительные стили для мобильных */
-@media (max-width: 480px) {
-	.header__wrapper {
-		padding: 12px 0;
-	}
-
-	.header__menu {
-		width: 100vw;
-		left: -100vw;
-		padding: 80px 24px 24px;
-	}
-
-	.header__logo {
-		font-size: 18px;
-		gap: 8px;
-
-		img {
-			width: 32px;
-			height: 32px;
-		}
-	}
-
-	.header__menu-nav {
-		a {
-			padding: 16px 18px;
-			text-align: center;
-			font-size: 15px;
-		}
-	}
-
-	.contacts-list {
-		a {
-			width: 44px;
-			height: 44px;
-			border-radius: 10px;
-		}
-
-		img {
-			width: 18px;
-			height: 18px;
-		}
+@media (prefers-reduced-motion: reduce) {
+	.header,
+	.header * {
+		transition: none !important;
 	}
 }

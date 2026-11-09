@@ -27,6 +27,30 @@
 	--nav-text-active: var(--accent);
 	--border-subtle: rgba(255, 255, 255, 0.1);
 
+	/* Header (Figma ABECT: Desktop 6, iPhone 13&14 - 1/2) */
+	--header-surface: rgba(36, 46, 71, 0.41);
+	--header-active: #132453;
+	--header-active-mobile: #001f87;
+	--header-text: #eeedff;
+	--header-text-muted: #8887a5;
+	--header-cta: #2a5bfe;
+	--header-cta-mobile: var(--cta-strong);
+	--logo-mark: #75a1fa;
+
+	/* Hero головної */
+	--cta-strong: #0037ef;
+	--hero-text: #d6d5f0;
+	--hero-chip-bg: rgba(18, 19, 24, 0.29);
+	--hero-chip-bg-mobile: rgba(18, 19, 24, 0.2);
+	--hero-chip-border: rgba(255, 255, 255, 0.18);
+	--hero-plate-bg: rgba(255, 255, 255, 0.09);
+
+	/* Скло (ефект Glass з макета) — див. клас .glass нижче */
+	--glass-bg: var(--header-surface);
+	--glass-blur: 8px;
+	--glass-pill-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 14px rgba(117, 161, 250, 0.14);
+	/* Шрифти: --font-montserrat і --font-montserrat-alt задає next/font на <body> (layout.tsx) */
+
 	/* Color system for components */
 	--color-primary: #375dfb;
 	--color-primary-rgb: 55, 93, 251;
@@ -75,7 +99,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: "Montserrat", sans-serif;
+	font-family: var(--font-montserrat, "Montserrat"), sans-serif;
 }
 
 /* base tag style */
@@ -96,9 +120,45 @@ body.fixed-body {
 	overflow: hidden;
 }
 
-/* стилі для всіх секцій крім .entry */
+/* відступи для секцій (hero головної перевизначає margin: 0) */
 section {
 	margin: 120px 0;
+}
+
+/*
+ * Скло (Glass з Figma): розмиття фону + світлий обідок (згори яскравіший) + м'яке внутрішнє світіння.
+ * Без бібліотек і SVG-фільтрів: лише backdrop-filter і тіні — працює в усіх браузерах (і в Safari на iPhone),
+ * не навантажує GPU на прокрутці. Колір / розмиття / насиченість — через --glass-bg / --glass-blur / --glass-saturate.
+ * Елементу потрібен border-radius; ::before зайнятий обідком.
+ */
+.glass {
+	position: relative;
+	isolation: isolate;
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 160%));
+	box-shadow:
+		inset 0 0 18px rgba(255, 255, 255, 0.03),
+		0 8px 24px rgba(0, 0, 0, 0.22);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		padding: 1px;
+		border-radius: inherit;
+		background: linear-gradient(
+			170deg,
+			rgba(255, 255, 255, 0.26) 0%,
+			rgba(255, 255, 255, 0.08) 30%,
+			rgba(255, 255, 255, 0.03) 60%,
+			rgba(255, 255, 255, 0.12) 100%
+		);
+		-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+		-webkit-mask-composite: xor;
+		mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+		pointer-events: none;
+	}
 }
 
 /* base class style */
@@ -107,6 +167,17 @@ section {
 	max-width: 1360px;
 	padding: 0 12px;
 	margin: 0 auto;
+}
+
+/* Сітка нового дизайну (Figma «ABECT», Desktop 6): контент 1288px. Поки — хедер і hero головної. */
+.container--design {
+	max-width: 1312px;
+}
+
+@media (max-width: 768px) {
+	.container--design {
+		padding: 0 20px;
+	}
 }
 
 /* Основна кнопка (Primary) */

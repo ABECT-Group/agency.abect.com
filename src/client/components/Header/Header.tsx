@@ -1,36 +1,25 @@
 'use client';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Link, usePathname } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import './Header.scss';
-import { Send, Phone } from 'lucide-react';
 
+// Ширина, з якої меню ховається в бургер (синхронно з Header.scss)
+const MOBILE_MAX_WIDTH = 1180;
 
 export default function Header() {
 	const t = useTranslations('Header');
-	const tCC = useTranslations('Common');
+	const tC = useTranslations('Common');
 	const pathname = usePathname();
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isScrolled, setIsScrolled] = useState(false);
-	const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
-	const [showIndicator, setShowIndicator] = useState(false);
+	const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
 
-	const headerRef = useRef<HTMLElement>(null);
 	const navRef = useRef<HTMLElement>(null);
-	const menuRef = useRef<HTMLDivElement>(null);
-	const navItemsRef = useRef<(HTMLElement | null)[]>([]);
 
-	// Touch handling for swipe to close
-	const touchStartX = useRef(0);
-	const touchStartY = useRef(0);
-	const touchEndX = useRef(0);
-	const touchEndY = useRef(0);
-	const isSwiping = useRef(false);
-
-	// Navigation items - memoized to prevent unnecessary re-renders
 	const navItems = useMemo(
 		() => [
 			{ href: '/services', section: 'services' },
@@ -42,152 +31,100 @@ export default function Header() {
 		[]
 	);
 
-	const contactLinks = useMemo(
-		() => [
-			{ href: 'https://t.me/+380980275819', icon: <Send /> },
-			{ href: 'viber://chat/?number=%2B380980275819', icon: <Phone /> }
-		],
-		[]
+	// Активний пункт — і для вкладених сторінок (/blog/<category>/<slug> → «Блог»)
+	const activeIndex = navItems.findIndex(
+		(item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
 	);
 
-	// Toggle menu
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
+	const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+	const toggleMenu = () => setIsMenuOpen((open) => !open);
 
-	// Close menu
-	const closeMenu = () => {
-		setIsMenuOpen(false);
-	};
-
-	// Handle body scroll lock
+	// Блокування прокрутки під відкритим меню
 	useEffect(() => {
-		if (isMenuOpen) {
-			document.body.classList.add('fixed-body');
-		} else {
-			document.body.classList.remove('fixed-body');
-		}
-
-		return () => {
-			document.body.classList.remove('fixed-body');
-		};
+		document.body.classList.toggle('fixed-body', isMenuOpen);
+		return () => document.body.classList.remove('fixed-body');
 	}, [isMenuOpen]);
 
-	// Handle scroll effect
+	// Esc закриває меню; перехід на десктопну ширину — теж (інакше лишиться блок прокрутки)
 	useEffect(() => {
-		const handleScroll = () => {
-			const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-			setIsScrolled(scrollTop > 50);
+		if (!isMenuOpen) return;
+
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') closeMenu();
+		};
+		const desktop = window.matchMedia(`(min-width: ${MOBILE_MAX_WIDTH + 1}px)`);
+		const onChange = (e: MediaQueryListEvent) => {
+			if (e.matches) closeMenu();
 		};
 
-		window.addEventListener('scroll', handleScroll);
+		document.addEventListener('keydown', onKeyDown);
+		desktop.addEventListener('change', onChange);
+		return () => {
+			document.removeEventListener('keydown', onKeyDown);
+			desktop.removeEventListener('change', onChange);
+		};
+	}, [isMenuOpen, closeMenu]);
+
+	// Фон хедера після прокрутки
+	useEffect(() => {
+		const handleScroll = () => setIsScrolled(window.scrollY > 50);
+		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 
-	// Update indicator position based on active route
+	// Підсвітка активного пункту («капсула», що переїжджає між пунктами на десктопі).
+	// ResizeObserver перераховує позицію після завантаження шрифту і зміни ширини.
 	useEffect(() => {
-		const updateIndicator = () => {
-			const activeIndex = navItems.findIndex((item) => pathname === item.href);
+		const nav = navRef.current;
+		if (!nav) return;
 
-			if (activeIndex !== -1 && navItemsRef.current[activeIndex]) {
-				const liElement = navItemsRef.current[activeIndex];
-				const navElement = navRef.current;
-
-				if (liElement && navElement) {
-					// Get the actual Link element inside the li
-					const linkElement = liElement.querySelector('a');
-
-					if (linkElement) {
-						const navRect = navElement.getBoundingClientRect();
-						const linkRect = linkElement.getBoundingClientRect();
-
-						setIndicatorStyle({
-							left: linkRect.left - navRect.left,
-							width: linkRect.width
-						});
-						setShowIndicator(true);
-					}
-				}
-			} else {
-				// Hide indicator if no active item found (e.g., on home page)
-				setShowIndicator(false);
+		const update = () => {
+			const link =
+				activeIndex === -1
+					? null
+					: nav.querySelectorAll<HTMLAnchorElement>('.header__nav-link')[activeIndex];
+			if (!link) {
+				setIndicator((prev) => ({ ...prev, visible: false }));
+				return;
 			}
+			const navRect = nav.getBoundingClientRect();
+			const linkRect = link.getBoundingClientRect();
+			setIndicator({ left: linkRect.left - navRect.left, width: linkRect.width, visible: true });
 		};
 
-		// Small delay to ensure DOM is ready
-		const timer = setTimeout(updateIndicator, 0);
-		window.addEventListener('resize', updateIndicator);
-
-		return () => {
-			clearTimeout(timer);
-			window.removeEventListener('resize', updateIndicator);
-		};
-	}, [pathname, navItems]);
-
-	// Handle touch events for swipe
-	const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-		touchStartX.current = e.changedTouches[0].screenX;
-		touchStartY.current = e.changedTouches[0].screenY;
-		isSwiping.current = false;
-	};
-
-	const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-		isSwiping.current = true;
-		touchEndX.current = e.changedTouches[0].screenX;
-		touchEndY.current = e.changedTouches[0].screenY;
-	};
-
-	const handleTouchEnd = () => {
-		if (isSwiping.current) {
-			const horizontalDistance = touchStartX.current - touchEndX.current;
-			const verticalDistance = Math.abs(touchStartY.current - touchEndY.current);
-
-			if (horizontalDistance > 70 && horizontalDistance > verticalDistance) {
-				closeMenu();
-			}
-		}
-		isSwiping.current = false;
-	};
+		const observer = new ResizeObserver(update);
+		observer.observe(nav);
+		return () => observer.disconnect();
+	}, [activeIndex]);
 
 	return (
-		<header ref={headerRef} className={`header ${isScrolled ? 'scrolled' : ''}`}>
-			<div className="container">
+		<header className={`header${isScrolled ? ' scrolled' : ''}${isMenuOpen ? ' menu-open' : ''}`}>
+			<div className="container container--design">
 				<div className="header__wrapper">
-					<Link href="/" className="header__logo logo">
-						<Image src="/icons/logo.svg" alt="ABECT логотип" width={36} height={36} />
-						<span>{t('logo')}</span>
+					<Link href="/" className="header__logo" aria-label={t('logoAriaLabel')} onClick={closeMenu}>
+						<span className="header__logo-mark" aria-hidden="true" />
+						{/* «E» — звичайним Montserrat, як у макеті (в Alternates вона схожа на «Є») */}
+						<span className="header__logo-text" aria-hidden="true">
+							AB<span className="header__logo-e">E</span>CT
+						</span>
 					</Link>
 
-					<div
-						ref={menuRef}
-						className={`header__menu ${isMenuOpen ? 'active' : ''}`}
-						onTouchStart={handleTouchStart}
-						onTouchMove={handleTouchMove}
-						onTouchEnd={handleTouchEnd}
-					>
-						<nav
-							ref={navRef}
-							className="header__menu-nav"
-							role="navigation"
-							aria-label={t('menuAriaLabel')}
-						>
-							<ul itemScope itemType="https://schema.org/ItemList">
+					<div id="header-menu" className={`header__menu${isMenuOpen ? ' active' : ''}`}>
+						<nav ref={navRef} className="header__nav glass" aria-label={t('menuAriaLabel')}>
+							<ul className="header__nav-list" itemScope itemType="https://schema.org/ItemList">
 								{navItems.map((item, index) => (
 									<li
 										key={item.section}
 										itemProp="itemListElement"
 										itemScope
 										itemType="https://schema.org/ListItem"
-										ref={(el) => {
-											navItemsRef.current[index] = el;
-										}}
 									>
 										<Link
 											href={item.href}
 											title={t(`navTitles.${item.section}`)}
 											itemProp="url"
-											data-section={item.section}
-											className={pathname === item.href ? 'active' : ''}
+											className={`header__nav-link${index === activeIndex ? ' active' : ''}`}
+											aria-current={index === activeIndex ? 'page' : undefined}
 											onClick={closeMenu}
 										>
 											<span itemProp="name">{t(`nav.${item.section}`)}</span>
@@ -195,48 +132,54 @@ export default function Header() {
 									</li>
 								))}
 							</ul>
-							<div
-								className={`nav-indicator ${showIndicator ? 'active' : ''}`}
-								style={{
-									left: `${indicatorStyle.left}px`,
-									width: `${indicatorStyle.width}px`
-								}}
+							<span
+								className={`header__nav-indicator${indicator.visible ? ' active' : ''}`}
+								style={{ width: `${indicator.width}px`, transform: `translateX(${indicator.left}px)` }}
+								aria-hidden="true"
 							/>
 						</nav>
 
-						<div className="header__menu-contacts" aria-label={t('contactsAriaLabel')}>
-							<ul className="contacts-list">
-								{contactLinks.map((contact, index) => (
-									<li key={index}>
-										<a href={contact.href} target="_blank" rel="noopener noreferrer">
-											{contact.icon}
-										</a>
-									</li>
-								))}
-							</ul>
+						{/* Лише в мобільному меню */}
+						<div className="header__menu-actions">
+							<div className="header__menu-controls">
+								<LanguageSwitcher />
+							</div>
+							<button
+								type="button"
+								data-open-modal
+								className="header__order"
+								onClick={closeMenu}
+							>
+								<span className="header__order-label">{t('orderButton')}</span>
+								<span className="header__order-arrow glass">
+									<Image src="/icons/arrow-39.svg" alt="" width={39} height={39} />
+								</span>
+							</button>
 						</div>
 					</div>
-					<div className="header__language">
+
+					{/* Лише на десктопі */}
+					<div className="header__actions">
 						<LanguageSwitcher />
+						<button type="button" data-open-modal className="header__contact">
+							{tC('cta')}
+						</button>
 					</div>
 
 					<button
 						type="button"
-						data-open-modal
-						className="header__cta cta cta-secondary"
-					>
-						{tCC('cta')}
-					</button>
-
-					<button
-						type="button"
-						className={`header__burger ${isMenuOpen ? 'active' : ''}`}
-						aria-label={t('burgerAriaLabel')}
+						className={`header__burger${isMenuOpen ? ' active' : ''}`}
+						aria-label={isMenuOpen ? t('closeMenuAriaLabel') : t('burgerAriaLabel')}
+						aria-expanded={isMenuOpen}
+						aria-controls="header-menu"
 						onClick={toggleMenu}
 					>
-						<div className="header__burger-element"></div>
-						<div className="header__burger-element"></div>
-						<div className="header__burger-element"></div>
+						{/* Три лінії бургера анімуються в хрестик (геометрія й кольори — з макета) */}
+						<span className="header__burger-lines" aria-hidden="true">
+							<span />
+							<span />
+							<span />
+						</span>
 					</button>
 				</div>
 			</div>

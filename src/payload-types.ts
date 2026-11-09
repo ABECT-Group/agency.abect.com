@@ -985,6 +985,19 @@ export interface CalculatorConfig {
     showPriceFrom?: boolean | null;
     minimumOrderPrice?: number | null;
   };
+  /**
+   * Плашки «Лендінг за 199 $» у першому екрані головної. Якщо порожньо — показуються ціни за замовчуванням із перекладів.
+   */
+  heroPrices?:
+    | {
+        /**
+         * Наприклад: "Лендінг"
+         */
+        label: string;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
   seo: {
     metaTitle: string;
     metaDescription: string;
@@ -1048,6 +1061,13 @@ export interface CalculatorConfigSelect<T extends boolean = true> {
         currency?: T;
         showPriceFrom?: T;
         minimumOrderPrice?: T;
+      };
+  heroPrices?:
+    | T
+    | {
+        label?: T;
+        price?: T;
+        id?: T;
       };
   seo?:
     | T

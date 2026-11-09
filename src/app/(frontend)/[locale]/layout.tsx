@@ -3,7 +3,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/client/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
-import { Victor_Mono } from "next/font/google";
+import { Montserrat, Montserrat_Alternates, Victor_Mono } from "next/font/google";
 import Header from "@/client/components/Header/Header";
 import Footer from "@/client/components/Footer/Footer";
 import StarsBackground from "@/client/components/StarsBackground/StarsBackground";
@@ -18,6 +18,21 @@ import "./globals.scss";
 const victorMono = Victor_Mono({
   variable: "--font-victor-mono",
   subsets: ["cyrillic", "latin"],
+});
+
+// Основний шрифт сайту (globals.scss → `*`). Self-hosted через next/font — працює з CSP font-src 'self'.
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["cyrillic", "latin"],
+  display: "swap",
+});
+
+// Акцентний шрифт з дизайну (хедер, hero). Не variable-шрифт — ваги задаються явно.
+const montserratAlternates = Montserrat_Alternates({
+  variable: "--font-montserrat-alt",
+  subsets: ["cyrillic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 // Спільні метадані для всіх сторінок (сторінки задають лише title/description/OG/alternates)
@@ -72,7 +87,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={langCode}>
-      <body className={victorMono.variable}>
+      <body className={`${victorMono.variable} ${montserrat.variable} ${montserratAlternates.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ModalProvider>
             <Header />

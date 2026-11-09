@@ -1,144 +1,74 @@
+/* Перемикач мови Ua / En — Figma «ABECT», хедер */
+
 .language-switcher {
-	position: relative;
-	z-index: 1001;
-}
-
-.language-switcher__button {
+	--switch-pill-bg: var(--header-active);
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 8px;
-	width: 80px;
-	height: 44px;
-	padding: 0 12px;
-	background: var(--blue-alpha-10);
-	border: 1px solid var(--border-subtle);
-	border-radius: 10px;
-	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	flex-shrink: 0;
+	width: 102px;
+	height: 46px;
+	padding: 5px;
+	border-radius: 30px;
 
-	&:hover {
-		background: var(--blue-alpha-20);
-		transform: scale(1.05);
+	// «Пігулка» активної мови: окремий шар, що переїжджає між опціями (::before зайнятий склом .glass).
+	// Ширини як у макеті: активна опція 54px, неактивна 38px.
+	&::after {
+		content: "";
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		width: 54px;
+		height: 36px;
+		border-radius: 30px;
+		background: var(--switch-pill-bg);
+		box-shadow: var(--glass-pill-shadow);
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+		pointer-events: none;
 	}
 
-	&.active {
-		background: var(--blue-alpha-20);
-		border-color: var(--accent);
-
-		.language-switcher__icon-element {
-			&:nth-child(1) {
-				transform: translateY(3px) rotate(-45deg);
-			}
-
-			&:nth-child(2) {
-				transform: translateY(-3px) rotate(45deg);
-			}
-		}
+	&[data-active="en"]::after {
+		transform: translateX(38px);
 	}
-}
-
-.language-switcher__current {
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--white);
-	letter-spacing: 0.5px;
-}
-
-.language-switcher__icon {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	gap: 3px;
-}
-
-.language-switcher__icon-element {
-	width: 12px;
-	height: 2px;
-	background: var(--white);
-	border-radius: 2px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.language-switcher__dropdown {
-	position: absolute;
-	top: calc(100% + 8px);
-	right: 0;
-	width: 80px;
-	background: rgba(13, 13, 27, 0.95);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid var(--border-subtle);
-	border-radius: 10px;
-	overflow: hidden;
-	opacity: 0;
-	visibility: hidden;
-	transform: translateY(-10px);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-
-	&.active {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(0);
-	}
-}
-
-.language-switcher__list {
-	list-style: none;
-	padding: 6px;
 }
 
 .language-switcher__option {
-	width: 100%;
-	padding: 10px 12px;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--nav-text);
-	background: transparent;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	text-align: left;
-	letter-spacing: 0.5px;
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex: 0 0 38px;
+	align-items: center;
+	justify-content: center;
+	height: 36px;
+	border-radius: 30px;
+	color: var(--header-text-muted);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	transition: flex-basis 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
 
 	&:hover {
 		color: var(--white);
-		background: var(--blue-alpha-10);
 	}
 
 	&.active {
-		color: var(--accent);
-		background: var(--accent-alpha-10);
-		cursor: default;
+		flex-basis: 54px;
+		color: var(--white);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
 	}
 }
 
-@media (max-width: 1180px) {
-	.language-switcher {
-		z-index: 1002;
-	}
+.language-switcher .language-switcher__e {
+	font-family: var(--font-montserrat, "Montserrat"), sans-serif;
 }
 
-@media (max-width: 480px) {
-	.language-switcher__button {
-		width: 70px;
-		height: 40px;
-		padding: 0 10px;
-	}
-
-	.language-switcher__current {
-		font-size: 13px;
-	}
-
-	.language-switcher__dropdown {
-		width: 70px;
-	}
-
+@media (prefers-reduced-motion: reduce) {
+	.language-switcher::after,
 	.language-switcher__option {
-		padding: 8px 10px;
-		font-size: 13px;
+		transition: none;
 	}
 }

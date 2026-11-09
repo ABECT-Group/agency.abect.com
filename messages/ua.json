@@ -1,14 +1,26 @@
 {
 	"HomePage": {
 		"Hero": {
-			"uppertitle": "#команда-ABECT",
-			"title": "Створимо сучасний сайт для вашого бізнесу",
+			"titleLead": "Створимо",
+			"titleAccent": "сучасний сайт",
+			"titleTail": "для вашого бізнесу",
 			"description": "Розробляємо сучасні, швидкі та адаптивні веб-сайти, які допомагають вашому бізнесу зростати онлайн.",
 			"orderButton": "Замовити сайт",
-			"portfolioButton": "Наше портфоліо",
-			"orderButtonAriaLabel": "Відкрити форму зв'язку",
-			"portfolioButtonAriaLabel": "Відкрити форму зв'язку",
-			"imageAlt": "Ілюстрація — команда розробляє веб-проєкт"
+			"imageAlt": "Ноутбук із сайтом, розробленим ABECT",
+			"tagsAriaLabel": "Які сайти ми робимо",
+			"tags": {
+				"modern": "сучасні",
+				"fast": "швидкі",
+				"adaptive": "адаптивні",
+				"websites": "веб-сайти"
+			},
+			"pricesAriaLabel": "Ціни на розробку",
+			"priceFormat": "за {price} $",
+			"defaultPrices": {
+				"landing": "Лендінг",
+				"businessCard": "Сайт візитка",
+				"corporate": "Корпоративний"
+			}
 		},
 		"Services": {
 			"title": "Послуги та ціни",
@@ -266,8 +278,10 @@
 			"contacts": "Контактна інформація компанії"
 		},
 		"menuAriaLabel": "Головне меню сайту",
-		"contactsAriaLabel": "Контактна інформація",
-		"burgerAriaLabel": "Відкрити меню"
+		"burgerAriaLabel": "Відкрити меню",
+		"closeMenuAriaLabel": "Закрити меню",
+		"logoAriaLabel": "ABECT — на головну",
+		"orderButton": "Замовити сайт"
 	},
 	"Footer": {
 		"logo": "ABECT",

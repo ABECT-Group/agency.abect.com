@@ -157,6 +157,14 @@ if (result.success) {
 - `Analytics.tsx` вантажить GA і Clarity лише коли згода `accepted`. Нові трекери підключаються тільки сюди, а їхні домени додаються в CSP (`next.config.mjs`).
 - Не читати localStorage у `useEffect` + `setState` (правило `react-hooks/set-state-in-effect`).
 
-## 8. Security-заголовки
+## 8. Скло (`.glass`)
+
+Ефект Glass з макета — глобальний клас `.glass` у `globals.scss`: розмиття фону, обідок-градієнт (`::before` з `mask`), внутрішнє світіння. Додати клас елементу з `border-radius`; колір і розмиття — через `--glass-bg`, `--glass-blur` (наприклад, на hover: `--glass-bg: var(--header-active)`). Активні «пігулки» всередині скла — `box-shadow: var(--glass-pill-shadow)`.
+
+- `::before` у такого елемента зайнятий обідком — не використовувати його під інше.
+- Писати **лише** `backdrop-filter`, без `-webkit-backdrop-filter`: Lightning CSS (збірка Next) при обох властивостях залишає тільки `-webkit-`, і в Chrome розмиття зникає. Префікс для Safari він додає сам.
+- Бібліотеки liquid glass із SVG-заломленням не підключати: працюють лише в Chromium і важкі для фіксованих елементів.
+
+## 9. Security-заголовки
 
 `next.config.mjs` → `headers()` для всіх маршрутів, крім `/admin`. CSP **увімкнена** (enforce). `'unsafe-eval'` додається лише в dev. Новий зовнішній домен (скрипти, шрифти, API, iframe) треба додати у відповідну директиву, інакше браузер його заблокує. Перевірка: відкрити сторінку, у консолі не має бути `Refused to …`.

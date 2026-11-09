@@ -271,6 +271,41 @@ export const CalculatorConfig: GlobalConfig = {
       ],
     },
 
+    // ============ ЦІНИ В HERO ГОЛОВНОЇ ============
+    {
+      name: 'heroPrices',
+      type: 'array',
+      label: 'Ціни на головній (перший екран)',
+      labels: {
+        singular: 'Ціна',
+        plural: 'Ціни',
+      },
+      maxRows: 3,
+      admin: {
+        description:
+          'Плашки «Лендінг за 199 $» у першому екрані головної. Якщо порожньо — показуються ціни за замовчуванням із перекладів.',
+      },
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+          required: true,
+          localized: true,
+          label: 'Назва',
+          admin: {
+            description: 'Наприклад: "Лендінг"',
+          },
+        },
+        {
+          name: 'price',
+          type: 'number',
+          required: true,
+          min: 0,
+          label: 'Ціна, $',
+        },
+      ],
+    },
+
     // ============ SEO ============
     {
       name: 'seo',

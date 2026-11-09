@@ -3,6 +3,7 @@ import Home from '@/client/modules/home/Home';
 import { Metadata } from 'next';
 import { Fragment } from 'react';
 import { SITE_URL } from '@/client/config/site';
+import { getCalculatorConfig } from '@/client/lib/calculator';
 
 type Params = {
 	params: Promise<{
@@ -82,6 +83,10 @@ export default async function HomePage({ params }: Params) {
 
 	setRequestLocale(locale);
 
+	// Ціни в hero — з CMS (Калькулятор → «Ціни на головній»); порожньо → дефолтні з макета
+	const calculatorConfig = await getCalculatorConfig(locale);
+	const heroPrices = calculatorConfig?.heroPrices?.map(({ label, price }) => ({ label, price })) ?? null;
+
 	const orgJsonLd = {
 		'@context': 'https://schema.org',
 		'@type': ['Organization', 'ProfessionalService'],
@@ -118,7 +123,7 @@ export default async function HomePage({ params }: Params) {
 		<Fragment>
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
-			<Home locale={locale} />
+			<Home locale={locale} heroPrices={heroPrices} />
 		</Fragment>
 	);
 }

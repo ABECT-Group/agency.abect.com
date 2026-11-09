@@ -1,175 +1,481 @@
-/* Entry Section */
-.entry {
-	min-height: calc(100vh - 80px);
-	display: flex;
-	align-items: center;
-	padding: 120px 0;
+/* Hero головної — Figma «ABECT»: Desktop 6 (17:750), iPhone 13&14 - 1 (4:44) */
+
+.hero {
 	position: relative;
 	overflow: hidden;
+	// Щонайменше на весь екран; якщо контент більший (низьке вікно, довший англ. заголовок) — росте,
+	// а не обрізається
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	min-height: 100svh;
 	margin: 0;
-	margin-top: 80px;
+	background: var(--black);
 
-	&__wrapper {
-		display: grid;
-		grid-template-columns: 1.3fr 0.7fr;
-		gap: 80px;
-		align-items: center;
+	> .container {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+
+	// Акцентний шрифт макета (глобальне правило `*` задає Montserrat кожному елементу)
+	&,
+	& * {
+		font-family: var(--font-montserrat-alt, "Montserrat Alternates"), sans-serif;
+	}
+}
+
+/* Фон: світіння + вертикальні смуги */
+.hero__bg {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image: url('/images/bg/glow-hero.svg'), url('/images/bg/stripe-hero.png');
+	background-repeat: no-repeat, repeat-x;
+	background-size: 1622px 1622px, 43px 100%;
+	// Світіння по центру висоти hero — щоб при 100vh лишалось за ноутбуком
+	background-position: center center, 0 0;
+}
+
+.hero__inner {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-rows: auto auto 1fr auto auto;
+	// Порожній рядок 1fr притискає заголовок і ціни до низу секції
+	grid-template-areas:
+		"text tags"
+		"cta tags"
+		". ."
+		"title title"
+		"prices prices";
+	// Висота — від .hero (≥ 100vh); відступи — як у макеті (текст із 186px, ціни до 111px від низу)
+	flex: 1;
+	padding-top: 186px;
+	padding-bottom: 111px;
+
+	// Усе, крім ноутбука, — над ним
+	> *:not(.hero__visual) {
+		position: relative;
+		z-index: 1;
+	}
+}
+
+.hero__text {
+	grid-area: text;
+	max-width: 461px;
+	color: var(--hero-text);
+	font-size: 18px;
+	line-height: 1.22;
+}
+
+/* CTA «Замовити сайт» + стрілка */
+.hero__cta {
+	grid-area: cta;
+	margin-top: 28px;
+}
+
+.hero__order {
+	display: inline-flex;
+	align-items: center;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+
+	&:hover {
+		.hero__order-label {
+			background: var(--accentHover);
+		}
+
+		.hero__order-arrow {
+			transform: translate(2px, -2px);
+		}
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 3px;
+		border-radius: 30px;
+	}
+}
+
+.hero__order-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 236px;
+	height: 50px;
+	padding: 0 29px;
+	border-radius: 30px;
+	background: var(--cta-strong);
+	color: var(--header-text);
+	font-size: 18px;
+	font-weight: 500;
+	text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+	white-space: nowrap;
+	transition: background-color 0.3s ease;
+}
+
+// Скляне коло поверх кнопки: над синьою кнопкою — матово-синє, поза нею — темне
+.hero__order-arrow {
+	--glass-bg: rgba(19, 36, 83, 0.35);
+	--glass-blur: 6px;
+	display: flex;
+	flex-shrink: 0;
+	margin-left: -5px;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.25);
+	transition: transform 0.3s ease;
+
+	img {
+		display: block;
+	}
+}
+
+.hero__order-arrow--mobile {
+	display: none;
+}
+
+/* Теги «сучасні / швидкі / адаптивні / веб-сайти» — праворуч, у два рядки */
+.hero__tags {
+	grid-area: tags;
+	align-self: start;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	column-gap: 12px;
+	margin-top: -8px;
+	list-style: none;
+}
+
+// Ціну («за 199 $», «from $199») не розриваємо — переноситься лише назва
+.hero__price-value {
+	white-space: nowrap;
+}
+
+// Перенос рядка після другого тегу — два рядки по два, як у макеті (і для довших англ. слів)
+.hero__tags-break {
+	flex-basis: 100%;
+	height: 0;
+
+	~ .hero__tag {
+		margin-top: 12px;
+	}
+}
+
+.hero__tag {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	height: 35px;
+	padding: 0 16px;
+	border: 1px solid var(--hero-chip-border);
+	border-radius: 30px;
+	background: var(--hero-chip-bg);
+	backdrop-filter: blur(6px);
+	color: var(--white);
+	font-size: 16px;
+	white-space: nowrap;
+
+	&::before {
+		content: "";
+		flex-shrink: 0;
+		width: 6px;
+		height: 5px;
+		background: var(--logo-mark);
+	}
+}
+
+/* Ноутбук — по центру, притиснутий до низу секції */
+// Ноутбук масштабується від висоти hero: у макеті 730px із 800 (91.25%), притиснутий до низу.
+// Ширина — з пропорцій зображення (698 × 813), але не ширше 52vw на вузьких високих екранах.
+.hero__visual {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	z-index: 0;
+	height: 91.25%;
+	aspect-ratio: 698 / 813;
+	max-width: 52vw;
+	transform: translateX(calc(-50% + 10px));
+	pointer-events: none;
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: bottom center;
+	}
+}
+
+/* Заголовок: «СТВОРИМО» + «СУЧАСНИЙ САЙТ» в один рядок по базовій лінії, «ДЛЯ ВАШОГО БІЗНЕСУ» — праворуч */
+.hero__title {
+	grid-area: title;
+	align-self: end;
+	color: var(--white);
+	font-weight: 700;
+	line-height: 1.22;
+	text-transform: uppercase;
+}
+
+.hero__title-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	column-gap: 11px;
+}
+
+.hero__title-lead,
+.hero__title-tail {
+	font-size: clamp(22px, 3.33vw, 48px);
+	letter-spacing: -0.04em;
+}
+
+// Без nowrap: «СУЧАСНИЙ САЙТ» і так в один рядок, а довший англ. «A MODERN WEBSITE» на вужчих екранах переноситься
+.hero__title-accent {
+	font-size: clamp(44px, 7.64vw, 110px);
+	letter-spacing: -0.04em;
+}
+
+.hero__title-tail {
+	display: block;
+	font-weight: 600;
+	text-align: right;
+}
+
+/* Плашки з цінами — скло, що накладається одна на одну */
+.hero__prices {
+	grid-area: prices;
+	display: flex;
+	margin-top: -12px;
+	list-style: none;
+}
+
+// Розміри з макета: 117 / 179 / 184px, накладання 18px, текст із 21 / 18 / 22px.
+// Матове скло сильніше за базове + відблиск по лівому краю (як у Figma на стику плашок).
+.hero__price {
+	--glass-bg: var(--hero-plate-bg);
+	--glass-blur: 10px;
+	--glass-saturate: 110%;
+	--plate-w: 117px;
+	--plate-pl: 21px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: var(--plate-w);
+	min-height: 76px;
+	padding: 0 26px 0 var(--plate-pl);
+	border-radius: 10px;
+	box-shadow:
+		inset 14px 0 18px -14px rgba(255, 255, 255, 0.16),
+		inset 0 0 18px rgba(255, 255, 255, 0.03),
+		-6px 0 14px rgba(0, 0, 0, 0.25);
+
+	&:nth-child(2) {
+		--plate-w: 179px;
+		--plate-pl: 18px;
+	}
+
+	&:nth-child(3) {
+		--plate-w: 184px;
+		--plate-pl: 22px;
+	}
+	color: var(--white);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.22;
+	white-space: nowrap;
+
+	& + & {
+		margin-left: -18px;
+	}
+}
+
+/* Мобільний: заголовок → опис → ноутбук із тегами → кнопка → ціни */
+@media (max-width: 768px) {
+	// Контент іде один під одним — фіксована висота обрізала б його на низьких телефонах
+	.hero {
+		height: auto;
+		min-height: 100svh;
+
+		> .container {
+			height: auto;
+		}
+	}
+
+	.hero__bg {
+		background-image: url('/images/bg/glow-hero-mobile.svg'), url('/images/bg/stripe-hero.png');
+		background-size: 1361px 1361px, 43px 100%;
+		background-position: center -251px, 0 0;
+	}
+
+	.hero__inner {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: none;
+		// Hero ≥ висоти екрана: рядки притиснуті догори, зайве місце — знизу (не між рядками)
+		align-content: start;
+		grid-template-areas:
+			"title"
+			"text"
+			"visual"
+			"cta"
+			"prices";
+		height: auto;
+		padding-top: 97px;
+		padding-bottom: 38px;
+	}
+
+	.hero__title {
+		align-self: auto;
+	}
+
+	.hero__title-row {
+		display: block;
+	}
+
+	.hero__title-lead,
+	.hero__title-accent {
+		display: block;
+		font-size: clamp(28px, 9.75vw, 38px);
+		line-height: 1.27;
+	}
+
+	.hero__title-tail {
+		font-size: clamp(13px, 4.1vw, 16px);
+	}
+
+	.hero__text {
+		max-width: 326px;
+		margin-top: 14px;
+		font-size: 14px;
+		text-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+	}
+
+	.hero__visual {
+		position: relative;
+		bottom: auto;
+		left: auto;
+		grid-area: visual;
+		justify-self: center;
+		// Кадр 371px ширший за контент (350): у макеті ноутбук виходить за поля;
+		// зображення 103% кадру, зсунуте вліво й угору й обрізане кадром
+		width: calc(100% + 21px);
+		height: auto;
+		max-width: none;
+		aspect-ratio: auto;
+		margin-top: -37px;
+		overflow: hidden;
+		transform: none;
+
+		img {
+			width: 103.23%;
+			height: auto;
+			max-width: none;
+			margin: -2.67% 0 0 -3.23%;
+		}
+	}
+
+	// Теги лежать поверх ноутбука (та сама клітинка сітки)
+	.hero__tags {
+		grid-area: visual;
+		align-self: stretch;
+		display: block;
+		max-width: none;
+		margin: -37px 0 0; // як у .hero__visual — щоб координати тегів рахувались від кадру ноутбука
+		pointer-events: none;
+	}
+
+	.hero__tag {
+		position: absolute;
+		height: auto;
+		padding: 5px 8px;
+		background: var(--hero-chip-bg-mobile);
+		color: rgba(255, 255, 255, 0.74);
+		font-size: 11px;
+
+		// Позиції з макета відносно клітинки (350 × 435)
+		&--modern {
+			top: 40.5%;
+			left: 4.6%;
+		}
+
+		&--fast {
+			top: 23.7%;
+			left: 76.6%;
+		}
+
+		&--adaptive {
+			top: 62.1%;
+			left: 70.3%;
+		}
+
+		&--websites {
+			display: none;
+		}
+	}
+
+	// Теги тут позиціонуються абсолютно — розрив і відступ другого рядка не потрібні
+	.hero__tags-break {
+		display: none;
+
+		~ .hero__tag {
+			margin-top: 0;
+		}
+	}
+
+	.hero__cta {
+		margin-top: -35px;
+		padding-right: 6px;
+	}
+
+	.hero__order {
+		display: flex;
 		width: 100%;
 	}
 
-	/* Left Content */
-	&__left {
+	.hero__order-label {
+		flex: 1;
+		min-width: 0;
+		height: 46px;
+	}
+
+	.hero__order-arrow {
+		margin-left: -9px;
+	}
+
+	.hero__order-arrow--desktop {
+		display: none;
+	}
+
+	.hero__order-arrow--mobile {
 		display: flex;
-		flex-direction: column;
-		gap: 24px;
 	}
 
-	&__uppertitle {
-		display: inline-block;
-		padding: 8px 16px;
-		background: var(--accent-alpha-10);
-		color: var(--accent);
-		font-size: 14px;
-		font-weight: 600;
-		border-radius: 24px;
-		border: 1px solid var(--accent-alpha-10);
-		width: fit-content;
-		letter-spacing: 0.02em;
+	.hero__prices {
+		margin-top: 18px;
 	}
 
-	h1 {
-		font-size: 48px;
-		font-weight: 700;
-		line-height: 1.1;
-		color: var(--white);
-		margin: 0;
-		letter-spacing: -0.02em;
-	}
+	// Ширина — за текстом (назви в CMS і англійською довші за макет), текст переноситься;
+	// праве поле більше за накладання (14px), щоб наступна плашка не закривала текст
+	.hero__price {
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 56px;
+		padding: 6px 22px 6px 12px;
+		font-size: 13px;
+		white-space: normal;
 
-	p {
-		font-size: 18px;
-		line-height: 1.6;
-		color: var(--nav-text);
-		margin: 0;
-		max-width: 500px;
-	}
-
-	&__btns {
-		display: flex;
-		gap: 16px;
-		margin-top: 16px;
-	}
-
-	/* Right Content */
-	&__right {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		img {
-			width: 100%;
-			height: auto;
-			border-radius: 20px;
-			transition: transform 0.3s ease;
-			transform: scale(1.5);
-
-			&:hover {
-				transform: scale(1.6);
-			}
+		& + & {
+			margin-left: -14px;
 		}
 	}
+}
 
-	/* Tablet styles - до 1024px */
-	@media (max-width: 1024px) {
-		margin-top: 0;
-
-		&__wrapper {
-			display: flex;
-			flex-direction: column-reverse;
-			gap: 60px;
-			text-align: center;
-		}
-
-		&__left {
-			order: 1;
-			align-items: center;
-		}
-
-		&__right {
-			order: 2;
-
-			img {
-				width: 100%;
-				height: auto;
-				border-radius: 20px;
-				box-shadow:
-					0 20px 60px var(--shadow-dark),
-					0 8px 24px var(--shadow-dark-hover);
-				transition: transform 0.3s ease;
-				transform: scale(1);
-
-				&:hover {
-					transform: scale(1);
-				}
-			}
-		}
-
-		h1 {
-			font-size: 42px;
-		}
-
-		p {
-			max-width: 600px;
-		}
-
-		&__btns {
-			justify-content: center;
-			align-items: center;
-		}
-	}
-
-	/* Mobile styles */
-	@media (max-width: 768px) {
-		padding: 80px 0 100px 0;
-		min-height: auto;
-
-		&__wrapper {
-			gap: 20px;
-		}
-
-		h1 {
-			font-size: 36px;
-		}
-
-		p {
-			font-size: 16px;
-		}
-
-		&__btns {
-			flex-direction: column;
-			gap: 12px;
-			width: 100%;
-
-			.cta {
-				width: 100%;
-				max-width: 300px;
-			}
-		}
-	}
-
-	@media (max-width: 480px) {
-		h1 {
-			font-size: 28px;
-			line-height: 1.2;
-		}
-
-		&__uppertitle {
-			font-size: 12px;
-			padding: 6px 12px;
-		}
-
-		p {
-			font-size: 15px;
-		}
+@media (prefers-reduced-motion: reduce) {
+	.hero * {
+		transition: none !important;
 	}
 }

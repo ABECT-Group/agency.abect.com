@@ -1,78 +1,45 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/client/i18n/navigation';
+import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/client/i18n/navigation';
 import './LanguageSwitcher.scss';
 
+// Підписи як у макеті. «E» — звичайним Montserrat (у Montserrat Alternates вона схожа на «Є»).
+const languages = [
+	{ code: 'ua', lang: 'uk', labelKey: 'ukrainian', label: <>Ua</> },
+	{ code: 'en', lang: 'en', labelKey: 'english', label: <><span className="language-switcher__e">E</span>n</> }
+] as const;
+
 export default function LanguageSwitcher() {
-	const [isOpen, setIsOpen] = useState(false);
+	const t = useTranslations('Common');
 	const locale = useLocale();
-	const router = useRouter();
 	const pathname = usePathname();
-	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	const languages = [
-		{ code: 'ua', label: 'UA' },
-		{ code: 'en', label: 'EN' }
-	];
-
-	// Close dropdown when clicking outside
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-				setIsOpen(false);
-			}
-		};
-
-		if (isOpen) {
-			document.addEventListener('mousedown', handleClickOutside);
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [isOpen]);
-
-	const handleLanguageChange = (newLocale: string) => {
-		setIsOpen(false);
-		router.push(pathname, { locale: newLocale });
-	};
-
-	const toggleDropdown = () => {
-		setIsOpen(!isOpen);
-	};
+	// Мова, на яку вже клікнули: «пігулка» переїжджає одразу, ще до завершення переходу.
+	// Діє, лише поки локаль та сама, з якої клікнули, — після будь-якої зміни мови (і «Назад») ігнорується.
+	const [pending, setPending] = useState<{ from: string; to: string } | null>(null);
+	const active = pending && pending.from === locale ? pending.to : locale;
 
 	return (
-		<div ref={dropdownRef} className="language-switcher">
-			<button
-				type="button"
-				className={`language-switcher__button ${isOpen ? 'active' : ''}`}
-				onClick={toggleDropdown}
-				aria-label="Change language"
-			>
-				<span className="language-switcher__current">{locale.toUpperCase()}</span>
-				<div className="language-switcher__icon">
-					<div className="language-switcher__icon-element"></div>
-					<div className="language-switcher__icon-element"></div>
-				</div>
-			</button>
-
-			<div className={`language-switcher__dropdown ${isOpen ? 'active' : ''}`}>
-				<ul className="language-switcher__list">
-					{languages.map((lang) => (
-						<li key={lang.code}>
-							<button
-								type="button"
-								className={`language-switcher__option ${locale === lang.code ? 'active' : ''}`}
-								onClick={() => handleLanguageChange(lang.code)}
-							>
-								{lang.label}
-							</button>
-						</li>
-					))}
-				</ul>
-			</div>
+		<div className="language-switcher glass" role="group" aria-label={t('language')} data-active={active}>
+			{languages.map((item) => {
+				const isActive = active === item.code;
+				return (
+					<Link
+						key={item.code}
+						href={pathname}
+						locale={item.code}
+						hrefLang={item.lang}
+						className={`language-switcher__option${isActive ? ' active' : ''}`}
+						aria-label={t(item.labelKey)}
+						aria-current={locale === item.code ? 'true' : undefined}
+						onClick={() => setPending({ from: locale, to: item.code })}
+					>
+						{item.label}
+					</Link>
+				);
+			})}
 		</div>
 	);
 }

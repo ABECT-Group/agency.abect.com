@@ -1,14 +1,26 @@
 {
 	"HomePage": {
 		"Hero": {
-			"uppertitle": "#ABECT-team",
-			"title": "We'll create a modern website for your business",
+			"titleLead": "We'll build",
+			"titleAccent": "a modern website",
+			"titleTail": "for your business",
 			"description": "We develop modern, fast and responsive websites that help your business grow online.",
 			"orderButton": "Order a website",
-			"portfolioButton": "Our portfolio",
-			"orderButtonAriaLabel": "Open contact form",
-			"portfolioButtonAriaLabel": "Open contact form",
-			"imageAlt": "Illustration — team developing a web project"
+			"imageAlt": "Laptop showing a website built by ABECT",
+			"tagsAriaLabel": "What kind of websites we build",
+			"tags": {
+				"modern": "modern",
+				"fast": "fast",
+				"adaptive": "responsive",
+				"websites": "websites"
+			},
+			"pricesAriaLabel": "Development prices",
+			"priceFormat": "from ${price}",
+			"defaultPrices": {
+				"landing": "Landing",
+				"businessCard": "Business card",
+				"corporate": "Corporate"
+			}
 		},
 		"Services": {
 			"title": "Popular services and prices",
@@ -266,8 +278,10 @@
 			"contacts": "Company contact information"
 		},
 		"menuAriaLabel": "Main site menu",
-		"contactsAriaLabel": "Contact information",
-		"burgerAriaLabel": "Open menu"
+		"burgerAriaLabel": "Open menu",
+		"closeMenuAriaLabel": "Close menu",
+		"logoAriaLabel": "ABECT — home",
+		"orderButton": "Order a website"
 	},
 	"Footer": {
 		"logo": "ABECT",

@@ -23,6 +23,7 @@
 | CMS | Payload CMS 3.93 (вбудована в той самий Next-застосунок, адмінка на `/admin`) |
 | БД | MongoDB 7 (`@payloadcms/db-mongodb`, mongoose) |
 | Стилі | SCSS: окремий файл поруч з кожним компонентом |
+| Шрифти | `next/font/google` у `[locale]/layout.tsx` (self-hosted): Montserrat — основний (`--font-montserrat`), Montserrat Alternates — акцентний з дизайну (`--font-montserrat-alt`), Victor Mono |
 | i18n | `next-intl` 4.14 (локалі `ua`, `en`) + Payload localization (`uk`, `en`) |
 | Редактор контенту | Lexical (`src/utils/editor.ts`) |
 | Іконки | `lucide-react` |
@@ -120,6 +121,6 @@ frontend/
 | `media` | Файли та зображення (`alt`, `caption`, `folder`) | ні |
 | `leads` | Заявки з форм | ні |
 | `users` | Адміни (`superadmin` / `admin` / `moderator`) | так |
-| global `calculator-config` | Типи проектів, ціни, додаткові послуги, коефіцієнти терміновості | так |
+| global `calculator-config` | Типи проектів, ціни, додаткові послуги, коефіцієнти терміновості; `heroPrices` — плашки з цінами в hero головної (порожньо → дефолтні з макета) | так |
 
 Колекцію `comments` видалено 2026-11-09 (на фронті не використовувалась). Документи, якщо були, лишились у MongoDB, але в адмінці не показуються.
