@@ -5,6 +5,12 @@
 
 ---
 
+## 2026-11-09 — Превʼю на Vercel ([ченджлог](../changelogs/2026-11-09.md), запит 19)
+
+| ID | Що було | Як вирішено |
+|---|---|---|
+| ISS-038 | На Vercel `payloadFetch` ходив на `127.0.0.1:$PORT`, якого там немає → головна давала «Помилка сервера» | На Vercel — адреса деплою `VERCEL_URL` + заголовок `x-vercel-protection-bypass` із `VERCEL_AUTOMATION_BYPASS_SECRET` (`src/client/lib/payload-fetch.ts`). На VPS поведінка без змін |
+
 ## 2026-11-09 — Хедер і hero за новим дизайном ([ченджлог](../changelogs/2026-11-09.md), запит 16)
 
 | ID | Що було | Як вирішено |

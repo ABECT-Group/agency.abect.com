@@ -20,11 +20,28 @@ export interface PayloadListResponse<T> {
 
 export type QueryValue = string | number | boolean | null | undefined
 
-/** Внутрішня адреса Payload. За замовчуванням — цей самий Next.js-процес. */
+/**
+ * Адреса Payload REST для серверних запитів:
+ * 1. `PAYLOAD_INTERNAL_URL`, якщо задано явно;
+ * 2. на Vercel (serverless) — адреса цього ж деплою (`VERCEL_URL`): власного HTTP-сервера
+ *    на 127.0.0.1 там немає (ISS-038);
+ * 3. інакше (VPS / Docker / локально) — цей самий Next.js-процес.
+ */
 function internalBaseUrl(): string {
   const explicit = process.env.PAYLOAD_INTERNAL_URL
   if (explicit) return explicit.replace(/\/$/, '')
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return `http://127.0.0.1:${process.env.PORT || 3000}`
+}
+
+/**
+ * Превʼю на Vercel закриті Deployment Protection — запит сайту до самого себе отримав би 401.
+ * Якщо у Vercel увімкнено «Protection Bypass for Automation», Vercel сам задає
+ * VERCEL_AUTOMATION_BYPASS_SECRET, і ми передаємо його заголовком.
+ */
+function internalHeaders(): Record<string, string> {
+  const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+  return bypass ? { 'x-vercel-protection-bypass': bypass } : {}
 }
 
 /** Локаль маршруту (`ua` | `en`) → локаль Payload (`uk` | `en`). */
@@ -41,6 +58,7 @@ export async function payloadFetch<T>(path: string, query: Record<string, QueryV
 
   const url = `${internalBaseUrl()}${path}?${params.toString()}`
   const response = await fetch(url, {
+    headers: internalHeaders(),
     next: { tags: ['all'] },
     cache: 'force-cache',
   })

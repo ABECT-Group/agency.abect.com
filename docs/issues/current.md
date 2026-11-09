@@ -21,7 +21,6 @@
 | ISS-033 | ⚪ | Без `.gitattributes` git на Windows показує `payload-types.ts` зміненим (лише кінці рядків); `AGENTS.md` від `next dev` не закомічено | корінь |
 | ISS-037 | 🟡 | Розмиття (`backdrop-filter`) у калькуляторі не працює в Chrome / Edge — Lightning CSS лишає лише `-webkit-` | `Calculator.scss` |
 | ISS-036 | 🟡 | Ціни не узгоджені: hero 199/399/799 $, секція послуг у макеті 100/300/450 $, калькулятор у CMS — у UAH | дизайн / CMS |
-| ISS-038 | 🟡 | Превʼю на Vercel: `payloadFetch` ходить на `127.0.0.1:$PORT`, якого на Vercel немає → дані CMS не завантажуються | `lib/payload-fetch.ts` |
 | ISS-035 | ⚪ | Дрібні неточності документації: «кожна колекція» має revalidate-хуки (у `leads`, `users` немає), README без `devsafe`/`pl`, `devsafe` використовує `rm -rf` | `docs/`, `package.json` |
 
 ---
@@ -61,4 +60,3 @@
 - **ISS-035** — `architecture.md` («Як рендеряться сторінки»): хуки `revalidateAll` є не в кожній колекції — у `leads` і `users` їх немає (і не треба, їх немає на сайті); уточнити формулювання. `README.md` не згадує скрипти `devsafe`, `pl`; `devsafe` (`rm -rf .next`) не працює в cmd на Windows.
 - **ISS-036** — У hero (макет і дефолти в коді) — «Лендінг за 199 $, Сайт візитка за 399 $, Корпоративний за 799 $»; у секції «Послуги та ціни» того ж макета — 100 / 300 / 450 $; калькулятор у CMS рахує в UAH. Потрібне рішення власника, які ціни правильні. Ціни в hero можна змінити без коду: адмінка → «Калькулятор» → «Ціни на головній» (`heroPrices`).
 - **ISS-037** — У `src/client/components/Calculator/Calculator.scss` у правилі є і `backdrop-filter`, і `-webkit-backdrop-filter`. Lightning CSS (збірка CSS у Next) у такому разі залишає лише `-webkit-backdrop-filter`, який Chrome / Edge ігнорують, — розмиття там не працює. Виправлення: прибрати рядок `-webkit-backdrop-filter` (префікс для Safari додасться автоматично). Знайдено 2026-11-09 під час роботи над хедером / hero, де те саме вже виправлено.
-- **ISS-038** — `src/client/lib/payload-fetch.ts` бере адресу Payload як `PAYLOAD_INTERNAL_URL` або `http://127.0.0.1:$PORT`. На VPS це той самий процес, а на Vercel (serverless) за цією адресою нічого не слухає, тож сторінки з даними CMS на превʼю падають або порожні. Виправлення: якщо є `VERCEL_URL` — ходити на `https://${VERCEL_URL}`; якщо у Vercel увімкнено *Deployment Protection* для Preview — додавати заголовок `x-vercel-protection-bypass` із `VERCEL_AUTOMATION_BYPASS_SECRET` (*Protection Bypass for Automation*) або вимкнути захист превʼю.

@@ -123,7 +123,8 @@ git push                                        # наступні рази
 - Превʼю працює на **тестовій базі** (змінні середовища Vercel для *Preview*), не на продакшн-даних. Telegram на превʼю вимкнений — тестові заявки нікуди не надсилаються.
 - Завантажені на превʼю в адмінку файли не зберігаються (на Vercel немає постійного диска).
 
-> ⚠️ Поки не виправлено ISS-038, сторінки з даними з CMS на Vercel можуть бути порожніми (див. [`issues/current.md`](issues/current.md)).
+- Деплой `main`, який Vercel робить **одноразово при імпорті проекту**, `vercel.json` не скасовує — його можна видалити в *Deployments*. Наступні пуші в `main` Vercel уже пропускає.
+- На Vercel сайт бере дані з CMS за адресою самого деплою (`VERCEL_URL`), а не `127.0.0.1` (`src/client/lib/payload-fetch.ts`). Якщо превʼю закриті *Deployment Protection*, потрібен секрет обходу — див. 5.1, п. 3.
 
 ## 5. Власник
 
@@ -136,7 +137,11 @@ git push                                        # наступні рази
    - ✅ *Restrict deletions*, ✅ *Block force pushes*;
    - **не** вмикати *Require a pull request before merging*;
    - *Enforcement status*: **Active**.
-3. **Vercel:** *Add New → Project* → імпортувати `ABECT-Group/agency.abect.com` (за потреби дати Vercel GitHub App доступ до організації). У *Settings → Environment Variables* для **Preview**: `DATABASE_URI` (тестова MongoDB Atlas, *Network Access* `0.0.0.0/0`), `PAYLOAD_SECRET` (не такий, як на проді). `TELEGRAM_*` не задавати.
+3. **Vercel:**
+   - *Add New → Project* → імпортувати `ABECT-Group/agency.abect.com` (за потреби дати Vercel GitHub App доступ до організації).
+   - *Settings → Environment Variables* для **Preview**: `DATABASE_URI` (тестова MongoDB Atlas, *Network Access* `0.0.0.0/0`), `PAYLOAD_SECRET` (не такий, як на проді). `TELEGRAM_*` не задавати.
+   - *Settings → Deployment Protection* → **Protection Bypass for Automation** → *Add secret* (створює `VERCEL_AUTOMATION_BYPASS_SECRET`). Без цього захищене превʼю не може читати дані з самого себе й показує «Помилка сервера». Альтернатива — вимкнути *Vercel Authentication* для Preview (тоді превʼю відкриті всім, хто має посилання).
+   - Після зміни змінних — *Redeploy* потрібного деплою.
 
 ### 5.2 Перевірка гілки
 
