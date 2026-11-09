@@ -1,20 +1,29 @@
-# Git workflow: гілки, коміти, pull request
+# Git workflow: гілки, коміти, превʼю
 
 Як працюють над репозиторієм **https://github.com/ABECT-Group/agency.abect.com** власник і розробник (зокрема разом із Claude).
+
+**Коротко:** розробник робить гілку під задачу → комітить і пушить її → Vercel сам викладає превʼю гілки → власник дивиться превʼю й сам зливає гілку в `main` → деплой `main` на VPS.
+**Pull request не потрібні.**
+
+```
+feature/задача  ──push──►  превʼю на Vercel (автоматично)
+                                  │  власник перевіряє
+                                  ▼
+                               main  ──►  деплой на VPS (прод)
+```
 
 ## 1. Ролі
 
 | | Власник проекту | Розробник |
 |---|---|---|
 | Доступ до репозиторію | Admin | Collaborator з правом **Write** |
-| Де працює | рев'ю й мердж PR | **лише у своїх гілках** |
-| Коміти в `main` | за потреби — напряму (власник у *Bypass list* ruleset) | ❌ ніколи (GitHub не дозволить) |
-| Відкриває PR | за потреби | ✅ на кожну задачу |
-| Мерджить PR у `main` | ✅ тільки він | ❌ |
+| Де працює | `main` | **лише у своїх гілках** |
+| Пушить у `main` | ✅ тільки він (злиття гілок розробника) | ❌ ніколи |
+| Перевіряє зміни | ✅ на превʼю Vercel і в коді гілки | — |
 | Деплой на VPS | ✅ тільки він, тільки з `main` | ❌ |
 | Секрети (`.env.*` на сервері), `scripts/`, `mongodb/` | ✅ | ❌ немає доступу й не потрібно |
 
-**`main` = те, що на проді.** У `main` потрапляє лише перевірений і змерджений власником код.
+**`main` = те, що на проді.** У `main` потрапляє лише перевірений власником код.
 
 ## 2. Назви гілок
 
@@ -26,6 +35,8 @@
 | `fix/` | виправлення бага | `fix/calculator-price-rounding` |
 | `docs/` | лише документація | `docs/update-api` |
 | `chore/` | залежності, конфіги, рефакторинг без зміни поведінки | `chore/update-payload` |
+
+Назва гілки потрапляє в адресу превʼю на Vercel, тому коротка й зрозуміла назва — зручніше.
 
 ## 3. Робочий цикл розробника
 
@@ -62,7 +73,7 @@ git switch -c feature/<коротка-назва>
 - Не комітити: `.env*`, `media/`, `.next/`, `node_modules/` (вони в `.gitignore` — не обходити).
 - `git add <файли>` або `git add -p`, а не наосліп `git add .`, — щоб не захопити зайве.
 
-### 3.4 Перед pull request
+### 3.4 Перед тим як сказати «готово»
 
 ```bash
 git fetch origin
@@ -74,68 +85,91 @@ npm run build                   # якщо зачеплені сторінки, 
 
 І оновити документацію за [`../CLAUDE.md`](../CLAUDE.md) (крок 5): запис у `docs/changelogs/YYYY-MM-DD.md` (з назвою гілки), короткий опис дня в індексі `changelog.md`, `docs/issues/*`.
 
-> Уже запушені гілки **не ребейзимо** й не робимо `push --force` — лише `merge origin/main`. Так історія PR не ламається.
+> Уже запушені гілки **не ребейзимо** й не робимо `push --force` — лише `merge origin/main`.
 
-### 3.5 Пуш і pull request
+### 3.5 Пуш — і все
 
 ```bash
-git push -u origin feature/<коротка-назва>
-gh pr create --base main --title "feat: пошук по блогу"     # опис — за шаблоном
+git push -u origin feature/<коротка-назва>      # перший раз
+git push                                        # наступні рази
 ```
 
-Без `gh`: відкрити `https://github.com/ABECT-Group/agency.abect.com/compare/main...feature/<коротка-назва>` → **Create pull request**.
+Після пушу **Vercel автоматично збирає превʼю гілки** (1–3 хвилини). Pull request відкривати не потрібно.
 
-Опис PR заповнюється за шаблоном (`.github/pull_request_template.md`): що зроблено, як перевірено, чи потрібні дії при деплої (нові env-змінні, міграції, зміни nginx тощо).
+Повідомити власника: назва гілки + посилання на превʼю + що зроблено й чи потрібні дії при деплої (нові env-змінні, зміни nginx тощо).
 
-### 3.6 Після рев'ю
+### 3.6 Після перевірки
 
-- Зауваження власника виправляються **новими комітами в ту саму гілку** → `git push`. PR оновлюється сам.
-- Після мерджу:
+- Зауваження власника виправляються **новими комітами в ту саму гілку** → `git push` (превʼю оновиться само).
+- Коли власник злив гілку в `main`:
   ```bash
   git switch main
   git pull --ff-only
   git branch -d feature/<коротка-назва>
   ```
-  Гілку на GitHub видаляє власник при мерджі (або автоматично, див. 4.1).
 
 ### 3.7 Конфлікти в документації
 
 Найчастіше конфліктують `docs/changelogs/*.md` і `docs/issues/current.md`. Правило: **зберегти обидва записи**. У ченджлозі — новіші зверху; номери `ISS-XXX`, якщо збіглися, — перенумерувати свої на наступні вільні.
 
-## 4. Власник
+## 4. Превʼю на Vercel
 
-### 4.1 Одноразове налаштування GitHub
+Репозиторій підключено до Vercel. Він сам викладає **кожен пуш у кожну гілку, крім `main`**:
 
-1. **Додати розробника:** репозиторій → *Settings* → *Collaborators and teams* → *Add people* → роль **Write**.
-2. **Захистити `main`:** *Settings* → *Rules* → *Rulesets* → *New branch ruleset*:
+- `main` на Vercel не деплоїться — це заборонено у [`../vercel.json`](../vercel.json) (`git.deploymentEnabled.main: false`). Прод — лише VPS.
+- У кожної гілки є **постійна адреса**, яка завжди показує її останній коміт:
+  `https://<проект>-git-<назва-гілки>-<команда>.vercel.app` (`/` у назві гілки стає `-`).
+- Посилання видно у Vercel → *Deployments* і на GitHub біля коміту (статус ✓ → *Details*).
+- Превʼю працює на **тестовій базі** (змінні середовища Vercel для *Preview*), не на продакшн-даних. Telegram на превʼю вимкнений — тестові заявки нікуди не надсилаються.
+- Завантажені на превʼю в адмінку файли не зберігаються (на Vercel немає постійного диска).
+
+> ⚠️ Поки не виправлено ISS-038, сторінки з даними з CMS на Vercel можуть бути порожніми (див. [`issues/current.md`](issues/current.md)).
+
+## 5. Власник
+
+### 5.1 Одноразове налаштування
+
+1. **GitHub — додати розробника:** репозиторій → *Settings* → *Collaborators and teams* → *Add people* → роль **Write**.
+2. **GitHub — захистити `main`:** *Settings* → *Rules* → *Rulesets* → *New branch ruleset*:
    - Target: `main` (Default branch);
+   - ✅ *Restrict updates* (пушити в `main` може лише той, хто в *Bypass list*) — додати себе в *Bypass list*;
    - ✅ *Restrict deletions*, ✅ *Block force pushes*;
-   - ✅ *Require a pull request before merging* (Required approvals — 1, якщо рев'ю обов'язкове для всіх; для власника можна додати себе в *Bypass list*);
+   - **не** вмикати *Require a pull request before merging*;
    - *Enforcement status*: **Active**.
-   Після цього навіть із правом Write напряму запушити в `main` неможливо.
-3. *Settings* → *General* → *Pull Requests*: увімкнути **Allow squash merging** і **Automatically delete head branches**.
+3. **Vercel:** *Add New → Project* → імпортувати `ABECT-Group/agency.abect.com` (за потреби дати Vercel GitHub App доступ до організації). У *Settings → Environment Variables* для **Preview**: `DATABASE_URI` (тестова MongoDB Atlas, *Network Access* `0.0.0.0/0`), `PAYLOAD_SECRET` (не такий, як на проді). `TELEGRAM_*` не задавати.
 
-### 4.2 Рев'ю PR
+### 5.2 Перевірка гілки
 
-Чекліст:
-- [ ] Зміна відповідає задачі, нічого зайвого (особливо `package-lock.json`, `access`, `next.config.mjs`, `Dockerfile`).
+- [ ] Превʼю на Vercel відкривається, зміни виглядають як треба (десктоп і мобільний, UA і EN).
+- [ ] Зміна відповідає задачі, нічого зайвого (особливо `package-lock.json`, `access`, `next.config.mjs`, `Dockerfile`):
+  ```bash
+  git fetch origin
+  git log --oneline main..origin/feature/<гілка>
+  git diff main...origin/feature/<гілка> --stat
+  ```
 - [ ] Немає секретів, `.env`, великих бінарників.
 - [ ] Оновлені `docs/changelogs/*` і, за потреби, `docs/issues/*`, `docs/*.md`.
-- [ ] У PR описано, як перевірено, і чи треба щось робити при деплої.
-- [ ] За бажанням — локально: `gh pr checkout <номер>` → `npm ci && npm run typecheck && npm run lint && npm run build`.
+- [ ] За бажанням — локально: `git switch feature/<гілка>` → `npm ci && npm run typecheck && npm run lint && npm run build`.
 
-### 4.3 Мердж і деплой
+### 5.3 Злиття в `main` і деплой
 
-- Мердж: **Squash and merge** (одна задача = один коміт у `main`, заголовок — назва PR).
-- Деплой після мерджу: `/home/admin/www/abect/scripts/restart.sh` на VPS (див. [deployment.md](deployment.md)). Деплоїться завжди `main`.
+```bash
+git switch main
+git pull --ff-only
+git fetch origin
+git merge origin/feature/<гілка>      # якщо гілка від свіжого main — це fast-forward
+git push
+```
 
-## 5. Робота з Claude
+Далі — деплой `main` на VPS: `/home/admin/www/abect/scripts/restart.sh` (див. [deployment.md](deployment.md)). Гілку після злиття можна видалити: `git push origin --delete feature/<гілка>`.
+
+## 6. Робота з Claude
 
 Розробник працює з Claude Code у цьому репозиторії. Claude читає [`../CLAUDE.md`](../CLAUDE.md) і зобов'язаний:
 
 1. **На старті кожної сесії спитати, в якій гілці працюємо**, і перемкнутися на неї (або створити нову від `main`). Без цього — жодних дій із кодом.
-2. Ніколи не працювати й не комітити в `main`.
-3. Комітити, пушити й відкривати PR лише на прохання розробника; ніколи не мерджити PR.
+2. Ніколи не працювати й не комітити в `main` (виняток — пряме прохання власника).
+3. Комітити й пушити лише на прохання розробника. Pull request не створювати.
 4. Не робити `push --force`, `reset --hard`, rebase запушених гілок без прямого прохання.
 5. Вести ченджлог і issues за правилами `CLAUDE.md`.
 

@@ -76,7 +76,7 @@
 frontend/
 ├── CLAUDE.md                 # правила для Claude
 ├── README.md                 # опис проекту + список документації
-├── .github/                  # шаблон pull request
+├── vercel.json               # превʼю гілок на Vercel; main не деплоїться (прод — VPS)
 ├── docs/                     # ця документація
 ├── messages/{ua,en}.json     # переклади інтерфейсу (next-intl)
 ├── public/                   # статика: favicon, logo.png, seo/*-og.jpg, llms.txt, icons/, images/
