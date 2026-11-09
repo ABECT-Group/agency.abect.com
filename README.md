@@ -50,8 +50,10 @@ npm run seed:services:extra  # seed додаткових послуг
 На VPS через Docker, вручну:
 
 ```bash
-/home/admin/www/abect/frontend/infra/scripts/restart.sh
+/home/admin/www/abect/scripts/restart.sh
 ```
 
 Повна інструкція (структура сервера, env, nginx, бекапи, міграція): [`docs/deployment.md`](docs/deployment.md).
-Скрипти: [`infra/scripts/`](infra/scripts/README.md) · MongoDB: [`infra/mongodb/`](infra/mongodb/README.md).
+Серверні скрипти (`scripts/`) і compose MongoDB (`mongodb/`) лежать поруч із цією папкою й **не входять у репозиторій**.
+
+Робота з гілками й pull request: [`docs/git-workflow.md`](docs/git-workflow.md).

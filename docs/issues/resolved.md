@@ -16,7 +16,7 @@
 | ISS-004 | Критичні CVE: `next` 15.4.10, `payload`/`@payloadcms/*` 3.72.0 (pre-auth account takeover), `next-intl` 4.4, `sharp` 0.34 та ін. (41 вразливість, 6 critical) | Next 16.4.5, Payload 3.93.0, React 19.2.9, next-intl 4.14.9, sharp 0.35.5, eslint-config-next 16.4.5; overrides `happy-dom`, `dompurify`, `minimatch`. Лишилось 7 low (ISS-025) |
 | ISS-003 | `NEXT_PUBLIC_*` не потрапляли в Docker-білд (аналітика мертва, Origin-check вимкнений) | `ARG`/`ENV` у Dockerfile + build args `${VAR}` у compose. Серверні запити більше не залежать від `NEXT_PUBLIC_SERVER_URL` (`payloadFetch` → `127.0.0.1:$PORT`) |
 | ISS-005 | Зайва external-мережа `mongodb-net` | Видалено з compose |
-| ISS-006 | Бекапи без `media/`, ротації, `trap`, копії поза сервером | `infra/scripts/backup.sh`: БД + `media/`, ротація 14 днів, `trap`, `chmod 600`, опційно `rclone`. Cron — задача власника (ISS-027) |
+| ISS-006 | Бекапи без `media/`, ротації, `trap`, копії поза сервером | `../scripts/backup.sh` (поза git): БД + `media/`, ротація 14 днів, `trap`, `chmod 600`, опційно `rclone`. Cron — задача власника (ISS-027) |
 | ISS-007 | Sitemap без динамічних сторінок (статичний, згенерований на білді без БД) | `sitemap.ts` — `force-dynamic`; послуги фільтруються за `published` (раніше потрапляли б і чернетки) |
 | ISS-008 | Простій ~5 хв на кожному деплої | `restart.sh`: `build` → `up -d` → health-check → `image prune`; lock-файл |
 | ISS-009 | OG-зображення 404 (14 файлів) і `/logo.png` 404 (JSON-LD) | Згенеровано `public/seo/*.jpg` (1200×630, фірмовий стиль) і `public/logo.png` (512×512) |
@@ -27,7 +27,7 @@
 | ISS-015 | `X-Powered-By: Next.js, Payload` | `poweredByHeader: false` |
 | ISS-016 | Dockerfile: root, devDeps і `src` в образі, healthcheck залежав від БД | `output: 'standalone'`, `USER node`, лише standalone + static + public, healthcheck `/api/health` |
 | ISS-017 | `name: "cms"`, опис і версія з шаблону | `agency-abect` 2.1.0, `private`, `engines.node ≥ 20.9` (git-теги — ISS-031) |
-| ISS-018 | `mongodb/` і `scripts/` поза git, на сервер через SFTP | Перенесено в `infra/mongodb`, `infra/scripts` (старі копії — ISS-028) |
+| ISS-018 | `mongodb/` і `scripts/` поза git, на сервер через SFTP | **Закрито рішенням власника:** ці папки свідомо лишаються поза репозиторієм. (Перенесення в `infra/` у коміті `1f021f2` скасовано) |
 | ISS-019 | fetch-блок скопійований у ~20 lib-функціях, icons/metadata у 13 сторінках, хардкод домену | `payloadFetch`/`payloadFind`; icons/manifest/metadataBase/authors — у layout; `SITE_URL` |
 | ISS-020 | Дубль `src/app/(frontend)/favicon.ico` | Видалено, `favicon.ico` прописано в metadata layout |
 | ISS-021 | Rate limit обходився підробкою `X-Forwarded-For` | IP з `X-Real-IP`, інакше останнє значення XFF. Перевірено: підроблений XFF не дає обійти ліміт |

@@ -61,7 +61,5 @@ backups
 *.log
 logs
 
-# Infra / docs
-infra
 docs
 CLAUDE.md

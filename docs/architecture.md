@@ -75,9 +75,6 @@
 frontend/
 ├── CLAUDE.md                 # правила для Claude
 ├── docs/                     # ця документація
-├── infra/
-│   ├── mongodb/              # docker-compose MongoDB (прод)
-│   └── scripts/              # restart.sh (деплой), backup.sh (бекапи)
 ├── messages/{ua,en}.json     # переклади інтерфейсу (next-intl)
 ├── public/                   # статика: favicon, logo.png, seo/*-og.jpg, llms.txt, icons/, images/
 ├── media/                    # завантаження Payload (не в git, на VPS це volume)

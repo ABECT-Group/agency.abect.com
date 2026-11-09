@@ -9,8 +9,7 @@
 | [patterns.md](patterns.md) | Патерни коду: сторінка, модуль, lib-запит, колекція Payload, i18n, SEO, ревалідація |
 | [api.md](api.md) | API: власні ендпоінти, Payload REST, матриця доступів, Telegram |
 | [deployment.md](deployment.md) | VPS, Docker, nginx, env-змінні, скрипти, бекапи, міграція 2026-11-09 |
-| [../infra/scripts/README.md](../infra/scripts/README.md) | `restart.sh` (деплой), `backup.sh` (бекапи), cron, відновлення |
-| [../infra/mongodb/README.md](../infra/mongodb/README.md) | MongoDB у Docker |
+| [git-workflow.md](git-workflow.md) | **Гілки, коміти, pull request: як працює розробник і як мерджить власник** |
 | [issues/current.md](issues/current.md) | **Поточні проблеми** з пріоритетами |
 | [issues/resolved.md](issues/resolved.md) | Історія вирішених проблем |
 | [changelogs/changelog.md](changelogs/changelog.md) | Індекс змін по днях (нові зверху) |
@@ -22,4 +21,13 @@
 
 ## Інфраструктура
 
-З 2026-11-09 усе в репозиторії: серверні скрипти й compose MongoDB лежать у `infra/`. Поза git лишаються лише секрети (`.env.db`, `.env.frontend` на сервері) і дані (`media/`, volume MongoDB, бекапи).
+Git-репозиторій — це лише папка `frontend/`. Поруч на диску (і на VPS) лежать папки, які **не відстежуються git** (рішення власника):
+
+```
+AgencyAbect/
+├── frontend/   ← git (цей репозиторій)
+├── mongodb/    ← docker-compose MongoDB, README.md всередині
+└── scripts/    ← restart.sh, backup.sh, README.md всередині
+```
+
+У розробника, який клонує лише репозиторій, цих папок немає — вони потрібні тільки для сервера.

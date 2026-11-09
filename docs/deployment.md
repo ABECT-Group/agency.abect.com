@@ -1,13 +1,14 @@
 # Деплой (VPS)
 
-> Актуалізовано 2026-11-09. Скрипти й compose MongoDB тепер у репозиторії:
-> [`../infra/scripts/README.md`](../infra/scripts/README.md) · [`../infra/mongodb/README.md`](../infra/mongodb/README.md).
+> Актуалізовано 2026-11-09. Серверні скрипти й compose MongoDB лежать **поза репозиторієм** (рішення власника):
+> `AgencyAbect/scripts/` і `AgencyAbect/mongodb/` (у кожній є `README.md`). На сервер їх кладуть через SFTP.
+> Деплоїть лише власник і лише з гілки `main` (див. [git-workflow.md](git-workflow.md)).
 
 ## Схема
 
 ```
 GitHub ABECT-Group/agency.abect.com (main)
-        │  git pull (вручну, infra/scripts/restart.sh)
+        │  git pull (вручну, scripts/restart.sh)
         ▼
 VPS  /home/admin/www/abect/frontend ── docker compose build → up -d (сайт працює під час білду)
         │
@@ -15,7 +16,7 @@ nginx :80 → 301 https
 nginx :443 (Let's Encrypt) ──► 127.0.0.1:3333 ──► agency-abect-frontend :3000 (user node, healthcheck /api/health)
                                                      │  docker network abect-shared
                                                      ▼
-                                                 abect-mongo :27017 (volume mongodb_mongo_data)
+                                                 abect-mongo :27017 (volume mongo_data)
 ```
 
 CI/CD немає: деплой запускається вручну по SSH.
@@ -26,13 +27,11 @@ CI/CD немає: деплой запускається вручну по SSH.
 /home/admin/www/abect/
 ├── .env.db           # MONGO_ROOT_USER, MONGO_ROOT_PASSWORD, DATABASE_URI       (chmod 600)
 ├── .env.frontend     # PAYLOAD_SECRET, NEXT_PUBLIC_*, TELEGRAM_*                 (chmod 600)
-├── backups/          # архіви infra/scripts/backup.sh
-└── frontend/         # git clone https://github.com/ABECT-Group/agency.abect.com.git
-    ├── media/        # завантаження Payload (bind-mount у контейнер /app/media, власник uid 1000)
-    └── infra/        # mongodb/ (compose БД), scripts/ (restart.sh, backup.sh)
+├── frontend/         # git clone https://github.com/ABECT-Group/agency.abect.com.git
+│   └── media/        # завантаження Payload (bind-mount у контейнер /app/media, власник uid 1000)
+├── mongodb/          # SFTP: docker-compose MongoDB, backups/
+└── scripts/          # SFTP: restart.sh, backup.sh
 ```
-
-Старі папки `/home/admin/www/abect/mongodb/` і `/home/admin/www/abect/scripts/` (завантажені через SFTP) більше не потрібні. Як перейти — у розділі «Міграція 2026-11-09» нижче.
 
 Передумови: Docker + Compose v2, nginx, certbot, користувач `admin` із sudo, DNS `agency.abect.com` → IP сервера.
 
@@ -42,15 +41,17 @@ CI/CD немає: деплой запускається вручну по SSH.
 # 1. Код
 mkdir -p /home/admin/www/abect && cd /home/admin/www/abect
 git clone https://github.com/ABECT-Group/agency.abect.com.git frontend
+# mongodb/ і scripts/ залити через SFTP з локальної папки AgencyAbect/
+chmod +x scripts/*.sh
 
 # 2. Секрети
-nano .env.db         # див. frontend/infra/mongodb/README.md
+nano .env.db         # див. mongodb/README.md
 nano .env.frontend   # див. нижче
 chmod 600 .env.*
 
 # 3. Мережа та MongoDB
 docker network create abect-shared
-cd frontend/infra/mongodb && set -a && source ../../../.env.db && set +a && docker compose up -d && cd /home/admin/www/abect
+cd mongodb && set -a && source ../.env.db && set +a && docker compose up -d && cd ..
 
 # 4. nginx + SSL (конфіг нижче)
 sudo nano /etc/nginx/sites-available/agency.abect.com
@@ -59,7 +60,7 @@ sudo certbot certonly --webroot -w /var/www/certbot -d agency.abect.com
 sudo nginx -t && sudo systemctl reload nginx
 
 # 5. Фронтенд
-frontend/infra/scripts/restart.sh
+scripts/restart.sh
 
 # 6. Адмінка: https://agency.abect.com/admin → створити першого користувача (стане superadmin)
 ```
@@ -82,7 +83,7 @@ NEXT_TELEMETRY_DISABLED=1
 ## Передеплой
 
 ```bash
-/home/admin/www/abect/frontend/infra/scripts/restart.sh
+/home/admin/www/abect/scripts/restart.sh
 docker logs agency-abect-frontend --tail=50 -f
 ```
 
@@ -90,35 +91,37 @@ docker logs agency-abect-frontend --tail=50 -f
 
 ## Міграція 2026-11-09 (одноразово)
 
-Оновлення 2026-11-09: Next 16, Payload 3.93, standalone-образ від користувача `node`, порт лише на localhost, скрипти в git. Порядок дій:
+Оновлення 2026-11-09: Next 16, Payload 3.93, standalone-образ від користувача `node`, порт лише на localhost, нові скрипти. Порядок дій:
 
 ```bash
 cd /home/admin/www/abect
 
-# 1. Свіжий бекап старим скриптом (про всяк випадок)
+# 1. Свіжий бекап СТАРИМ скриптом (про всяк випадок)
 scripts/backup.sh
 
-# 2. Додати в .env.frontend змінні NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_CLARITY_ID (якщо є ID)
+# 2. Залити по SFTP нові версії з локальної папки AgencyAbect/:
+#    scripts/restart.sh, scripts/backup.sh, scripts/README.md, mongodb/README.md
+chmod +x scripts/*.sh
+sed -i 's/\r$//' scripts/*.sh         # якщо файли прийшли з CRLF (Windows)
 
-# 3. Перший деплой новим скриптом (він сам зробить git pull)
-cd frontend && git pull origin main && cd ..
-frontend/infra/scripts/restart.sh
+# 3. Додати в .env.frontend змінні NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_CLARITY_ID (якщо є ID)
 
-# 4. Перевірки
-curl -s -o /dev/null -w "%{http_code}\n" http://<IP-сервера>:3333/      # має НЕ відповідати (порт закрито)
-curl -s https://agency.abect.com/api/health                               # {"status":"ok"}
+# 4. Деплой (скрипт сам зробить git pull)
+scripts/restart.sh
+
+# 5. Перевірки
+curl -s -m 5 -o /dev/null -w "%{http_code}\n" http://<IP-сервера>:3333/   # не має відповідати (порт закрито)
+curl -s https://agency.abect.com/api/health                                # {"status":"ok"}
 curl -s -o /dev/null -w "%{http_code}\n" -X POST https://agency.abect.com/api/graphql   # 404
-curl -s https://agency.abect.com/sitemap.xml | grep -c "<loc>"            # більше за 16
+curl -s https://agency.abect.com/sitemap.xml | grep -c "<loc>"             # більше за 16
 
-# 5. Старі папки більше не потрібні (Mongo-контейнер, що вже працює, це не зачіпає)
-rm -rf scripts                        # тепер frontend/infra/scripts
-# mongodb/ — див. frontend/infra/mongodb/README.md → «Перехід зі старої папки»
-
-# 6. cron для бекапів — див. frontend/infra/scripts/README.md
+# 6. cron для бекапів — див. scripts/README.md
 ```
 
+`frontend/docker-compose.yml` більше не вимагає мережі `mongodb-net` — якщо її створювали вручну, можна видалити (`docker network rm mongodb-net`).
+
 Після деплою **змініть паролі адмінів**: до виправлення адмінка була доступна по HTTP на `:3333`, а версія Payload мала критичну вразливість відновлення пароля.
-Якщо до цього в адмінці не було користувача з роллю `superadmin` — увійдіть і призначте її собі в «Користувачі» (поки суперадміна немає, це дозволено будь-якому залогіненому).
+Якщо в адмінці не було користувача з роллю `superadmin` — увійдіть і призначте її собі в «Користувачі» (поки суперадміна немає, це дозволено будь-якому залогіненому).
 
 ## Docker
 
@@ -199,7 +202,7 @@ server {
 
 ## Бекапи
 
-`infra/scripts/backup.sh` → `backups/abect_db_*.gz` + `backups/abect_media_*.tar.gz`, ротація 14 днів, опційна копія через rclone. Cron і відновлення — у [`../infra/scripts/README.md`](../infra/scripts/README.md).
+`scripts/backup.sh` (поза git) → `mongodb/backups/abect_db_*.gz` + `mongodb/backups/abect_media_*.tar.gz`, ротація 14 днів, опційна копія через rclone. Cron і відновлення — у `AgencyAbect/scripts/README.md`.
 
 ## Корисні команди
 
