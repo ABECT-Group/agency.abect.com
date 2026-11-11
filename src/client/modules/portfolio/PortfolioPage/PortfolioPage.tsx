@@ -6,6 +6,8 @@ import type { Portfolio } from '@/payload-types';
 import PortfolioFilter, { FilterType } from '../PortfolioFilter/PortfolioFilter';
 import PortfolioList from '@/client/components/PortfolioList/PortfolioList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
+import PageHero from '@/client/components/PageHero/PageHero';
+import ScrollReveal from '@/client/components/ScrollReveal/ScrollReveal';
 import './PortfolioPage.scss';
 
 interface PortfolioPageProps {
@@ -13,20 +15,16 @@ interface PortfolioPageProps {
 	initialProjects: Portfolio[];
 }
 
-export default function PortfolioPage({
-	locale,
-	initialProjects
-}: PortfolioPageProps): JSX.Element {
+// «Портфоліо»: PageHero → фільтр за типом (ChipBar, на клієнті) → сітка карток проєктів
+export default function PortfolioPage({ locale, initialProjects }: PortfolioPageProps): JSX.Element {
 	const t = useTranslations('PortfolioPage');
 	const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
-	// Фильтрация проектов на клиенте
-	const filteredProjects = useMemo(() => {
-		if (activeFilter === 'all') return initialProjects;
-		return initialProjects.filter((project) => project.service === activeFilter);
-	}, [activeFilter, initialProjects]);
+	const filteredProjects = useMemo(
+		() => (activeFilter === 'all' ? initialProjects : initialProjects.filter((project) => project.service === activeFilter)),
+		[activeFilter, initialProjects]
+	);
 
-	// Подсчет проектов для каждого фильтра
 	const filterCounts = useMemo(
 		() => ({
 			all: initialProjects.length,
@@ -38,76 +36,44 @@ export default function PortfolioPage({
 	);
 
 	return (
-		<section
-			className="portfolio-page"
-			itemScope
-			itemType="https://schema.org/CollectionPage"
-		>
-			<div className="container">
-				{/* Заголовок страницы */}
-				<header className="portfolio-page__header">
-					<h1 className="portfolio-page__title" itemProp="name">
-						{t('title')}
-					</h1>
-					<p className="portfolio-page__subtitle" itemProp="description">
-						{t('subtitle')}
-					</p>
-				</header>
-
-				<Breadcrumbs chapter='portfolio' />
-
-				{/* Main Layout: Фильтр (1fr) + Контент (3fr) */}
-				<div className="portfolio-page__layout">
-					{/* Sidebar с фильтром */}
-					<PortfolioFilter
-						activeFilter={activeFilter}
-						onFilterChange={setActiveFilter}
-						counts={filterCounts}
-					/>
-
-					{/* Контент */}
-					<div className="portfolio-page__content">
-						{/* Если есть проекты */}
-						{filteredProjects.length > 0 ? (
-							<>
-								<PortfolioList projects={filteredProjects} locale={locale} startRows={2} />
-
-								{/* Stats Footer */}
-								<footer className="portfolio-page__stats">
-									<p>
-										{t('showingResults', { count: filteredProjects.length })}
-									</p>
-									{activeFilter !== 'all' && (
-										<button
-											type="button"
-											className="portfolio-page__reset-btn"
-											onClick={() => setActiveFilter('all')}
-										>
-											{t('viewAllButton')}
-										</button>
-									)}
-								</footer>
-							</>
-						) : (
-							/* Empty State */
-							<div className="portfolio-page__empty">
-								<h3>{t('noResults')}</h3>
-								<p>{t('noResultsDescription')}</p>
-								<button
-									type="button"
-									className="cta"
-									onClick={() => setActiveFilter('all')}
-								>
-									{t('viewAllButton')}
-								</button>
-							</div>
-						)}
-					</div>
-				</div>
-
-				{/* Schema.org мета-данные */}
+		<>
+			<PageHero title={t('title')} subtitle={t('subtitle')} breadcrumbs={<Breadcrumbs chapter="portfolio" />} />
+			<section className="portfolio-page" itemScope itemType="https://schema.org/CollectionPage">
+				{/* Назва й опис сторінки для schema.org (видимі — у PageHero) */}
+				<meta itemProp="name" content={t('title')} />
+				<meta itemProp="description" content={t('subtitle')} />
 				<meta itemProp="numberOfItems" content={String(filteredProjects.length)} />
-			</div>
-		</section>
+
+				<div className="container container--design">
+					<div className="list-toolbar">
+						<PortfolioFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} counts={filterCounts} />
+					</div>
+
+					{filteredProjects.length > 0 ? (
+						<>
+							<PortfolioList projects={filteredProjects} locale={locale} startRows={3} eagerFirstRow />
+
+							<footer className="list-stats">
+								<p>{t('showingResults', { count: filteredProjects.length })}</p>
+								{activeFilter !== 'all' && (
+									<button type="button" className="pill-btn pill-btn--outline" onClick={() => setActiveFilter('all')}>
+										{t('viewAllButton')}
+									</button>
+								)}
+							</footer>
+						</>
+					) : (
+						<div className="list-empty glass">
+							<h2>{t('noResults')}</h2>
+							<p>{t('noResultsDescription')}</p>
+							<button type="button" className="pill-btn pill-btn--gradient" onClick={() => setActiveFilter('all')}>
+								{t('viewAllButton')}
+							</button>
+						</div>
+					)}
+				</div>
+			</section>
+			<ScrollReveal />
+		</>
 	);
 }

@@ -1,0 +1,40 @@
+/*
+ * Поява при прокрутці (див. ScrollReveal.tsx). Лише opacity / transform / filter — без перерахунку макета.
+ * transform вільний: розмітка використовує окремі властивості translate / rotate / scale для позицій і hover,
+ * тож поява з ними не конфліктує (нахилені картки етапів лишаються нахиленими).
+ * Варіанти: data-reveal (знизу вгору з розфокусу) і data-reveal="pop" (декор: масштаб + поворот).
+ */
+$reveal-ease: cubic-bezier(0.22, 1, 0.36, 1); // easeOutQuint — як у вступній анімації hero
+
+[data-reveal-state="pending"] {
+	opacity: 0;
+	transform: translateY(var(--reveal-shift, 28px));
+	filter: blur(var(--reveal-blur, 6px));
+}
+
+[data-reveal="pop"][data-reveal-state="pending"] {
+	transform: scale(0.55) rotate(-18deg);
+	filter: none;
+}
+
+[data-reveal-state="visible"] {
+	transition:
+		opacity 0.55s $reveal-ease var(--reveal-delay, 0s),
+		transform 0.7s $reveal-ease var(--reveal-delay, 0s),
+		filter 0.55s $reveal-ease var(--reveal-delay, 0s);
+}
+
+[data-reveal="pop"][data-reveal-state="visible"] {
+	transition:
+		opacity 0.5s $reveal-ease var(--reveal-delay, 0s),
+		transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) var(--reveal-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-reveal-state] {
+		opacity: 1;
+		transform: none;
+		filter: none;
+		transition: none;
+	}
+}

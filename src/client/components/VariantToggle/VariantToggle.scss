@@ -1,0 +1,86 @@
+/* Перемикач «Розробка кодом / На конструкторі» — скло (глобальний .glass), «пігулка» переїжджає */
+
+.variant-toggle {
+	--glass-bg: var(--toggle-glass-bg);
+	--glass-blur: 12px;
+	display: flex;
+	width: fit-content;
+	padding: 2px 7px;
+	border-radius: 30px;
+}
+
+.variant-toggle__option {
+	height: 43px;
+	padding: 0 23px;
+	border: none;
+	border-radius: 30px;
+	background: transparent;
+	color: var(--hero-text);
+	font-size: 18px;
+	font-weight: 400;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color 0.3s ease, color 0.3s ease;
+
+	&:hover {
+		color: var(--white);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+	}
+}
+
+// До вимірювання кнопок (перший рендер) — фон на самій активній кнопці
+.variant-toggle__option--active {
+	background: var(--cta-gradient);
+	color: var(--white);
+}
+
+.variant-toggle--ready {
+	&::after {
+		content: "";
+		position: absolute;
+		top: 2px;
+		bottom: 2px;
+		left: 0;
+		width: var(--pill-width);
+		border-radius: 30px;
+		background: var(--cta-gradient);
+		box-shadow: 0 4px 16px rgba(0, 73, 254, 0.35);
+		transform: translateX(var(--pill-left));
+		transition:
+			transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+			width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.variant-toggle__option {
+		position: relative;
+		z-index: 1;
+	}
+
+	.variant-toggle__option--active {
+		background: transparent;
+	}
+}
+
+@media (max-width: 768px) {
+	.variant-toggle {
+		width: 100%;
+		padding: 3px;
+	}
+
+	.variant-toggle__option {
+		flex: 1;
+		height: 40px;
+		padding: 0 10px;
+		font-size: 14px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.variant-toggle--ready::after {
+		transition: none;
+	}
+}

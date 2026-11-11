@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/client/i18n/navigation';
 import './LanguageSwitcher.scss';
 
-// Підписи як у макеті. «E» — звичайним Montserrat (у Montserrat Alternates вона схожа на «Є»).
+// Підписи як у макеті.
 const languages = [
 	{ code: 'ua', lang: 'uk', labelKey: 'ukrainian', label: <>Ua</> },
 	{ code: 'en', lang: 'en', labelKey: 'english', label: <><span className="language-switcher__e">E</span>n</> }

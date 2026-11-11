@@ -1,82 +1,19 @@
-/* Related Projects */
+/* «Схожі проєкти» */
+
 .related-projects {
-	margin: 100px 0 80px 0;
+	margin: 96px 0;
+}
 
-	&__header {
-		text-align: center;
-		margin-bottom: 60px;
+.related-projects__list {
+	margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+	.related-projects {
+		margin: 64px 0;
 	}
 
-	&__title {
-		font-size: 40px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 16px;
-		letter-spacing: -0.02em;
-	}
-
-	&__subtitle {
-		font-size: 17px;
-		color: var(--nav-text);
-		max-width: 600px;
-		margin: 0 auto;
-		line-height: 1.6;
-	}
-
-	&__footer {
-		display: flex;
-		justify-content: center;
-		margin-top: 60px;
-		padding-top: 40px;
-		border-top: 1px solid var(--border-subtle);
-	}
-
-	/* Адаптивність */
-	@media (max-width: 1024px) {
-		margin: 80px 0 60px 0;
-
-		&__header {
-			margin-bottom: 50px;
-		}
-
-		&__title {
-			font-size: 32px;
-		}
-
-		&__subtitle {
-			font-size: 16px;
-		}
-
-		&__footer {
-			margin-top: 50px;
-			padding-top: 32px;
-		}
-	}
-
-	@media (max-width: 768px) {
-		margin: 60px 0 50px 0;
-
-		&__header {
-			margin-bottom: 40px;
-		}
-
-		&__title {
-			font-size: 28px;
-			margin-bottom: 12px;
-		}
-
-		&__subtitle {
-			font-size: 15px;
-		}
-
-		&__footer {
-			margin-top: 40px;
-			padding-top: 24px;
-
-			.cta {
-				width: 100%;
-				max-width: 300px;
-			}
-		}
+	.related-projects__list {
+		margin-top: 24px;
 	}
 }

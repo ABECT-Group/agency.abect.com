@@ -7,6 +7,7 @@ import type { Post, Category } from '@/payload-types';
 import BlogFilter from '../BlogFilter/BlogFilter';
 import BlogList from '@/client/components/BlogList/BlogList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
+import PageHero from '@/client/components/PageHero/PageHero';
 import './BlogPage.scss';
 
 interface BlogPageProps {
@@ -55,74 +56,70 @@ export default function BlogPage({
 	const pageSubtitle = currentCategory ? currentCategory.description : t('subtitle');
 
 	return (
-		<section
-			className="blog-page"
-			itemScope
-			itemType="https://schema.org/Blog"
-		>
-			<div className="container">
-				{/* Header */}
-				<header className="blog-page__header">
-					<h1 className="blog-page__title" itemProp="name">
-						{pageTitle}
-					</h1>
-					<p className="blog-page__subtitle" itemProp="description">
-						{pageSubtitle}
-					</p>
-				</header>
+		<>
+			<PageHero
+				title={pageTitle}
+				subtitle={pageSubtitle}
+				breadcrumbs={<Breadcrumbs chapter="blog" slug={currentCategory ? currentCategory.name : undefined} />}
+			/>
+			<section
+				className="blog-page"
+				itemScope
+				itemType="https://schema.org/Blog"
+			>
+				{/* Шапка — назва й опис сторінки для schema.org (видимі — у PageHero) */}
+				<meta itemProp="name" content={pageTitle} />
+				<meta itemProp="description" content={pageSubtitle} />
+				<div className="container container--design">
 
-				<Breadcrumbs
-					chapter="blog"
-					slug={currentCategory ? currentCategory.name : undefined}
-				/>
+					{/* Main Layout: Filter (1fr) + Content (3fr) */}
+					<div className="blog-page__layout">
+						{/* Sidebar with filter */}
+						<BlogFilter
+							activeCategory={currentCategory?.slug}
+							categories={categories}
+							counts={filterCounts}
+						/>
 
-				{/* Main Layout: Filter (1fr) + Content (3fr) */}
-				<div className="blog-page__layout">
-					{/* Sidebar with filter */}
-					<BlogFilter
-						activeCategory={currentCategory?.slug}
-						categories={categories}
-						counts={filterCounts}
-					/>
+						{/* Content */}
+						<div className="blog-page__content">
+							{/* If there are posts */}
+							{posts.length > 0 ? (
+								<>
+									<BlogList posts={posts} locale={locale} startRows={2} />
 
-					{/* Content */}
-					<div className="blog-page__content">
-						{/* If there are posts */}
-						{posts.length > 0 ? (
-							<>
-								<BlogList posts={posts} locale={locale} startRows={2} />
-
-								{/* Stats Footer */}
-								<footer className="blog-page__stats">
-									<p>
-										{t('showingResults', { count: posts.length })}
-									</p>
-									{currentCategory && (
-										<Link
-											href="/blog"
-											className="blog-page__reset-btn"
-										>
-											{t('viewAllButton')}
-										</Link>
-									)}
-								</footer>
-							</>
-						) : (
-							/* Empty State */
-							<div className="blog-page__empty">
-								<h3>{t('noResults')}</h3>
-								<p>{t('noResultsDescription')}</p>
-								<Link href="/blog" className="cta">
-									{t('viewAllButton')}
-								</Link>
-							</div>
-						)}
+									{/* Stats Footer */}
+									<footer className="blog-page__stats">
+										<p>
+											{t('showingResults', { count: posts.length })}
+										</p>
+										{currentCategory && (
+											<Link
+												href="/blog"
+												className="blog-page__reset-btn"
+											>
+												{t('viewAllButton')}
+											</Link>
+										)}
+									</footer>
+								</>
+							) : (
+								/* Empty State */
+								<div className="blog-page__empty">
+									<h3>{t('noResults')}</h3>
+									<p>{t('noResultsDescription')}</p>
+									<Link href="/blog" className="cta">
+										{t('viewAllButton')}
+									</Link>
+								</div>
+							)}
+						</div>
 					</div>
-				</div>
 
-				{/* Schema.org meta */}
-				<meta itemProp="numberOfItems" content={String(posts.length)} />
-			</div>
-		</section>
+					{/* Schema.org meta */}
+					<meta itemProp="numberOfItems" content={String(posts.length)} />
+				</div>
+			</section>
+		</>
 	);
 }

@@ -23,13 +23,13 @@
 			}
 		},
 		"Services": {
-			"title": "Popular services and prices",
-			"timeline": "Deadline",
-			"subtitle": "Transparent pricing without hidden fees. Payment in installments after each stage",
+			"title": "Services & pricing",
+			"timeline": "Timeline: {timeline}",
+			"subtitle": "We choose the website format to match your goals, business specifics and budget.",
 			"gridAriaLabel": "List of services with prices",
 			"orderButton": "Order",
-			"footerText": "Didn't find the service you need? Leave a request and we'll find the right solution for you!",
-			"calculateButton": "Calculate cost",
+			"footerText": "Didn't find the service you need? Leave a request and we'll find a solution for you!",
+			"calculateButton": "Calculate the cost",
 			"calculateAriaLabel": "Open project cost calculator",
 			"weblium": "Builder",
 			"custom": "Custom code",
@@ -135,14 +135,25 @@
 					"3": "A/B testing",
 					"4": "Weekly reports"
 				}
-			}
+			},
+			"moreButton": "More services",
+			"toggleAriaLabel": "Development method",
+			"variants": {
+				"custom": "Custom code",
+				"weblium": "Website builder"
+			},
+			"priceFrom": "from",
+			"orderAriaLabel": "Order: {title}",
+			"detailsLink": "Learn more"
 		},
 		"Portfolio": {
 			"sectionLabel": "#Our_works",
-			"title": "Portfolio of Real Projects",
-			"subtitle": "Case studies of website development for Ukrainian and European businesses",
+			"title": "Our work",
+			"subtitle": "Every project starts with understanding the business goals. We build websites around the target audience, the product and the needs of future customers.",
 			"viewAllButton": "View all works",
-			"orderButton": "Order a project"
+			"orderButton": "Order a project",
+			"prevAriaLabel": "Previous projects",
+			"nextAriaLabel": "Next projects"
 		},
 		"Advantages": {
 			"title": "What sets us apart from other studios?",
@@ -180,6 +191,59 @@
 				"title": "Post-launch support — free for a month",
 				"description": "The first month after launch, technical support, minor bug fixes and consultations are free. We don't disappear after payment.",
 				"serviceType": "Website technical support"
+			}
+		},
+		"Process": {
+			"title": "How we build your website",
+			"subtitle": "A transparent process — from the first conversation to the launch of the finished project. You always know what stage the work is at and what result you will get.",
+			"cta": "Discuss your project",
+			"steps": {
+				"brief": {
+					"title": "Project brief",
+					"text": "We discuss your goals, business specifics and wishes.\nWe define the structure of the future website, the pages, features and materials needed."
+				},
+				"design": {
+					"title": "Design",
+					"text": "We create a custom design that reflects your brand and your audience's needs.\n\nWe plan the page structure, navigation and usability, and approve the mockups before development starts."
+				},
+				"development": {
+					"title": "Development",
+					"text": "We turn the approved design into a fully functional website: the agreed features, mobile adaptation and the integrations you need. We set up the technical side of the site."
+				},
+				"launch": {
+					"title": "Launch & handover",
+					"text": "We test the website on different devices and set up the domain, hosting and SSL certificate. Then we publish the finished project and hand over all the accesses."
+				}
+			}
+		},
+		"Faq": {
+			"title": "Website development FAQ",
+			"subtitle": "Answers to the most common questions about building a website, development costs and launching the finished project.",
+			"items": {
+				"start": {
+					"question": "How does the work start?",
+					"answer": "It all starts with discussing your idea. We clarify the website's goals, the features you need, your design preferences and budget. Then we suggest the best solution, agree on the price and get to work."
+				},
+				"price": {
+					"question": "How much does a website cost?",
+					"answer": "The price depends on the type of website, the number of pages and the features. Starting prices are listed in the «Services & pricing» section above, and we will give you an exact quote after a short discussion of your project. You can also get an estimate with the calculator on our website."
+				},
+				"codeVsBuilder": {
+					"question": "What is the difference between custom code and a website builder?",
+					"answer": "A website builder is faster to launch, but you are limited to what the platform allows. A custom-coded website is faster, has no limits on design or features, and is better for SEO and future growth. We will help you choose the option that fits your goals and budget."
+				},
+				"mobile": {
+					"question": "Will the website work well on phones?",
+					"answer": "Yes. Every website we build is adapted for smartphones, tablets and desktops, and we test it on different devices and browsers before launch."
+				},
+				"prepare": {
+					"question": "What do I need to prepare to get started?",
+					"answer": "Just tell us about your business and what the website should do. If you have a logo, brand colors, texts or photos — great; if not, we will tell you what is needed and help you prepare the materials."
+				},
+				"afterLaunch": {
+					"question": "What do I get after the launch?",
+					"answer": "A finished website on your domain with an SSL certificate, working request forms and all the accesses to the site and hosting. After the launch we stay in touch and help with support and changes."
+				}
 			}
 		}
 	},
@@ -449,12 +513,13 @@
 		"included": "What's included",
 		"orderButton": "Order Service",
 		"pricing": {
-			"title": "Weblium vs Custom Comparison",
+			"title": "Custom code or website builder",
 			"subtitle": "Choose the optimal option for your business",
 			"timeline": "Timeline",
 			"recommended": "Recommended",
 			"orderWeblium": "Order Weblium",
-			"orderCustom": "Order Custom"
+			"orderCustom": "Order Custom",
+			"singleTitle": "Price and what's included"
 		},
 		"content": {
 			"aboutTitle": "About the Service",

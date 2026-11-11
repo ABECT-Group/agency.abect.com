@@ -1,7 +1,8 @@
+/* Текст із CMS (Lexical) — кольори нового дизайну; заголовки — Unbounded (глобальне правило h1–h6) */
 .RichText {
     font-size: 17px;
     line-height: 1.7;
-    color: var(--nav-text);
+    color: var(--section-text);
 
     /* Заголовки */
     h2,
@@ -17,15 +18,15 @@
     }
 
     h2 {
-        font-size: 32px;
+        font-size: 28px;
         padding-bottom: 12px;
-        border-bottom: 2px solid var(--border-subtle);
+        border-bottom: 1px solid var(--card-divider);
         margin-top: 48px;
         margin-bottom: 20px;
     }
 
     h3 {
-        font-size: 24px;
+        font-size: 21px;
         margin-top: 38px;
         margin-bottom: 16px;
     }
@@ -46,7 +47,7 @@
     /* Параграфи */
     p {
         margin-bottom: 20px;
-        color: var(--nav-text);
+        color: var(--section-text);
 
         &:last-child {
             margin-bottom: 0;
@@ -58,14 +59,14 @@
     ol {
         margin: 20px 0;
         padding-left: 24px;
-        color: var(--nav-text);
+        color: var(--section-text);
 
         li {
             margin-bottom: 12px;
             line-height: 1.7;
 
             &::marker {
-                color: var(--accent);
+                color: var(--logo-mark);
             }
         }
 
@@ -86,14 +87,14 @@
 
     /* Посилання */
     a {
-        color: var(--accent);
+        color: var(--logo-mark);
         text-decoration: none;
         border-bottom: 1px solid var(--accent-alpha-10);
         transition: all 0.2s ease;
 
         &:hover {
-            border-bottom-color: var(--accent);
-            color: var(--accentLight);
+            border-bottom-color: var(--logo-mark);
+            color: var(--white);
         }
     }
 
@@ -115,7 +116,7 @@
         font-family: var(--font-victor-mono), 'Courier New', monospace;
         font-size: 0.9em;
         background: var(--accent-alpha-10);
-        color: var(--accentLight);
+        color: var(--white);
         padding: 2px 8px;
         border-radius: 4px;
         border: 1px solid var(--accent-alpha-10);
@@ -145,7 +146,7 @@
         margin: 32px 0;
         padding: 20px 24px;
         background: var(--accent-alpha-05);
-        border-left: 4px solid var(--accent);
+        border-left: 4px solid var(--logo-mark);
         border-radius: 0 12px 12px 0;
         font-style: italic;
         color: var(--white);
@@ -165,7 +166,7 @@
             margin-top: 12px;
             font-size: 14px;
             font-style: normal;
-            color: var(--accent);
+            color: var(--logo-mark);
             font-weight: 600;
         }
     }
@@ -196,7 +197,7 @@
         figcaption {
             margin-top: 12px;
             font-size: 14px;
-            color: var(--nav-text);
+            color: var(--section-text);
             text-align: center;
             font-style: italic;
         }
@@ -218,7 +219,7 @@
                 font-weight: 700;
                 padding: 16px;
                 text-align: left;
-                border-bottom: 2px solid var(--accent);
+                border-bottom: 2px solid var(--logo-mark);
             }
         }
 
@@ -233,7 +234,7 @@
 
             td {
                 padding: 16px;
-                color: var(--nav-text);
+                color: var(--section-text);
             }
         }
     }

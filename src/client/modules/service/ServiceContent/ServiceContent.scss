@@ -1,126 +1,61 @@
-/* Service Content */
+/* «Про послугу» — опис із CMS у картці нового дизайну (+ зображення послуги, якщо є) */
+
 .service-content {
+	margin: 96px 0 0;
+}
 
-	&__description,
-	&__included,
-	&__comparison,
-	&__technologies,
-	&__benefits {
-		max-width: 900px;
-		margin: 0 auto;
-		margin-bottom: 80px;
+.service-content__body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+	margin-top: 32px;
+}
 
-		&:last-child {
-			margin-bottom: 0;
-		}
+.service-content__body--with-image {
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+	align-items: start;
+}
+
+.service-content__text {
+	padding: 32px 36px;
+	border: 1px solid var(--card-border);
+	border-radius: 12px;
+	background: var(--card-surface);
+	color: var(--section-text);
+	font-size: 16px;
+	line-height: 1.65;
+}
+
+.service-content__image {
+	overflow: hidden;
+	margin: 0;
+	border: 1px solid var(--card-border);
+	border-radius: 12px;
+
+	img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+}
+
+@media (max-width: 1024px) {
+	.service-content__body--with-image {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	.service-content {
+		margin-top: 64px;
 	}
 
-	&__title {
-		font-size: 32px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 32px;
-		letter-spacing: -0.01em;
+	.service-content__body {
+		margin-top: 24px;
 	}
 
-	/* Technologies */
-	&__tech-list {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-		list-style: none;
-	}
-
-	&__tech-item {
-		padding: 10px 20px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid var(--border-subtle);
-		border-radius: 12px;
-		color: var(--white);
+	.service-content__text {
+		padding: 22px 18px;
 		font-size: 15px;
-		font-weight: 500;
-		transition: all 0.3s ease;
-
-		&:hover {
-			background: var(--accent-alpha-10);
-			border-color: var(--accent);
-			transform: translateY(-2px);
-		}
-	}
-
-	/* Benefits Grid */
-	&__benefits-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 24px;
-	}
-
-	&__benefit-card {
-		padding: 24px;
-		background: rgba(255, 255, 255, 0.03);
-		backdrop-filter: blur(10px);
-		border-radius: 16px;
-		border: 1px solid var(--border-subtle);
-		transition: all 0.3s ease;
-
-		&:hover {
-			transform: translateY(-4px);
-			box-shadow: 0 8px 24px var(--shadow-dark);
-			border-color: var(--accent);
-		}
-	}
-
-	&__benefit-icon {
-		font-size: 32px;
-		margin-bottom: 16px;
-	}
-
-	&__benefit-title {
-		font-size: 18px;
-		font-weight: 600;
-		color: var(--white);
-		margin-bottom: 8px;
-	}
-
-	&__benefit-description {
-		font-size: 15px;
-		color: var(--nav-text);
-		line-height: 1.6;
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-
-		&__description,
-		&__included,
-		&__comparison,
-		&__technologies,
-		&__benefits {
-			margin-bottom: 60px;
-		}
-
-		&__title {
-			font-size: 28px;
-		}
-	}
-
-	@media (max-width: 768px) {
-
-		&__description,
-		&__included,
-		&__comparison,
-		&__technologies,
-		&__benefits {
-			margin-bottom: 50px;
-		}
-
-		&__title {
-			font-size: 24px;
-			margin-bottom: 24px;
-		}
-
-		&__benefits-grid {
-			grid-template-columns: 1fr;
-		}
 	}
 }

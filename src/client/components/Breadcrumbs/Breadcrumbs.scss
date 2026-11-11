@@ -1,3 +1,4 @@
+/* Хлібні крихти — стиль нового дизайну: приглушений текст, квадратні «маркери» як у тегах hero */
 .breadcrumbs {
 	margin-bottom: 32px;
 	overflow: hidden;
@@ -5,21 +6,27 @@
 	ol {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 10px;
 		list-style: none;
 	}
 
 	li {
 		display: flex;
 		align-items: center;
-		white-space: nowrap;
-		gap: 8px;
+		gap: 10px;
+		color: var(--hero-text);
 		font-size: 14px;
-		color: var(--nav-text);
+		font-weight: 500;
+		white-space: nowrap;
 
+		// Роздільник — маленький квадрат кольору логотипа (як маркер у тегах hero)
 		&::after {
-			content: '/';
-			color: var(--border-subtle);
+			content: "";
+			flex-shrink: 0;
+			width: 5px;
+			height: 5px;
+			background: var(--logo-mark);
+			opacity: 0.7;
 		}
 
 		&:last-child::after {
@@ -27,9 +34,9 @@
 		}
 
 		&:last-child {
-			color: var(--white);
 			flex: 1 1 0;
 			min-width: 0;
+			color: var(--white);
 
 			span {
 				display: block;
@@ -42,12 +49,18 @@
 	}
 
 	a {
-		color: var(--nav-text);
+		color: var(--hero-text);
 		text-decoration: none;
 		transition: color 0.3s ease;
 
 		&:hover {
-			color: var(--accent);
+			color: var(--white);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--logo-mark);
+			outline-offset: 3px;
+			border-radius: 4px;
 		}
 	}
 }

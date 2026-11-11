@@ -1,6 +1,7 @@
 'use client';
 
 import { JSX } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Portfolio } from '@/payload-types';
 import RichTextWithAnchors from '@/client/components/RichText/RichText';
 import RichTextHeadings from '@/client/components/RichTextHeadings/RichTextHeadings';
@@ -15,20 +16,22 @@ export default function ProjectContent({
 	project,
 	author = "ABECT Studio"
 }: ProjectContentProps): JSX.Element {
+	const t = useTranslations('ProjectDetail.sidebar');
+
 	return (
 		<section
 			className='project-content'
 			itemScope
 			itemType="https://schema.org/Article"
 		>
-			<div className="container">
+			<div className="container container--design">
 				<div className="project-content__wrapper">
 					<aside
 						className="project-content__sidebar"
 						role="complementary"
 						aria-label="Table of contents"
 					>
-						<RichTextHeadings content={project.content} />
+						<RichTextHeadings content={project.content} title={t('tableOfContents')} />
 					</aside>
 
 					<article

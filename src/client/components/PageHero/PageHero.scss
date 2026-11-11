@@ -1,0 +1,182 @@
+/* «Шапка» внутрішньої сторінки — стиль hero головної (смуги + світіння + синя смуга знизу) */
+
+.page-hero {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	margin: 0;
+	padding: 168px 0 72px;
+	background: var(--black);
+	// Синя смуга під блоком (як Figma 85:164 під hero головної)
+	border-bottom: 33px solid var(--hero-band);
+
+	// Наступна секція сторінки — ближче, ніж глобальні 120px
+	+ section {
+		margin-top: 64px;
+	}
+}
+
+// Смуги на всю ширину + світіння hero, центр якого — під нижнім краєм блоку
+.page-hero__bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: url('/images/bg/glow-hero.svg'), url('/images/bg/stripe-hero.png');
+	background-repeat: no-repeat, repeat-x;
+	background-size: 1622px 1622px, 43px 100%;
+	background-position: center calc(100% + 811px - 140px), 0 0;
+	pointer-events: none;
+}
+
+.page-hero__inner {
+	position: relative;
+}
+
+.page-hero__breadcrumbs {
+	margin-bottom: 28px;
+
+	// Крихти тут без власного нижнього відступу
+	.breadcrumbs {
+		margin-bottom: 0;
+	}
+}
+
+.page-hero__title {
+	max-width: 1100px;
+	color: var(--white);
+	font-size: clamp(30px, 4.45vw, 64px);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.04em;
+	text-transform: uppercase;
+	text-wrap: balance;
+}
+
+.page-hero__subtitle {
+	max-width: 760px;
+	margin-top: 20px;
+	color: var(--hero-text);
+	font-size: 18px;
+	line-height: 1.55;
+}
+
+.page-hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+	margin-top: 32px;
+}
+
+// Теги біля кнопки (категорія, термін, клієнт…) — як теги hero головної («▪ сучасні»)
+.page-hero__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	list-style: none;
+}
+
+.page-hero__tag {
+	--glass-bg: var(--hero-chip-bg);
+	--glass-blur: 6px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	height: 35px;
+	padding: 0 16px;
+	border-radius: 30px;
+	color: var(--white);
+	font-size: 15px;
+	white-space: nowrap;
+
+	&::after {
+		content: "";
+		order: -1;
+		flex-shrink: 0;
+		width: 6px;
+		height: 5px;
+		background: var(--logo-mark);
+	}
+
+	@media (max-width: 768px) {
+		height: 32px;
+		padding: 0 12px;
+		font-size: 13px;
+	}
+}
+
+/* Поява при завантаженні — та сама крива, що у вступній анімації hero головної */
+@keyframes page-hero-rise {
+	from {
+		opacity: 0;
+		translate: 0 28px;
+		filter: blur(6px);
+	}
+}
+
+.page-hero__breadcrumbs,
+.page-hero__title,
+.page-hero__subtitle,
+.page-hero__actions {
+	animation: page-hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.page-hero__title {
+	animation-delay: 0.08s;
+}
+
+.page-hero__subtitle {
+	animation-delay: 0.16s;
+}
+
+.page-hero__actions {
+	animation-delay: 0.24s;
+}
+
+@keyframes page-hero-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+.page-hero__bg {
+	animation: page-hero-fade 1.2s ease-out both;
+}
+
+@media (max-width: 768px) {
+	.page-hero {
+		padding: 112px 0 44px;
+
+		+ section {
+			margin-top: 40px;
+		}
+	}
+
+	.page-hero__bg {
+		background-size: 1100px 1100px, 43px 100%;
+		background-position: center calc(100% + 550px - 90px), 0 0;
+	}
+
+	.page-hero__breadcrumbs {
+		margin-bottom: 18px;
+	}
+
+	.page-hero__subtitle {
+		margin-top: 14px;
+		font-size: 15px;
+	}
+
+	.page-hero__actions {
+		margin-top: 24px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-hero__bg,
+	.page-hero__breadcrumbs,
+	.page-hero__title,
+	.page-hero__subtitle,
+	.page-hero__actions {
+		animation: none;
+	}
+}

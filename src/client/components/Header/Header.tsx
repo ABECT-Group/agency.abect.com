@@ -39,10 +39,22 @@ export default function Header() {
 	const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 	const toggleMenu = () => setIsMenuOpen((open) => !open);
 
-	// Блокування прокрутки під відкритим меню
+	// Блокування прокрутки під відкритим меню. Лише overflow: hidden не тримає сторінку в iOS Safari
+	// і при «протягуванні» прокрутки з меню — тому body фіксується на поточній позиції (top = −scrollY),
+	// а після закриття прокрутка повертається туди ж (миттєво, без smooth-scroll з html).
 	useEffect(() => {
-		document.body.classList.toggle('fixed-body', isMenuOpen);
-		return () => document.body.classList.remove('fixed-body');
+		if (!isMenuOpen) return;
+
+		const { body } = document;
+		const scrollY = window.scrollY;
+		body.classList.add('fixed-body');
+		body.style.top = `-${scrollY}px`;
+
+		return () => {
+			body.classList.remove('fixed-body');
+			body.style.top = '';
+			window.scrollTo({ top: scrollY, behavior: 'instant' });
+		};
 	}, [isMenuOpen]);
 
 	// Esc закриває меню; перехід на десктопну ширину — теж (інакше лишиться блок прокрутки)
@@ -103,7 +115,7 @@ export default function Header() {
 				<div className="header__wrapper">
 					<Link href="/" className="header__logo" aria-label={t('logoAriaLabel')} onClick={closeMenu}>
 						<span className="header__logo-mark" aria-hidden="true" />
-						{/* «E» — звичайним Montserrat, як у макеті (в Alternates вона схожа на «Є») */}
+						{/* «E» — окремим span (лишився з Montserrat Alternates; зараз увесь хедер — Montserrat) */}
 						<span className="header__logo-text" aria-hidden="true">
 							AB<span className="header__logo-e">E</span>CT
 						</span>

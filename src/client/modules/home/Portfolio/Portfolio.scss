@@ -1,89 +1,237 @@
-/* Portfolio Section */
+/* «Наші роботи» — Figma «ABECT», Desktop 6 (166:226, 166:288 …, фон 177:33) */
+
 .portfolio {
-	/* Секція без фону - видно body background */
+	position: relative;
+	// Декор виходить за краї — обрізаємо лише по горизонталі (без горизонтальної прокрутки сторінки)
+	overflow-x: clip;
+	isolation: isolate;
+	margin: 0;
+	padding: 80px 0 110px;
+}
 
-	&__header {
-		text-align: center;
-		margin-bottom: 60px;
+// Фон: «рваний» темно-синій силует + синє світіння праворуч (по горизонталі обрізається секцією,
+// по вертикалі може м'яко заходити на сусідні)
+.portfolio__bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow-x: clip;
+	background: url('/images/bg/edge-portfolio.svg') center / 100% 100% no-repeat;
+	pointer-events: none;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: -384px;
+		left: calc(50% - 13px);
+		width: 1136px;
+		height: 1136px;
+		background: url('/images/bg/glow-section.svg') center / contain no-repeat;
+	}
+}
+
+// Контент секції в макеті вужчий за сітку (98…1342 при 1440): місце для стрілок поза картками
+.portfolio > .container {
+	padding: 0 34px;
+}
+
+.portfolio__slider {
+	position: relative;
+	margin-top: 58px;
+}
+
+.portfolio__track {
+	display: grid;
+	grid-auto-columns: calc((100% - 40px) / 3);
+	grid-auto-flow: column;
+	gap: 20px;
+	// overflow-x: auto робить прокручуваним і y: піднята при наведенні картка з тінню давала
+	// вертикальну прокрутку в треку. Тому y — hidden, а місце під підйом і тінь — внутрішні поля,
+	// компенсовані від'ємними відступами (розмітка навколо не зсувається).
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding-block: 12px 48px;
+	margin-block: -12px -48px;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+	list-style: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.portfolio__slide {
+	scroll-snap-align: start;
+}
+
+.portfolio__card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	border: 1px solid var(--card-border);
+	border-radius: 10px;
+	background: var(--portfolio-card-bg);
+	color: var(--card-heading);
+	text-decoration: none;
+	transition:
+		translate 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+		border-color 0.4s ease,
+		box-shadow 0.4s ease;
+
+	&:hover {
+		translate: 0 -6px;
+		border-color: rgba(117, 161, 250, 0.45);
+		box-shadow: 0 18px 40px rgba(0, 40, 160, 0.25);
 	}
 
-	&__label {
-		display: inline-block;
+	&:hover .portfolio__card-image img {
+		scale: 1.04;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: -2px;
+	}
+}
+
+.portfolio__card-image {
+	position: relative;
+	display: block;
+	aspect-ratio: 370 / 231.25;
+	overflow: hidden;
+	border-bottom: 1px solid var(--card-border);
+	border-radius: 10px;
+
+	img {
+		object-fit: cover;
+		object-position: top center;
+		transition: scale 0.5s ease;
+	}
+}
+
+.portfolio__card-title {
+	padding: 15px 19px 16px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 27.6px;
+}
+
+// Стрілки — у полях за межами карток, на рівні середини зображень
+.portfolio__arrow {
+	position: absolute;
+	top: 112px;
+	z-index: 1;
+	display: flex;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	cursor: pointer;
+	transition: opacity 0.3s ease, scale 0.3s ease;
+
+	img {
+		display: block;
+	}
+
+	&:hover:not(:disabled) {
+		scale: 1.08;
+	}
+
+	&:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+	}
+}
+
+.portfolio__arrow--prev {
+	right: calc(100% + 12px);
+
+	img {
+		transform: scaleX(-1);
+	}
+}
+
+.portfolio__arrow--next {
+	left: calc(100% + 12px);
+}
+
+// Поля вужчі за стрілку (36 + 12px) — стрілки заходять на край карток
+@media (max-width: 1339px) {
+	.portfolio__arrow--prev {
+		right: auto;
+		left: -18px;
+	}
+
+	.portfolio__arrow--next {
+		left: auto;
+		right: -18px;
+	}
+}
+
+@media (max-width: 1024px) {
+	.portfolio__track {
+		grid-auto-columns: calc((100% - 20px) / 2);
+	}
+
+	.portfolio__arrow {
+		top: 26%;
+	}
+}
+
+@media (max-width: 768px) {
+	.portfolio {
+		padding: 56px 0 72px;
+	}
+
+	.portfolio > .container {
+		padding: 0 20px;
+	}
+
+	.portfolio__bg::before {
+		top: -460px;
+		left: calc(50% - 400px);
+		width: 900px;
+		height: 900px;
+	}
+
+	.portfolio__slider {
+		margin-top: 28px;
+	}
+
+	// Наступна картка визирає з-за краю — підказка, що можна гортати
+	.portfolio__track {
+		grid-auto-columns: 85%;
+		gap: 12px;
+		// Лише по горизонталі — вертикальні поля під тінь лишаються з базового правила
+		margin-inline: -20px;
+		padding-inline: 20px;
+		scroll-padding-inline: 20px;
+	}
+
+	.portfolio__card-title {
+		padding: 12px 14px;
 		font-size: 14px;
-		font-weight: 700;
-		color: var(--accent);
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		margin-bottom: 16px;
+		line-height: 1.4;
 	}
 
-	&__title {
-		font-size: 48px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 16px;
-		letter-spacing: -0.02em;
+	// На телефоні гортають свайпом
+	.portfolio__arrow {
+		display: none;
 	}
+}
 
-	&__subtitle {
-		font-size: 18px;
-		color: var(--nav-text);
-		max-width: 700px;
-		margin: 0 auto;
-		line-height: 1.6;
-	}
-
-	&__footer {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 16px;
-		margin-top: 60px;
-	}
-
-	/* Адаптивність */
-	@media (max-width: 1024px) {
-		&__title {
-			font-size: 36px;
-		}
-
-		&__subtitle {
-			font-size: 17px;
-		}
-
-		&__footer {
-			margin-top: 50px;
-		}
-	}
-
-	@media (max-width: 768px) {
-		&__header {
-			margin-bottom: 40px;
-		}
-
-		&__label {
-			font-size: 13px;
-			margin-bottom: 12px;
-		}
-
-		&__title {
-			font-size: 28px;
-			margin-bottom: 12px;
-		}
-
-		&__subtitle {
-			font-size: 16px;
-		}
-
-		&__footer {
-			flex-direction: column;
-			gap: 12px;
-			margin-top: 40px;
-
-			.cta {
-				width: 100%;
-				max-width: 320px;
-			}
-		}
+@media (prefers-reduced-motion: reduce) {
+	.portfolio__card,
+	.portfolio__card-image img,
+	.portfolio__arrow {
+		transition: none;
 	}
 }

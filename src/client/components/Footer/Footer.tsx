@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Link, usePathname } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Send, Smartphone, Mail, Phone } from 'lucide-react';
@@ -42,18 +41,14 @@ export default function Footer() {
 
 	return (
 		<footer className="footer" itemScope itemType="https://schema.org/Organization">
-			<div className="container">
+			<div className="footer__bg" aria-hidden="true" />
+			<div className="container container--design">
 				<div className="footer__wrapper">
 					<div className="footer__top">
 						<div className="footer__section footer__company">
+							{/* Логотип — як у хедері (знак + ABECT) */}
 							<Link href="/" className="footer__logo">
-								<Image
-									src="/icons/logo.svg"
-									alt="Company name logo"
-									width={40}
-									height={40}
-									itemProp="logo"
-								/>
+								<span className="footer__logo-mark" aria-hidden="true" />
 								<span itemProp="name">{t('logo')}</span>
 							</Link>
 
@@ -113,7 +108,7 @@ export default function Footer() {
 										href={contact.href}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="footer__social-link"
+										className="footer__social-link glass"
 										aria-label={contact.label}
 									>
 										{contact.icon}
@@ -132,7 +127,7 @@ export default function Footer() {
 							>
 								{contactInfo.map((contact, index) => (
 									<div key={index} className="footer__contact-item">
-										<span className="footer__contact-label">
+										<span className="footer__contact-label glass">
 											{contact.icon}
 										</span>
 										<div className="footer__contact-value">

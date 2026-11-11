@@ -1,143 +1,19 @@
-/* FAQ Section */
+/* Часті питання про послугу — акордеон FaqList */
+
 .faq-section {
-	&__header {
-		text-align: center;
-		margin-bottom: 60px;
+	margin: 96px 0;
+}
+
+.faq-section__list {
+	margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+	.faq-section {
+		margin: 64px 0;
 	}
 
-	&__title {
-		font-size: 40px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 16px;
-		letter-spacing: -0.02em;
-	}
-
-	&__subtitle {
-		font-size: 18px;
-		color: var(--nav-text);
-		max-width: 600px;
-		margin: 0 auto;
-	}
-
-	&__list {
-		max-width: 900px;
-		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	&__item {
-		background: rgba(255, 255, 255, 0.03);
-		backdrop-filter: blur(10px);
-		border-radius: 16px;
-		border: 1px solid var(--border-subtle);
-		overflow: hidden;
-		transition: all 0.3s ease;
-
-		&:hover {
-			border-color: var(--accent);
-		}
-
-		&--open {
-			border-color: var(--accent);
-			box-shadow: 0 4px 16px var(--shadow-ghost);
-
-			.faq-section__icon {
-				transform: rotate(180deg);
-				color: var(--accent);
-			}
-		}
-	}
-
-	&__question {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		padding: 20px 24px;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-		font-size: 18px;
-		font-weight: 600;
-		color: var(--white);
-		transition: all 0.3s ease;
-
-		&:hover {
-			color: var(--accent);
-		}
-	}
-
-	&__icon {
-		flex-shrink: 0;
-		color: var(--nav-text);
-		transition: all 0.3s ease;
-	}
-
-	&__answer {
-		padding: 0 24px 24px 24px;
-		color: var(--nav-text);
-		font-size: 16px;
-		line-height: 1.6;
-		animation: fadeIn 0.3s ease;
-
-		@keyframes fadeIn {
-			from {
-				opacity: 0;
-				transform: translateY(-10px);
-			}
-
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-
-		&__title {
-			font-size: 32px;
-		}
-	}
-
-	@media (max-width: 768px) {
-
-		&__header {
-			margin-bottom: 40px;
-		}
-
-		&__title {
-			font-size: 28px;
-		}
-
-		&__subtitle {
-			font-size: 16px;
-		}
-
-		&__question {
-			font-size: 16px;
-			padding: 16px 20px;
-		}
-
-		&__answer {
-			padding: 0 20px 20px 20px;
-			font-size: 15px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		&__title {
-			font-size: 24px;
-		}
-
-		&__question {
-			font-size: 15px;
-		}
+	.faq-section__list {
+		margin-top: 24px;
 	}
 }

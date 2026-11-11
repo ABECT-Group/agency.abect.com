@@ -10,12 +10,6 @@
 	background: transparent;
 	transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
 
-	// Акцентний шрифт макета на всьому хедері (глобальне правило `*` задає Montserrat кожному елементу)
-	&,
-	& * {
-		font-family: var(--font-montserrat-alt, "Montserrat Alternates"), sans-serif;
-	}
-
 	&.scrolled {
 		background: var(--header-bg-scrolled);
 		backdrop-filter: blur(16px);
@@ -289,6 +283,8 @@
 		margin: 0;
 		padding: 114px 20px 40px;
 		overflow-y: auto;
+		// Прокрутка всередині меню не «протікає» на сторінку
+		overscroll-behavior: contain;
 		background-color: var(--black);
 		background-image: url('/images/bg/glow.svg'), url('/images/bg/stripe.png');
 		background-repeat: no-repeat, repeat-x;

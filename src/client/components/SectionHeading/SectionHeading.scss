@@ -1,0 +1,71 @@
+/* Заголовок секції нового дизайну (Figma «ABECT», Desktop 6) */
+
+.section-heading {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas:
+		"title aside"
+		"subtitle aside";
+	align-items: start;
+	column-gap: 24px;
+}
+
+.section-heading__title {
+	grid-area: title;
+	color: var(--white);
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 1.24;
+	letter-spacing: -0.04em;
+	text-transform: uppercase;
+}
+
+.section-heading--md .section-heading__title {
+	font-size: 36px;
+}
+
+.section-heading__subtitle {
+	grid-area: subtitle;
+	max-width: 892px;
+	margin-top: 8px;
+	color: var(--section-text);
+	font-size: 18px;
+	line-height: 28px;
+}
+
+.section-heading__aside {
+	grid-area: aside;
+	align-self: start;
+}
+
+@media (max-width: 1024px) {
+	.section-heading__title,
+	.section-heading--md .section-heading__title {
+		font-size: 30px;
+	}
+}
+
+@media (max-width: 768px) {
+	.section-heading {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"title"
+			"subtitle"
+			"aside";
+	}
+
+	.section-heading__title,
+	.section-heading--md .section-heading__title {
+		font-size: clamp(20px, 6.4vw, 26px);
+	}
+
+	.section-heading__subtitle {
+		margin-top: 10px;
+		font-size: 14px;
+		line-height: 1.5;
+	}
+
+	.section-heading__aside {
+		margin-top: 20px;
+	}
+}

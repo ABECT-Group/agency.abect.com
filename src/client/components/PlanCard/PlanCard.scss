@@ -1,0 +1,302 @@
+/* Ціна-картка послуги — Figma «ABECT», Desktop 6 (164:41 «01 / Лендінг», 166:127, 166:156) */
+
+.plan-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-height: 503px;
+	padding: 30px 20px 28px;
+	overflow: hidden;
+	border: 1px solid var(--card-border);
+	border-radius: 10px;
+	background: var(--card-surface);
+	color: var(--white);
+
+	> *:not(.plan-card__decor) {
+		position: relative;
+		z-index: 1;
+	}
+}
+
+// Наведення: картка трохи піднімається, рамка підсвічується (translate — щоб не конфліктувати з появою)
+@media (hover: hover) {
+	.plan-card {
+		transition:
+			translate 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+			border-color 0.4s ease,
+			box-shadow 0.4s ease;
+
+		&:hover {
+			translate: 0 -6px;
+			border-color: rgba(117, 161, 250, 0.45);
+			box-shadow: 0 18px 40px rgba(0, 40, 160, 0.25);
+		}
+	}
+
+	.plan-card--accent:hover {
+		border-color: var(--card-border-accent);
+		box-shadow: 0 18px 44px rgba(0, 166, 255, 0.25);
+	}
+}
+
+// Перемикання «кодом / на конструкторі»: нові ціни й тексти проявляються (елементи з key перемонтовуються)
+@keyframes plan-card-swap {
+	from {
+		opacity: 0;
+		translate: 0 8px;
+	}
+}
+
+.plan-card--swap {
+	.plan-card__price-value,
+	.plan-card__price-alt,
+	.plan-card__description,
+	.plan-card__features,
+	.plan-card__extra {
+		animation: plan-card-swap 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.plan-card__description {
+		animation-delay: 0.04s;
+	}
+
+	.plan-card__features {
+		animation-delay: 0.08s;
+	}
+
+	.plan-card__extra {
+		animation-delay: 0.12s;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.plan-card,
+	.plan-card--swap * {
+		transition: none;
+		animation: none !important;
+	}
+}
+
+.plan-card--accent {
+	border: 2px solid var(--card-border-accent);
+	background: var(--card-surface-accent);
+}
+
+/* Декоративні 3D-об'єкти в правому верхньому куті (обрізаються карткою) */
+.plan-card__decor {
+	position: absolute;
+	z-index: 0;
+	max-width: none;
+	height: auto;
+	object-fit: contain;
+	pointer-events: none;
+}
+
+.plan-card__decor--drip {
+	top: 0;
+	right: 20px;
+	width: 157px;
+}
+
+.plan-card__decor--blob {
+	top: -42px;
+	left: calc(100% - 38px);
+	width: 201px;
+	translate: -50% -50%;
+	rotate: -61.5deg;
+}
+
+.plan-card__decor--spiral {
+	top: 20px;
+	left: calc(100% - 71px);
+	width: 161px;
+	translate: -50% -50%;
+	rotate: -25.6deg;
+}
+
+.plan-card__title {
+	padding: 0 10px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.24;
+}
+
+.plan-card__number {
+	font-weight: 500;
+}
+
+.plan-card__price {
+	display: flex;
+	align-items: baseline;
+	gap: 9px;
+	margin-top: 14px;
+	padding: 0 10px 16px;
+	border-bottom: 1px solid var(--card-divider);
+}
+
+.plan-card__price-from {
+	color: var(--price-label);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.plan-card__price-value {
+	font-family: var(--font-unbounded, "Unbounded"), sans-serif;
+	font-size: 48px;
+	font-weight: 700;
+	line-height: 1.24;
+	white-space: nowrap;
+}
+
+// Довідкова ціна в гривнях — праворуч, по нижньому краю основної
+.plan-card__price-alt {
+	margin-left: auto;
+	color: var(--price-alt);
+	font-size: 16px;
+	font-weight: 500;
+	white-space: nowrap;
+
+	.plan-card__price-from {
+		color: var(--price-alt-label);
+	}
+}
+
+.plan-card__description {
+	margin-top: 20px;
+	padding: 0 10px;
+	color: var(--card-text);
+	font-size: 16px;
+	line-height: 1.22;
+}
+
+// «$22 — домен, хостинг» — притиснуто до кнопок
+.plan-card__extra {
+	margin-top: auto;
+	padding: 28px 10px 0;
+	color: var(--card-text-soft);
+	font-size: 16px;
+	line-height: 1.22;
+
+	+ .plan-card__actions {
+		margin-top: 0;
+		padding-top: 20px;
+	}
+}
+
+.plan-card__features {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 16px;
+	padding: 0 10px;
+	list-style: none;
+
+	li {
+		display: flex;
+		gap: 10px;
+		font-size: 15px;
+		line-height: 1.22;
+
+		// Галочка з макета (іконка в макеті віддзеркалена по вертикалі)
+		&::before {
+			content: "";
+			flex-shrink: 0;
+			width: 20px;
+			height: 19px;
+			background: url('/icons/check.svg') center / contain no-repeat;
+			transform: scaleY(-1);
+		}
+	}
+}
+
+.plan-card__actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: auto;
+	padding-top: 28px;
+}
+
+.plan-card__more {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin-right: 4px;
+	color: var(--card-text-soft);
+	font-size: 16px;
+	text-decoration: none;
+	white-space: nowrap;
+
+	img {
+		width: 12px;
+		height: auto;
+		rotate: -38.66deg;
+		transition: translate 0.3s ease;
+	}
+
+	&:hover img {
+		translate: 2px -2px;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 3px;
+	}
+}
+
+@media (max-width: 768px) {
+	.plan-card {
+		min-height: 0;
+		padding: 24px 14px 22px;
+	}
+
+	.plan-card__title {
+		max-width: calc(100% - 90px);
+		font-size: 14px;
+	}
+
+	.plan-card__price {
+		flex-wrap: wrap;
+	}
+
+	.plan-card__price-value {
+		font-size: 36px;
+	}
+
+	.plan-card__price-alt {
+		font-size: 14px;
+	}
+
+	.plan-card__extra {
+		padding-top: 20px;
+		font-size: 14px;
+	}
+
+	.plan-card__description {
+		font-size: 14px;
+	}
+
+	.plan-card__features li {
+		font-size: 14px;
+	}
+
+	.plan-card__decor--drip {
+		width: 120px;
+	}
+
+	.plan-card__decor--blob {
+		width: 170px;
+	}
+
+	.plan-card__decor--spiral {
+		width: 130px;
+	}
+}
+
+@media (max-width: 380px) {
+	.plan-card__actions {
+		flex-wrap: wrap;
+	}
+}

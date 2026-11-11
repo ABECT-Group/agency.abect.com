@@ -1,5 +1,6 @@
 import React, { JSX } from 'react';
 import type { Service, ServiceType } from '@/payload-types';
+import ScrollReveal from '@/client/components/ScrollReveal/ScrollReveal';
 
 import ServiceHero from './ServiceHero/ServiceHero';
 import PricingComparison from './PricingComparison/PricingComparison';
@@ -15,15 +16,14 @@ interface ServiceDetailProps {
 	serviceType?: ServiceType;
 }
 
+// Сторінка послуги в стилі нового дизайну: шапка → ціни (PlanCard) → опис → роботи → схожі послуги → FAQ
 function ServiceDetail({ service, relatedServices, locale, serviceType }: ServiceDetailProps): JSX.Element {
 	return (
-		<main>
+		<main className="service-detail">
 			<ServiceHero service={service} locale={locale} serviceType={serviceType} />
 
-
-			{service.hasWebliumOption && (
-				<PricingComparison service={service} locale={locale} />
-			)}
+			{/* Ціни — завжди: одна картка або дві («кодом» і «на конструкторі») */}
+			<PricingComparison service={service} locale={locale} />
 
 			<ServiceContent service={service} />
 
@@ -33,10 +33,9 @@ function ServiceDetail({ service, relatedServices, locale, serviceType }: Servic
 
 			<RelatedServices services={relatedServices} locale={locale} />
 
-			{service.faq && service.faq.length > 0 && (
-				<FAQSection faq={service.faq} />
-			)}
+			{service.faq && service.faq.length > 0 && <FAQSection faq={service.faq} />}
 
+			<ScrollReveal />
 		</main>
 	);
 }

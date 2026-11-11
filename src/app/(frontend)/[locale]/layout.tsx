@@ -3,10 +3,9 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/client/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
-import { Montserrat, Montserrat_Alternates, Victor_Mono } from "next/font/google";
+import { Montserrat, Unbounded, Victor_Mono } from "next/font/google";
 import Header from "@/client/components/Header/Header";
 import Footer from "@/client/components/Footer/Footer";
-import StarsBackground from "@/client/components/StarsBackground/StarsBackground";
 import CookieBanner from "@/client/components/CookieBanner";
 import Analytics from "@/client/components/Analytics/Analytics";
 import { ModalProvider } from "@/client/providers/ModalProvider";
@@ -27,11 +26,10 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-// Акцентний шрифт з дизайну (хедер, hero). Не variable-шрифт — ваги задаються явно.
-const montserratAlternates = Montserrat_Alternates({
-  variable: "--font-montserrat-alt",
+// Шрифт заголовків (globals.scss → h1–h6). Variable-шрифт — будь-яка вага без окремих файлів.
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
   subsets: ["cyrillic", "latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -87,13 +85,12 @@ export default async function LocaleLayout({
 
   return (
     <html lang={langCode}>
-      <body className={`${victorMono.variable} ${montserrat.variable} ${montserratAlternates.variable}`}>
+      <body className={`${victorMono.variable} ${montserrat.variable} ${unbounded.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ModalProvider>
             <Header />
             {children}
             <Footer />
-            <StarsBackground />
             <CookieBanner locale={locale} />
             <Analytics />
           </ModalProvider>

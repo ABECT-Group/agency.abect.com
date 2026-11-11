@@ -1,0 +1,35 @@
+/* Головна нового дизайну: фон сторінки — суцільний чорний, як у макеті (Desktop 6, bg-black).
+ * Сині світіння секцій — у самих секціях (Portfolio, Faq) і під hero (нижче). */
+.home {
+	position: relative;
+	isolation: isolate;
+	// Світіння ширші за екран — без горизонтальної прокрутки (по вертикалі не обрізаємо)
+	overflow-x: clip;
+	background: var(--black);
+}
+
+// Синя смуга під hero (Figma 85:164)
+.home__band {
+	position: relative;
+	height: 33px;
+	background: var(--hero-band);
+
+	// Світіння hero (Figma 17:751) у макеті виходить за його низ — м'яке синє сяйво під смугою
+	// на початку «Послуг». Hero обрізає своє світіння (overflow: hidden), тому продовження — тут:
+	// те саме коло, з тим самим центром (середина hero ≈ 50svh вище смуги), видно лише під смугою.
+	@media (min-width: 769px) {
+		&::after {
+			content: "";
+			position: absolute;
+			top: calc(-50svh - 811px);
+			left: 50%;
+			z-index: -1;
+			width: 1622px;
+			height: 1622px;
+			translate: -50% 0;
+			background: url('/images/bg/glow-hero.svg') center / contain no-repeat;
+			clip-path: inset(calc(811px + 50svh + 33px) 0 0 0);
+			pointer-events: none;
+		}
+	}
+}

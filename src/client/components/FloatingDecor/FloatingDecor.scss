@@ -1,0 +1,118 @@
+/* Декоративний 3D-об'єкт із легким рухом (див. FloatingDecor.tsx). Анімується лише transform обгортки. */
+
+// Плавно вгору-вниз із невеликим поворотом
+@keyframes floating-decor-sway {
+	from {
+		transform: translateY(-6px) rotate(-3deg);
+	}
+
+	to {
+		transform: translateY(6px) rotate(3deg);
+	}
+}
+
+// «Дихання»: трохи збільшується й нахиляється
+@keyframes floating-decor-breathe {
+	from {
+		transform: scale(0.96) rotate(-4deg);
+	}
+
+	to {
+		transform: scale(1.05) rotate(4deg);
+	}
+}
+
+// Пружина: стискається, підстрибує й розтягується, потім заспокоюється
+@keyframes floating-decor-spring {
+	0%,
+	100% {
+		transform: none;
+	}
+
+	25% {
+		transform: translateY(4px) scale(1.04, 0.93);
+	}
+
+	50% {
+		transform: translateY(-7px) scale(0.97, 1.05) rotate(2deg);
+	}
+
+	75% {
+		transform: translateY(1px) scale(1.01, 0.99) rotate(-1deg);
+	}
+}
+
+// Повільне коло з поворотом
+@keyframes floating-decor-orbit {
+	0%,
+	100% {
+		transform: translate(0, -8px) rotate(0deg);
+	}
+
+	25% {
+		transform: translate(8px, 0) rotate(5deg);
+	}
+
+	50% {
+		transform: translate(0, 8px) rotate(0deg);
+	}
+
+	75% {
+		transform: translate(-8px, 0) rotate(-5deg);
+	}
+}
+
+// Маятник від нижнього краю
+@keyframes floating-decor-pendulum {
+	from {
+		transform: rotate(-5deg);
+	}
+
+	to {
+		transform: rotate(5deg);
+	}
+}
+
+.floating-decor {
+	display: block;
+	pointer-events: none;
+
+	> img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-width: none;
+	}
+}
+
+.floating-decor--sway {
+	animation: floating-decor-sway var(--decor-duration, 7s) ease-in-out var(--decor-offset, 0s) infinite alternate;
+}
+
+.floating-decor--breathe {
+	animation: floating-decor-breathe var(--decor-duration, 5s) ease-in-out var(--decor-offset, 0s) infinite alternate;
+}
+
+.floating-decor--spring {
+	transform-origin: 50% 80%;
+	animation: floating-decor-spring var(--decor-duration, 4.5s) ease-in-out var(--decor-offset, 0s) infinite;
+}
+
+.floating-decor--orbit {
+	animation: floating-decor-orbit var(--decor-duration, 10s) linear var(--decor-offset, 0s) infinite;
+}
+
+.floating-decor--pendulum {
+	transform-origin: 50% 100%;
+	animation: floating-decor-pendulum var(--decor-duration, 6s) ease-in-out var(--decor-offset, 0s) infinite alternate;
+}
+
+.floating-decor:not(.floating-decor--none) {
+	will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.floating-decor {
+		animation: none !important;
+	}
+}

@@ -1,39 +1,28 @@
-/* Portfolio List */
+/* Сітка карток проєктів (PortfolioCard) */
 .portfolio-list {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 32px;
-	width: 100%;
+	gap: 20px;
+	list-style: none;
+}
 
-	&__rows--4{
-		grid-template-columns: repeat(4, 1fr);
+.portfolio-list--3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.portfolio-list--2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 1024px) {
+	.portfolio-list--3 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
+}
 
-	&__rows--3{
-		grid-template-columns: repeat(3, 1fr);
-	}
-
-	&__rows--2{
-	    grid-template-columns: repeat(2, 1fr);
-	}
-
-	&__rows--1{
-	    grid-template-columns: 1fr;
-	}
-
-	/* Tablet (2 колонки) */
-	@media (max-width: 1024px) {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 24px;
-
-		&__rows--1{
-			grid-template-columns: 1fr;
-		}
-	}
-
-	/* Mobile (1 колонка) */
-	@media (max-width: 768px) {
-		grid-template-columns: 1fr;
-		gap: 20px;
+@media (max-width: 768px) {
+	.portfolio-list--3,
+	.portfolio-list--2 {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 16px;
 	}
 }

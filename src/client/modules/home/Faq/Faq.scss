@@ -1,0 +1,77 @@
+/* «Часті запитання» — Figma «ABECT», Desktop 6 (166:312, 171:4, фон 177:70). Акордеон — FaqList. */
+
+.faq {
+	position: relative;
+	// Декор виходить за краї — обрізаємо лише по горизонталі (без горизонтальної прокрутки сторінки)
+	overflow-x: clip;
+	isolation: isolate;
+	margin: 0;
+	padding: 112px 0 165px;
+
+	> .container {
+		position: relative;
+	}
+}
+
+// Фон: «рваний» силует + синє світіння зліва (по горизонталі обрізається секцією)
+.faq__bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow-x: clip;
+	background: url('/images/bg/edge-faq.svg') center / 100% 100% no-repeat;
+	pointer-events: none;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: -264px;
+		left: calc(50% - 1102px);
+		width: 1136px;
+		height: 1136px;
+		background: url('/images/bg/glow-section.svg') center / contain no-repeat;
+	}
+}
+
+// Список — над спіраллю: декор лежить під питаннями
+.faq__list {
+	position: relative;
+	z-index: 2;
+	margin-top: 49px;
+}
+
+// Хромована спіраль — під правим краєм списку, під двома останніми питаннями
+.faq__decor {
+	position: absolute;
+	top: calc(100% + 35px);
+	left: calc(100% - 102px);
+	z-index: 1;
+	width: 286px;
+	height: auto;
+	translate: -50% -50%;
+	rotate: -25.58deg;
+	pointer-events: none;
+}
+
+@media (max-width: 768px) {
+	.faq {
+		padding: 72px 0 130px;
+	}
+
+	.faq__bg::before {
+		top: -400px;
+		left: calc(50% - 800px);
+		width: 900px;
+		height: 900px;
+	}
+
+	.faq__list {
+		margin-top: 28px;
+	}
+
+	.faq__decor {
+		top: calc(100% + 30px);
+		left: calc(100% - 50px);
+		width: 150px;
+	}
+}

@@ -1,68 +1,19 @@
-/* Portfolio Showcase */
+/* «Приклади робіт» на сторінці послуги */
+
 .portfolio-showcase {
-	padding: 80px 0;
+	margin: 96px 0 0;
+}
 
-	&__header {
-		text-align: center;
-		margin-bottom: 60px;
+.portfolio-showcase__list {
+	margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+	.portfolio-showcase {
+		margin-top: 64px;
 	}
 
-	&__title {
-		font-size: 40px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 16px;
-		letter-spacing: -0.02em;
-	}
-
-	&__subtitle {
-		font-size: 18px;
-		color: var(--nav-text);
-		max-width: 600px;
-		margin: 0 auto;
-	}
-
-	&__footer {
-		text-align: center;
-		margin-top: 60px;
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-		padding: 60px 0;
-
-		&__title {
-			font-size: 32px;
-		}
-
-		&__footer {
-			margin-top: 50px;
-		}
-	}
-
-	@media (max-width: 768px) {
-		padding: 50px 0;
-
-		&__header {
-			margin-bottom: 40px;
-		}
-
-		&__title {
-			font-size: 28px;
-		}
-
-		&__subtitle {
-			font-size: 16px;
-		}
-
-		&__footer {
-			margin-top: 40px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		&__title {
-			font-size: 24px;
-		}
+	.portfolio-showcase__list {
+		margin-top: 24px;
 	}
 }

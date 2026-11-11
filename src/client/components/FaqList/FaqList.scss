@@ -1,0 +1,194 @@
+/* Акордеон питань нового дизайну (див. FaqList.tsx) */
+
+.faq-list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.faq-list__item {
+	// Матове скло (глобальний .glass): розмиття фону — декор і світіння під питаннями м'яко розмиті
+	--glass-bg: var(--faq-bg);
+	--glass-blur: 18px;
+	--glass-saturate: 140%;
+	border: 1px solid var(--faq-border);
+	border-radius: 12px;
+	color: var(--white);
+	transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+	// Плавне розкриття відповіді (Chrome / Edge 131+; в інших браузерах — миттєво, як звичайний <details>)
+	interpolate-size: allow-keywords;
+
+	&[open] {
+		--glass-bg: var(--faq-open-bg);
+		border-color: var(--faq-open-border);
+		color: var(--faq-open-text);
+	}
+
+	&::details-content {
+		block-size: 0;
+		overflow: clip;
+		opacity: 0;
+		transition:
+			block-size 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.35s ease,
+			content-visibility 0.45s allow-discrete;
+	}
+
+	&[open]::details-content {
+		block-size: auto;
+		opacity: 1;
+	}
+}
+
+.faq-list__question {
+	display: grid;
+	grid-template-columns: 72px minmax(0, 1fr) 36px;
+	align-items: center;
+	min-height: 74px;
+	padding: 18px 56px 18px 27px;
+	list-style: none;
+	cursor: pointer;
+
+	&::-webkit-details-marker {
+		display: none;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+		border-radius: 12px;
+	}
+
+	&:hover .faq-list__icon {
+		scale: 1.08;
+	}
+}
+
+.faq-list__number {
+	color: var(--logo-mark);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+}
+
+.faq-list__question-text {
+	padding-right: 24px;
+	font-family: var(--font-unbounded, "Unbounded"), sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 28px;
+}
+
+// Закрите — синє коло зі стрілкою вниз, відкрите — чорне зі стрілкою вгору
+.faq-list__icon {
+	position: relative;
+	display: block;
+	width: 36px;
+	height: 36px;
+	transition: scale 0.3s ease;
+
+	img {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		transition:
+			rotate 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.3s ease;
+	}
+}
+
+.faq-list__icon-closed {
+	rotate: 90deg;
+}
+
+.faq-list__icon-open {
+	rotate: 90deg;
+	opacity: 0;
+}
+
+.faq-list__item[open] {
+	.faq-list__icon-closed {
+		rotate: -90deg;
+		opacity: 0;
+	}
+
+	.faq-list__icon-open {
+		rotate: -90deg;
+		opacity: 1;
+	}
+}
+
+.faq-list__answer {
+	// Текст від колонки питання (99px), ширина як у макеті — до 1028px
+	max-width: calc(1028px + 99px);
+	padding: 0 24px 22px 99px;
+	font-size: 16px;
+	line-height: 25px;
+
+	// Відповідь із CMS (RichText): кольори тексту — від фону питання (у відкритого — білий фон, чорний текст).
+	// :is(...) — специфічність класу, щоб перебити кольори .RichText
+	:is(.RichText, p, li, b, i, strong, em) {
+		color: inherit;
+	}
+
+	.RichText {
+		font-size: inherit;
+		line-height: inherit;
+	}
+
+	> * + * {
+		margin-top: 10px;
+	}
+}
+
+@media (max-width: 768px) {
+	.faq-list {
+		gap: 12px;
+	}
+
+	.faq-list__question {
+		grid-template-columns: minmax(0, 1fr) 32px;
+		grid-template-areas:
+			"number icon"
+			"text icon";
+		row-gap: 4px;
+		min-height: 0;
+		padding: 16px 14px 16px 16px;
+	}
+
+	.faq-list__number {
+		grid-area: number;
+		font-size: 13px;
+		line-height: 1.4;
+	}
+
+	.faq-list__question-text {
+		grid-area: text;
+		padding-right: 12px;
+		font-size: 15px;
+		line-height: 1.4;
+	}
+
+	.faq-list__icon {
+		grid-area: icon;
+		width: 32px;
+		height: 32px;
+	}
+
+	.faq-list__answer {
+		padding: 0 16px 18px;
+		font-size: 14px;
+		line-height: 1.55;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.faq-list__item,
+	.faq-list__item::details-content,
+	.faq-list__icon,
+	.faq-list__icon img {
+		transition: none;
+	}
+}

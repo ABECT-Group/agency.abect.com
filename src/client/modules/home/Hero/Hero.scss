@@ -17,12 +17,6 @@
 		flex: 1;
 		flex-direction: column;
 	}
-
-	// Акцентний шрифт макета (глобальне правило `*` задає Montserrat кожному елементу)
-	&,
-	& * {
-		font-family: var(--font-montserrat-alt, "Montserrat Alternates"), sans-serif;
-	}
 }
 
 /* Фон: світіння + вертикальні смуги */
@@ -312,10 +306,21 @@
 		background-position: center -251px, 0 0;
 	}
 
+	// Кнопка — на першому екрані: ноутбук стискається по висоті так, щоб низ кнопки був за
+	// --hero-cta-gap від низу екрана. Під кнопкою (плашки + нижнє поле) — ~114px, тому висота
+	// блока = екран + (114 − gap); рядок ноутбука забирає решту, від --hero-visual-min до натуральної.
+	// max-height: fit-content — на високих телефонах натуральна висота (без порожнечі знизу);
+	// min-height — щоб на дуже низьких екранах вміст не обрізався (min-content тут не підходить:
+	// у блоковій осі він дорівнює повній висоті вмісту).
 	.hero__inner {
+		--hero-cta-gap: 16px;
+		--hero-below-cta: 114px;
+		--hero-visual-min: 170px;
+		// Натуральна висота кадру ноутбука: ширина клітинки (екран − поля 40 + 21) × 1.1757, мінус наліт −37px
+		--hero-visual-max: calc((100vw - 19px) * 1.1757 - 37px);
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: none;
-		// Hero ≥ висоти екрана: рядки притиснуті догори, зайве місце — знизу (не між рядками)
+		grid-template-rows: auto auto minmax(var(--hero-visual-min), var(--hero-visual-max)) auto auto;
+		// Зайве місце (якщо є) — знизу, не між рядками
 		align-content: start;
 		grid-template-areas:
 			"title"
@@ -323,7 +328,10 @@
 			"visual"
 			"cta"
 			"prices";
-		height: auto;
+		flex: none;
+		height: calc(100svh + var(--hero-below-cta) - var(--hero-cta-gap));
+		max-height: fit-content;
+		min-height: 640px;
 		padding-top: 97px;
 		padding-bottom: 38px;
 	}
@@ -360,8 +368,8 @@
 		left: auto;
 		grid-area: visual;
 		justify-self: center;
-		// Кадр 371px ширший за контент (350): у макеті ноутбук виходить за поля;
-		// зображення 103% кадру, зсунуте вліво й угору й обрізане кадром
+		// Клітинка 371px ширша за контент (350): у макеті ноутбук виходить за поля.
+		// Висоту задає рядок сітки (container-type: size — вміст на неї не впливає).
 		width: calc(100% + 21px);
 		height: auto;
 		max-width: none;
@@ -369,23 +377,32 @@
 		margin-top: -37px;
 		overflow: hidden;
 		transform: none;
+		container-type: size;
 
+		// Кадр ноутбука (пропорції 1 : 1.1757) — у всю ширину клітинки або менший, якщо бракує висоти;
+		// по центру й притиснутий до низу. Зображення — 103% кадру, зсунуте вліво й угору й обрізане.
 		img {
-			width: 103.23%;
+			--fw: min(100cqw, 100cqh / 1.1757);
+			width: calc(var(--fw) * 1.0323);
 			height: auto;
 			max-width: none;
-			margin: -2.67% 0 0 -3.23%;
+			margin: calc(100cqh - var(--fw) * 1.1757 - var(--fw) * 0.0267) 0 0
+				calc((100cqw - var(--fw)) / 2 - var(--fw) * 0.0323);
 		}
 	}
 
 	// Теги лежать поверх ноутбука (та сама клітинка сітки)
+	// Розміри й зсув — як у .hero__visual, щоб координати тегів рахувались від кадру ноутбука
 	.hero__tags {
 		grid-area: visual;
 		align-self: stretch;
+		justify-self: center;
 		display: block;
+		width: calc(100% + 21px);
 		max-width: none;
-		margin: -37px 0 0; // як у .hero__visual — щоб координати тегів рахувались від кадру ноутбука
+		margin: -37px 0 0;
 		pointer-events: none;
+		container-type: size;
 	}
 
 	.hero__tag {
@@ -396,20 +413,24 @@
 		color: rgba(255, 255, 255, 0.74);
 		font-size: 11px;
 
-		// Позиції з макета відносно клітинки (350 × 435)
+		// Позиції з макета — частки кадру ноутбука (371 × 436), кадр може бути меншим за клітинку
+		--fw: min(100cqw, 100cqh / 1.1757);
+		top: calc(100cqh - var(--fw) * 1.1757 * (1 - var(--y)));
+		left: calc((100cqw - var(--fw)) / 2 + var(--fw) * var(--x));
+
 		&--modern {
-			top: 40.5%;
-			left: 4.6%;
+			--x: 0.0717;
+			--y: 0.405;
 		}
 
 		&--fast {
-			top: 23.7%;
-			left: 76.6%;
+			--x: 0.751;
+			--y: 0.237;
 		}
 
 		&--adaptive {
-			top: 62.1%;
-			left: 70.3%;
+			--x: 0.6915;
+			--y: 0.621;
 		}
 
 		&--websites {
