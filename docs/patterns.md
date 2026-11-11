@@ -77,6 +77,18 @@ modules/service/
 - Навігація в клієнтських компонентах — лише через `Link` / `useRouter` з `@/client/i18n/navigation` (зберігають мову). `window.location.href = '/…'` губить `/en`.
 - SCSS-файли компонентів — глобальні (не CSS Modules): `:global(...)` у них не працює.
 
+### Спільні елементи нового дизайну
+
+- «Шапка» внутрішньої сторінки — `PageHero` (`src/client/components/PageHero/`): крихти, H1, опис, кнопки; секція сторінки йде одразу після нього.
+- Фільтри сторінок-списків — `ChipBar` (`src/client/components/ChipBar/`); рядок фільтрів / підсумок / порожній стан — глобальні `.list-toolbar` / `.list-stats` / `.list-empty`; картки проєктів — `PortfolioList` / `PortfolioCard`.
+- Картки послуг — `ServicesList` (сітка `PlanCard`); перемикач «кодом / на конструкторі» — `VariantToggle`; акордеон питань — `FaqList`; кнопки-пігулки — глобальні `.pill-btn--gradient` / `.pill-btn--outline`.
+- Заголовок секції — `SectionHeading` (`src/client/components/SectionHeading/`): H2 + опис, опційно `aside` праворуч (перемикач, кнопка), `size="lg" | "md"`.
+- Синя пігулка зі скляною стрілкою — `ArrowButton` (`src/client/components/ArrowButton/`): з `href` — посилання, без нього — кнопка з `data-open-modal` (відкриває форму заявки).
+- Кольори — лише змінні з `:root` у `globals.scss` (блок «Секції головної нового дизайну»), не хардкод у модулях.
+- Декор, що виходить за краї секції, обрізати `overflow-x: clip` на секції (а не `overflow: hidden`, щоб не різати по вертикалі).
+- Поява при прокрутці — атрибут `data-reveal` (або `data-reveal="pop"` для декору) + CSS-змінні `--reveal-delay` / `--reveal-shift` / `--reveal-blur`; на сторінці має бути змонтований `ScrollReveal` (`src/client/components/ScrollReveal/`, зараз — у `Home.tsx`). Для позицій і hover таких елементів використовувати окремі `translate` / `rotate` / `scale`, не `transform`.
+- Декоративні 3D-об'єкти — `FloatingDecor` (`src/client/components/FloatingDecor/`): поява «pop»; за замовчуванням без руху, безкінечний рух — пропом `motion` (`sway` / `breathe` / `spring` / `orbit` / `pendulum`), зараз ніде не ввімкнений; класи позиціонування передавати в `className` (вони лягають на обгортку).
+
 ## 3. Запит до CMS (`src/client/lib/`)
 
 Усі запити — через `payloadFetch` / `payloadFind` з `lib/payload-fetch.ts`:

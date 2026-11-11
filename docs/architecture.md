@@ -23,7 +23,7 @@
 | CMS | Payload CMS 3.93 (вбудована в той самий Next-застосунок, адмінка на `/admin`) |
 | БД | MongoDB 7 (`@payloadcms/db-mongodb`, mongoose) |
 | Стилі | SCSS: окремий файл поруч з кожним компонентом |
-| Шрифти | `next/font/google` у `[locale]/layout.tsx` (self-hosted): Montserrat — основний (`--font-montserrat`), Montserrat Alternates — акцентний з дизайну (`--font-montserrat-alt`), Victor Mono |
+| Шрифти | `next/font/google` у `[locale]/layout.tsx` (self-hosted): Montserrat — текст (`--font-montserrat`, правило `*`), Unbounded — заголовки `h1`–`h6` (`--font-unbounded`), Victor Mono |
 | i18n | `next-intl` 4.14 (локалі `ua`, `en`) + Payload localization (`uk`, `en`) |
 | Редактор контенту | Lexical (`src/utils/editor.ts`) |
 | Іконки | `lucide-react` |
