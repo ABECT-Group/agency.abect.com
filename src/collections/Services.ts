@@ -126,6 +126,26 @@ export const Services: CollectionConfig = {
       },
     },
     {
+      name: 'webliumPriceUah',
+      type: 'number',
+      label: 'Ціна в гривнях (Weblium)',
+      min: 0,
+      admin: {
+        condition: (data) => data.hasWebliumOption === true,
+        description: 'Необовʼязково. На головній — праворуч від основної ціни: «від 3 600 грн» (якщо основна валюта не UAH)',
+      },
+    },
+    {
+      name: 'webliumExtraCosts',
+      type: 'text',
+      localized: true,
+      label: 'Додаткові витрати (Weblium)',
+      admin: {
+        condition: (data) => data.hasWebliumOption === true,
+        description: 'Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)',
+      },
+    },
+    {
       name: 'webliumTimeline',
       type: 'text',
       localized: true,
@@ -184,6 +204,24 @@ export const Services: CollectionConfig = {
         { label: 'EUR', value: 'EUR' },
       ],
       defaultValue: 'UAH',
+    },
+    {
+      name: 'customPriceUah',
+      type: 'number',
+      label: 'Ціна в гривнях (Custom)',
+      min: 0,
+      admin: {
+        description: 'Необовʼязково. На головній — праворуч від основної ціни: «від 5 400 грн» (якщо основна валюта не UAH)',
+      },
+    },
+    {
+      name: 'customExtraCosts',
+      type: 'text',
+      localized: true,
+      label: 'Додаткові витрати (Custom)',
+      admin: {
+        description: 'Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)',
+      },
     },
     {
       name: 'customTimeline',

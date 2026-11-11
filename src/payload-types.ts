@@ -177,6 +177,14 @@ export interface Service {
   webliumPrice?: number | null;
   webliumPriceCurrency?: ('UAH' | 'USD' | 'EUR') | null;
   /**
+   * Необовʼязково. На головній — праворуч від основної ціни: «від 3 600 грн» (якщо основна валюта не UAH)
+   */
+  webliumPriceUah?: number | null;
+  /**
+   * Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)
+   */
+  webliumExtraCosts?: string | null;
+  /**
    * Наприклад: "5-7 днів"
    */
   webliumTimeline?: string | null;
@@ -195,6 +203,14 @@ export interface Service {
    */
   customPrice: number;
   customPriceCurrency: 'UAH' | 'USD' | 'EUR';
+  /**
+   * Необовʼязково. На головній — праворуч від основної ціни: «від 5 400 грн» (якщо основна валюта не UAH)
+   */
+  customPriceUah?: number | null;
+  /**
+   * Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)
+   */
+  customExtraCosts?: string | null;
   /**
    * Наприклад: "2-3 тижні"
    */
@@ -658,6 +674,8 @@ export interface ServicesSelect<T extends boolean = true> {
   hasWebliumOption?: T;
   webliumPrice?: T;
   webliumPriceCurrency?: T;
+  webliumPriceUah?: T;
+  webliumExtraCosts?: T;
   webliumTimeline?: T;
   webliumFeatures?:
     | T
@@ -668,6 +686,8 @@ export interface ServicesSelect<T extends boolean = true> {
   webliumDescription?: T;
   customPrice?: T;
   customPriceCurrency?: T;
+  customPriceUah?: T;
+  customExtraCosts?: T;
   customTimeline?: T;
   customFeatures?:
     | T

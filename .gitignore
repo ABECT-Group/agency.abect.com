@@ -40,3 +40,6 @@ yarn-debug.log*
 
 # vercel
 .vercel
+
+# інструкції для агентів, які генерує next dev
+AGENTS.md
