@@ -78,12 +78,10 @@ AgencyAbect/
 
 ## Деплой
 
-Деплоїть власник, вручну, з гілки **`prod`** — так само, як QRHUB (`abect.com`) на тому ж сервері:
+Деплоїть власник, вручну. Окремої гілки `prod` немає: **що в `main`, те й на проді**. Після злиття змін у `main`:
 
 ```bash
-# локально: main → prod
-git switch prod && git pull --ff-only && git merge main && git push origin prod && git switch main
-# на сервері
+ssh admin@forze-main-server            # порт 54321
 ~/www/agency-abect/scripts/restart-frontend.sh
 ```
 

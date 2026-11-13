@@ -1,16 +1,16 @@
 # Деплой (VPS)
 
 > Актуалізовано 2026-11-13. Патерн той самий, що в QRHUB (`abect.com`) на тому ж сервері:
-> реліз — з гілки **`prod`**, вручну, скриптом `restart-frontend.sh`. Автоматичного CI/CD немає (рішення власника).
+> реліз — вручну, скриптом `restart-frontend.sh`. Відмінність від QRHUB: окремої гілки `prod` немає — **що в `main`, те й на проді** (рішення власника). Автоматичного CI/CD немає.
 > Скрипти — `AgencyAbect/scripts/` (поза git, на сервер через `scp`), опис — `AgencyAbect/scripts/README.md`.
 
 ## Схема
 
 ```
-розробник: feature/* ──► власник зливає в main ──► власник: main → prod (git push)
+розробник: feature/* ──► власник зливає в main (git push)
                                                           │
 VPS forze-main-server (SSH, порт 54321)                   ▼
-  ~/www/agency-abect/scripts/restart-frontend.sh: git pull origin prod → build → up -d → health-check
+  ~/www/agency-abect/scripts/restart-frontend.sh: git pull origin main → build → up -d → health-check
         │
 nginx :443 (Let's Encrypt) ──► 127.0.0.1:3333 ──► agency-abect-frontend :3000 (user node, /api/health)
                                                      │  docker network mongodb-net
@@ -24,7 +24,7 @@ nginx :443 (Let's Encrypt) ──► 127.0.0.1:3333 ──► agency-abect-front
 
 ```
 /home/admin/www/agency-abect/
-├── frontend/     # git clone https://github.com/ABECT-Group/agency.abect.com.git, гілка prod
+├── frontend/     # git clone https://github.com/ABECT-Group/agency.abect.com.git, гілка main
 │   └── media/    # файли з адмінки (volume → /app/media, власник uid 1000)
 ├── scripts/      # restart-frontend.sh, backup-media.sh (scp з AgencyAbect/scripts)
 ├── secrets/      # .env.frontend — chmod 600, поза git
@@ -59,15 +59,7 @@ NEXT_TELEMETRY_DISABLED=1
 
 ## Регулярний реліз
 
-**1. На своєму комп'ютері** — перенести `main` у `prod`:
-
-```bash
-git switch main && git pull --ff-only
-git switch prod && git pull --ff-only
-git merge main
-git push origin prod
-git switch main
-```
+**1. Зміни вже в `main`** (власник злив гілку й запушив — див. [git-workflow.md](git-workflow.md#53-злиття-в-main-і-деплой)).
 
 **2. На сервері:**
 
@@ -76,7 +68,7 @@ ssh admin@forze-main-server            # порт 54321
 ~/www/agency-abect/scripts/restart-frontend.sh
 ```
 
-Скрипт: `git pull origin prod` → `docker compose build` (сайт працює) → `up -d` → чекає `healthy` → прибирає старі образи. Не став healthy — завершується з помилкою й підказкою.
+Скрипт: `git pull origin main` → `docker compose build` (сайт працює) → `up -d` → чекає `healthy` → прибирає старі образи. Не став healthy — завершується з помилкою й підказкою.
 
 **3. Перевірка:**
 
@@ -88,12 +80,12 @@ docker logs agency-abect-frontend --tail=50
 
 ### Відкат
 
-Відкочується сама гілка `prod` на GitHub (з машини власника), потім звичайний реліз:
+Відкочується сам `main` на GitHub (з машини власника), потім звичайний реліз:
 
 ```bash
-git switch prod && git pull --ff-only
-git revert <поганий-коміт>          # або кілька; історію prod не переписувати
-git push origin prod
+git switch main && git pull --ff-only
+git revert <поганий-коміт>          # або кілька; історію main не переписувати
+git push origin main
 # на сервері:
 ~/www/agency-abect/scripts/restart-frontend.sh
 ```
@@ -102,13 +94,7 @@ git push origin prod
 
 Стан до переходу (2026-11-13): контейнер `agency-abect-frontend` з образу `frontend-app` (3 міс.), порт `0.0.0.0:3333`, мережі `abect-shared` + `mongodb-net`, секрети `~/www/agency-abect/.env.db` + `.env.frontend`, у `frontend/` — гілка `main` на `88deb2a`, `scripts/restart.sh` старий (`down` → `up --build`), `mongodb/` — залишок окремого Mongo.
 
-**0. Підготовка на машині власника:** гілку `chore/deploy-like-abect` злито в `main`; створити `prod`:
-
-```bash
-git switch main && git pull --ff-only
-git switch -c prod && git push -u origin prod
-git switch main
-```
+**0. Підготовка:** гілку `chore/deploy-like-abect` злито в `main` (2026-11-13). На сервері в `frontend/` зараз `main` на старому `88deb2a` — **запамʼятати цей коміт**, він потрібен для повернення старої версії.
 
 **1. На сервері — страхувальні копії** (без sudo):
 
@@ -153,7 +139,7 @@ rm scripts/restart.sh                              # старий скрипт
 ~/www/agency-abect/scripts/restart-frontend.sh
 ```
 
-Перший запуск сам перемкне `frontend/` з `main` на `prod`, збере образ `agency-abect-frontend:latest`, виправить власника `media/`, прибере старий контейнер (compose-проект `frontend`) і підніме новий. Простій — секунди.
+Скрипт підтягне свіжий `main`, збере образ `agency-abect-frontend:latest`, виправить власника `media/`, прибере старий контейнер (compose-проект `frontend`) і підніме новий. Простій — секунди.
 
 **5. Перевірка:**
 
@@ -170,8 +156,9 @@ docker inspect agency-abect-frontend --format '{{range $k,$v := .NetworkSettings
 ```bash
 cd ~/www/agency-abect/frontend
 docker rm -f agency-abect-frontend
-git checkout main                                  # локальний main на сервері — стара версія 88deb2a
-docker compose up -d                               # старий compose, старий образ frontend-app, старі .env
+git checkout 88deb2a                               # стара версія (detached HEAD): старий compose
+docker compose up -d                               # старий образ frontend-app, старі .env.db / .env.frontend
+# коли проблему виправлено в main: git checkout main && ../scripts/restart-frontend.sh
 ```
 
 **6. Прибирання — лише після успішної перевірки:**
@@ -183,7 +170,6 @@ docker network inspect abect-shared -f '{{len .Containers}}'   # має бути
 docker network rm abect-shared                     # мережа більше нікому не потрібна
 rm -rf mongodb                                     # залишок окремого Mongo
 rm .env.db .env.frontend                           # тепер усе в secrets/.env.frontend
-git -C frontend branch -D main                     # на сервері потрібна лише prod
 ```
 
 **7. Cron для бекапу файлів** (під admin, без sudo): `crontab -e`, додати рядок з `AgencyAbect/scripts/README.md` (розділ `backup-media.sh`).

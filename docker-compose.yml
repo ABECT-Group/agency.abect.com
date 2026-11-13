@@ -1,7 +1,7 @@
 # agency.abect.com на VPS forze-main-server — той самий патерн, що й у QRHUB (abect):
 #
 #   /home/admin/www/agency-abect/
-#   ├── frontend/   ← цей репозиторій (гілка prod), тут лежить цей файл
+#   ├── frontend/   ← цей репозиторій (гілка main = прод), тут лежить цей файл
 #   ├── scripts/    ← restart-frontend.sh, backup-media.sh (поза git, з AgencyAbect/scripts)
 #   └── secrets/    ← .env.frontend (поза git, chmod 600)
 #

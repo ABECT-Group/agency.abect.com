@@ -156,6 +156,6 @@ npm run typecheck && npm run lint
 | Переклади | `messages/ua.json` + `messages/en.json` (завжди обидва) |
 | Security-заголовки, CSP | `next.config.mjs` |
 | Локалі / rewrite | `src/proxy.ts` (Next 16), `src/client/i18n/` |
-| Деплой | `docs/deployment.md`: реліз з гілки `prod`, вручну, `~/www/agency-abect/scripts/restart-frontend.sh` (скрипти — `../scripts/`, поза git, лише у власника). БД — спільний контейнер `mongodb` на VPS |
+| Деплой | `docs/deployment.md`: реліз з `main` (окремої гілки `prod` немає: `main` = прод), вручну, `~/www/agency-abect/scripts/restart-frontend.sh` (скрипти — `../scripts/`, поза git, лише у власника). БД — спільний контейнер `mongodb` на VPS |
 
 Нюанс локалей: URL використовує `ua`/`en`, Payload — `uk`/`en` (див. `docs/architecture.md`).
