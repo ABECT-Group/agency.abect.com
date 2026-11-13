@@ -1,15 +1,9 @@
-# agency.abect.com на VPS forze-main-server — той самий патерн, що й у QRHUB (abect):
+# Прод на VPS: поруч із цією текою на сервері лежать scripts/ (restart-frontend.sh) і
+# secrets/.env.frontend — обидві поза git. Деталі сервера — у приватному runbook власника.
 #
-#   /home/admin/www/agency-abect/
-#   ├── frontend/   ← цей репозиторій (гілка main = прод), тут лежить цей файл
-#   ├── scripts/    ← restart-frontend.sh, backup-media.sh (поза git, з AgencyAbect/scripts)
-#   └── secrets/    ← .env.frontend (поза git, chmod 600)
-#
-# ⚠️ `name:` і `image:` — НЕ косметика. Без них Compose бере назву з теки (`frontend`),
-#    а на цьому сервері є кілька проектів з текою frontend/backend. Через збіг тегів 2026-07-22
-#    одна збірка вже перезаписала чужий образ і поклала чужий прод.
-# ⚠️ База — СПІЛЬНИЙ контейнер `mongodb` (replica set rs0, /opt/mongodb), БД `agency-abect`,
-#    доступний лише через мережу `mongodb-net`. Власного контейнера Mongo в цього проекту немає.
+# ⚠️ `name:` і `image:` — НЕ косметика: на сервері кілька проектів, і без явних імен Compose
+#    бере назву з теки (`frontend`) — образи різних проектів можуть перезаписати один одного.
+# ⚠️ MongoDB — окремий спільний контейнер на сервері; доступ до нього — через external-мережу нижче.
 name: agency-abect
 
 services:

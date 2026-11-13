@@ -133,6 +133,7 @@ git push -u origin <гілка>
 - ❌ Не робити `git push --force`, `reset --hard`, `rebase` вже запушених гілок, не видаляти чужі гілки — без прямого прохання.
 - ❌ Не деплоїти й не виконувати нічого на VPS (деплой — справа власника).
 - ❌ Не читати й не виводити вміст `.env`, `.env.prod` чи будь-яких секретів.
+- ❌ Репозиторій **публічний**: не писати в код і документацію IP, порти SSH, логіни, шляхи на сервері, назви сусідніх проектів і стан ще не виправлених вразливостей на проді.
 - ❌ Не писати в продакшн-БД і не слати POST або мутації на живий сайт. Для перевірок — лише GET без персональних даних.
 - ❌ Не правити згенеровані файли (`src/payload-types.ts`, `src/app/(payload)/**`). Замість цього запускати `npm run generate:types` / `generate:importmap`.
 
@@ -156,6 +157,6 @@ npm run typecheck && npm run lint
 | Переклади | `messages/ua.json` + `messages/en.json` (завжди обидва) |
 | Security-заголовки, CSP | `next.config.mjs` |
 | Локалі / rewrite | `src/proxy.ts` (Next 16), `src/client/i18n/` |
-| Деплой | `docs/deployment.md`: реліз з `main` (окремої гілки `prod` немає: `main` = прод), вручну, `~/www/agency-abect/scripts/restart-frontend.sh` (скрипти — `../scripts/`, поза git, лише у власника). БД — спільний контейнер `mongodb` на VPS |
+| Деплой | `docs/deployment.md` (публічна мінімальна версія): реліз з `main` вручну скриптом `restart-frontend.sh`; деталі сервера — лише в приватному runbook власника, у репозиторій їх не писати |
 
 Нюанс локалей: URL використовує `ua`/`en`, Payload — `uk`/`en` (див. `docs/architecture.md`).

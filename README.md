@@ -66,23 +66,10 @@ npm run seed:services:extra  # seed додаткових послуг
 
 ## Що поза репозиторієм
 
-Git-репозиторій — це лише папка `frontend/`. Поруч на диску власника лежить папка, яка **не відстежується git** (рішення власника):
-
-```
-AgencyAbect/
-├── frontend/   ← git (цей репозиторій)
-└── scripts/    ← restart-frontend.sh (реліз), backup-media.sh (бекап файлів), README.md
-```
-
-База — спільний контейнер `mongodb` на VPS (`/opt/mongodb`), власного Mongo в проекту немає. Розробнику ці речі не потрібні.
+Git-репозиторій — це лише папка `frontend/`. Серверні скрипти (`restart-frontend.sh`, `backup-media.sh`), секрети й runbook із деталями сервера зберігаються у власника, поза git. Розробнику вони не потрібні.
 
 ## Деплой
 
-Деплоїть власник, вручну. Окремої гілки `prod` немає: **що в `main`, те й на проді**. Після злиття змін у `main`:
+Деплоїть власник, вручну. Окремої гілки `prod` немає: **що в `main`, те й на проді**. Після злиття змін у `main` на сервері запускається `scripts/restart-frontend.sh`.
 
-```bash
-ssh admin@forze-main-server            # порт 54321
-~/www/agency-abect/scripts/restart-frontend.sh
-```
-
-Повна інструкція (структура сервера, секрети, nginx, бекапи, перехід на цей патерн): [`docs/deployment.md`](docs/deployment.md).
+Загальна схема, змінні, Docker, nginx і бекапи описані в [`docs/deployment.md`](docs/deployment.md).
