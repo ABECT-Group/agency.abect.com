@@ -9,7 +9,6 @@
 
 | ID | Пріоритет | Коротко | Де |
 |---|---|---|---|
-| ISS-026 | 🔴 | Виправлення 2026-11-09 ще не задеплоєні: на проді досі відкриті заявки, порт 3333 і вразливі версії | VPS |
 | ISS-014 | 🟡 | nginx на сервері не звірений з еталоном: дубль HSTS, потрібні `X-Real-IP` і `X-Forwarded-Host` | nginx |
 | ISS-027 | 🟡 | Задачі власника: паролі, роль superadmin, cron бекапів, rclone, GA/Clarity, захист `main` на GitHub | VPS / адмінка / GitHub |
 | ISS-024 | ⚪ | `../.claude/settings.local.json` — мертві дозволи на `E:/Startups/ABECT` і надто широкі правила | корінь |
@@ -33,10 +32,6 @@
 
 ## 🔴 Критичні
 
-### ISS-026 — Виправлення ще не на проді
-Код у `main` виправлений (ISS-001…004 і решта, див. [resolved.md](resolved.md)), але на VPS працює стара збірка: заявки клієнтів читаються через GraphQL без логіну, адмінка відкрита по HTTP на `:3333`, Next/Payload з критичними CVE.
-**Що зробити:** пройти розділ «Міграція 2026-11-09» у [deployment.md](../deployment.md#міграція-2026-11-09-одноразово) і перевірити пункти з нього.
-
 ## 🟡 Середні
 
 ### ISS-014 — nginx
@@ -48,7 +43,7 @@
 ### ISS-027 — Задачі власника після деплою
 1. Змінити паролі всіх користувачів адмінки (до виправлення адмінка була доступна по HTTP, а Payload мав критичну вразливість відновлення пароля).
 2. Призначити собі роль `superadmin` (поки її немає ні в кого, це дозволено будь-якому залогіненому). Решті — `admin` або `moderator`.
-3. Перехід сервера на нову схему деплою (`secrets/`, `restart-frontend.sh`, бекап `media/` за cron) — за приватним runbook власника. Бажано копію бекапів поза сервером.
+3. ~~Перехід сервера на нову схему деплою~~ — виконано 2026-11-13 (реліз через `restart-frontend.sh`, бекап `media/` за cron). Лишилось: копія бекапів поза сервером.
 4. Отримати ID GA4 / Clarity і вписати в `.env.frontend` (`NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_CLARITY_ID`), потім передеплой.
 5. Контент: стаття зі slug `1` (`/blog/ai-digital-professions/1`) схожа на тестову або з неправильним slug — перевірити в адмінці.
 6. Після деплою відкрити головну, `/services`, `/portfolio`, `/blog` (UA і EN) — переконатися, що дані на місці (ISS-022 виправлено конструктивно, але перевірка на проді — обов'язкова).
@@ -57,7 +52,7 @@
 ## ⚪ Низькі / техборг
 
 - **ISS-024** — Почистити `E:\Pet-projects\AgencyAbect\.claude\settings.local.json`: прибрати 25 правил зі шляхом `E:/Startups/ABECT/...` і надто широкі `Bash(curl *)`, `Bash(node *)`, `Bash(python3 *)`, `Bash(xargs grep *)`. Claude змінювати власні налаштування не може — правка вручну. Достатньо лишити: `npm install *`, `npm run *`, `npm audit *`, `npx tsc *`, `WebFetch(domain:agency.abect.com)`.
-- **ISS-025** — `deepmerge` ≤ 4.3.1 (prototype poisoning у `mergeObject`), транзитивно через `payload` / `@payloadcms/db-mongodb`. Payload зливає лише власні конфіги, не дані користувача, тож ризик низький. Прибрати, коли вийде виправлена версія або Payload замінить залежність. Решта `npm audit`: 0 critical / 0 high / 0 moderate (overrides для `happy-dom`, `dompurify`, `minimatch` — у `package.json`).
+- **ISS-025** — (2026-11-13: критична й висока вразливості `mongoose` < 8.24.7 закриті override `mongoose: 8.24.9` — Payload 3.93 жорстко тягне 8.24.1; прибрати override, коли Payload оновить залежність.) `deepmerge` ≤ 4.3.1 (prototype poisoning у `mergeObject`), транзитивно через `payload` / `@payloadcms/db-mongodb`. Payload зливає лише власні конфіги, не дані користувача, тож ризик низький. Прибрати, коли вийде виправлена версія або Payload замінить залежність. Решта `npm audit`: 0 critical / 0 high / 0 moderate (overrides для `happy-dom`, `dompurify`, `minimatch` — у `package.json`).
 - **ISS-029** — `script-src 'unsafe-inline'` потрібен для inline JSON-LD і скриптів GA/Clarity. Прибрати можна через nonce (proxy генерує nonce → заголовок CSP → `<Script nonce>`), але це робить усі сторінки динамічними. Оцінити, чи варто.
 - **ISS-030** — У Next 16.4 proxy отримує URL з хостом `localhost`, а rewrite порівнюється з URL на основі `HOSTNAME`; без `skipProxyUrlNormalize: true` усі UA-сторінки дають 307-цикл / 500. Після оновлення Next перевірити, чи баг виправлено (прибрати опцію → `npm run build` → standalone з `HOSTNAME=0.0.0.0` → `curl /about` має бути 200).
 - **ISS-031** — Запровадити git-теги (`v2.1.0` для релізу 2026-11-09) і підвищувати `version` у `package.json` за semver.
