@@ -1,130 +1,194 @@
 # Деплой (VPS)
 
-> Актуалізовано 2026-11-09. Серверні скрипти й compose MongoDB лежать **поза репозиторієм** (рішення власника):
-> `AgencyAbect/scripts/` і `AgencyAbect/mongodb/` (у кожній є `README.md`). На сервер їх кладуть через SFTP.
-> Деплоїть лише власник і лише з гілки `main` (див. [git-workflow.md](git-workflow.md)).
+> Актуалізовано 2026-11-13. Патерн той самий, що в QRHUB (`abect.com`) на тому ж сервері:
+> реліз — з гілки **`prod`**, вручну, скриптом `restart-frontend.sh`. Автоматичного CI/CD немає (рішення власника).
+> Скрипти — `AgencyAbect/scripts/` (поза git, на сервер через `scp`), опис — `AgencyAbect/scripts/README.md`.
 
 ## Схема
 
 ```
-GitHub ABECT-Group/agency.abect.com (main)
-        │  git pull (вручну, scripts/restart.sh)
-        ▼
-VPS  /home/admin/www/abect/frontend ── docker compose build → up -d (сайт працює під час білду)
+розробник: feature/* ──► власник зливає в main ──► власник: main → prod (git push)
+                                                          │
+VPS forze-main-server (SSH, порт 54321)                   ▼
+  ~/www/agency-abect/scripts/restart-frontend.sh: git pull origin prod → build → up -d → health-check
         │
-nginx :80 → 301 https
-nginx :443 (Let's Encrypt) ──► 127.0.0.1:3333 ──► agency-abect-frontend :3000 (user node, healthcheck /api/health)
-                                                     │  docker network abect-shared
+nginx :443 (Let's Encrypt) ──► 127.0.0.1:3333 ──► agency-abect-frontend :3000 (user node, /api/health)
+                                                     │  docker network mongodb-net
                                                      ▼
-                                                 abect-mongo :27017 (volume mongo_data)
+                              mongodb :27017 — СПІЛЬНИЙ контейнер (/opt/mongodb, replica set rs0), БД agency-abect
 ```
 
-CI/CD немає: деплой запускається вручну по SSH.
+⚠️ На сервері кілька проектів. **Тека цього — `~/www/agency-abect`.** `~/www/abect` — QRHUB, не плутати.
 
 ## Структура на сервері
 
 ```
-/home/admin/www/abect/
-├── .env.db           # MONGO_ROOT_USER, MONGO_ROOT_PASSWORD, DATABASE_URI       (chmod 600)
-├── .env.frontend     # PAYLOAD_SECRET, NEXT_PUBLIC_*, TELEGRAM_*                 (chmod 600)
-├── frontend/         # git clone https://github.com/ABECT-Group/agency.abect.com.git
-│   └── media/        # завантаження Payload (bind-mount у контейнер /app/media, власник uid 1000)
-├── mongodb/          # SFTP: docker-compose MongoDB, backups/
-└── scripts/          # SFTP: restart.sh, backup.sh
+/home/admin/www/agency-abect/
+├── frontend/     # git clone https://github.com/ABECT-Group/agency.abect.com.git, гілка prod
+│   └── media/    # файли з адмінки (volume → /app/media, власник uid 1000)
+├── scripts/      # restart-frontend.sh, backup-media.sh (scp з AgencyAbect/scripts)
+├── secrets/      # .env.frontend — chmod 600, поза git
+└── backups/      # архіви media (backup-media.sh)
 ```
 
-Передумови: Docker + Compose v2, nginx, certbot, користувач `admin` із sudo, DNS `agency.abect.com` → IP сервера.
+| Що | Де | Хто керує |
+|---|---|---|
+| База | спільний контейнер `mongodb`, `/opt/mongodb/docker-compose.yml`, БД `agency-abect` | власник сервера (root) |
+| Бекап бази | `/opt/mongodb/backup-mongo.sh` — cron root 03:00, дамп усіх баз, 7 днів | root |
+| Бекап файлів | `scripts/backup-media.sh` — cron admin 03:10, 7 днів | admin |
+| nginx | `/etc/nginx/sites-available/agency.abect.com` → `127.0.0.1:3333` | root |
 
-## Перший деплой (чистий сервер)
-
-```bash
-# 1. Код
-mkdir -p /home/admin/www/abect && cd /home/admin/www/abect
-git clone https://github.com/ABECT-Group/agency.abect.com.git frontend
-# mongodb/ і scripts/ залити через SFTP з локальної папки AgencyAbect/
-chmod +x scripts/*.sh
-
-# 2. Секрети
-nano .env.db         # див. mongodb/README.md
-nano .env.frontend   # див. нижче
-chmod 600 .env.*
-
-# 3. Мережа та MongoDB
-docker network create abect-shared
-cd mongodb && set -a && source ../.env.db && set +a && docker compose up -d && cd ..
-
-# 4. nginx + SSL (конфіг нижче)
-sudo nano /etc/nginx/sites-available/agency.abect.com
-sudo ln -s /etc/nginx/sites-available/agency.abect.com /etc/nginx/sites-enabled/
-sudo certbot certonly --webroot -w /var/www/certbot -d agency.abect.com
-sudo nginx -t && sudo systemctl reload nginx
-
-# 5. Фронтенд
-scripts/restart.sh
-
-# 6. Адмінка: https://agency.abect.com/admin → створити першого користувача (стане superadmin)
-```
-
-### `.env.frontend`
+### `secrets/.env.frontend`
 
 ```env
-PAYLOAD_SECRET=довгий_випадковий_рядок_32+     # openssl rand -base64 32
+DATABASE_URI=mongodb://USER:PASS@mongodb:27017/agency-abect?authSource=admin&replicaSet=rs0
+PAYLOAD_SECRET=довгий_випадковий_рядок_32+      # openssl rand -base64 32
 NEXT_PUBLIC_SERVER_URL=https://agency.abect.com
-NEXT_PUBLIC_GA_ID=                              # G-XXXXXXX, порожньо = вимкнено
-NEXT_PUBLIC_CLARITY_ID=                         # порожньо = вимкнено
+NEXT_PUBLIC_GA_ID=                               # G-XXXXXXX, порожньо = вимкнено
+NEXT_PUBLIC_CLARITY_ID=                          # порожньо = вимкнено
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 TELEGRAM_THREAD_ID=
 NEXT_TELEMETRY_DISABLED=1
-# APP_ENV=production                            # необовʼязково: без змінної на VPS і так production
+# APP_ENV=production                             # необовʼязково: на VPS і так production
 ```
 
-`APP_ENV=preview` закриває сайт від індексації й позначає заявки в Telegram як тестові — на VPS **не ставити**. Див. [`git-workflow.md`](git-workflow.md#4-превʼю-на-vercel).
+- `NEXT_PUBLIC_*` — **build-time**: `restart-frontend.sh` робить `source` цього файлу, compose передає їх як build args. Після зміни — новий реліз (простого рестарту мало).
+- `&replicaSet=rs0` — як у QRHUB: спільний Mongo працює як replica set, факт записаний у рядку підключення.
+- `APP_ENV=preview` на VPS **не ставити** — закриє сайт від індексації.
 
-`NEXT_PUBLIC_*` вшиваються в бандл під час білду: `restart.sh` робить `source` цього файлу, а `docker-compose.yml` передає їх як build args. Після зміни цих змінних потрібен передеплой.
+## Регулярний реліз
 
-## Передеплой
+**1. На своєму комп'ютері** — перенести `main` у `prod`:
 
 ```bash
-/home/admin/www/abect/scripts/restart.sh
-docker logs agency-abect-frontend --tail=50 -f
+git switch main && git pull --ff-only
+git switch prod && git pull --ff-only
+git merge main
+git push origin prod
+git switch main
 ```
 
-Сайт працює, поки йде білд. Контейнер замінюється за кілька секунд, потім скрипт чекає `healthy`.
-
-## Міграція 2026-11-09 (одноразово)
-
-Оновлення 2026-11-09: Next 16, Payload 3.93, standalone-образ від користувача `node`, порт лише на localhost, нові скрипти. Порядок дій:
+**2. На сервері:**
 
 ```bash
-cd /home/admin/www/abect
-
-# 1. Свіжий бекап СТАРИМ скриптом (про всяк випадок)
-scripts/backup.sh
-
-# 2. Залити по SFTP нові версії з локальної папки AgencyAbect/:
-#    scripts/restart.sh, scripts/backup.sh, scripts/README.md, mongodb/README.md
-chmod +x scripts/*.sh
-sed -i 's/\r$//' scripts/*.sh         # якщо файли прийшли з CRLF (Windows)
-
-# 3. Додати в .env.frontend змінні NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_CLARITY_ID (якщо є ID)
-
-# 4. Деплой (скрипт сам зробить git pull)
-scripts/restart.sh
-
-# 5. Перевірки
-curl -s -m 5 -o /dev/null -w "%{http_code}\n" http://<IP-сервера>:3333/   # не має відповідати (порт закрито)
-curl -s https://agency.abect.com/api/health                                # {"status":"ok"}
-curl -s -o /dev/null -w "%{http_code}\n" -X POST https://agency.abect.com/api/graphql   # 404
-curl -s https://agency.abect.com/sitemap.xml | grep -c "<loc>"             # більше за 16
-
-# 6. cron для бекапів — див. scripts/README.md
+ssh admin@forze-main-server            # порт 54321
+~/www/agency-abect/scripts/restart-frontend.sh
 ```
 
-`frontend/docker-compose.yml` більше не вимагає мережі `mongodb-net` — якщо її створювали вручну, можна видалити (`docker network rm mongodb-net`).
+Скрипт: `git pull origin prod` → `docker compose build` (сайт працює) → `up -d` → чекає `healthy` → прибирає старі образи. Не став healthy — завершується з помилкою й підказкою.
 
-Після деплою **змініть паролі адмінів**: до виправлення адмінка була доступна по HTTP на `:3333`, а версія Payload мала критичну вразливість відновлення пароля.
-Якщо в адмінці не було користувача з роллю `superadmin` — увійдіть і призначте її собі в «Користувачі» (поки суперадміна немає, це дозволено будь-якому залогіненому).
+**3. Перевірка:**
+
+```bash
+docker ps --filter name=agency-abect
+curl -s http://127.0.0.1:3333/api/health          # {"status":"ok"}
+docker logs agency-abect-frontend --tail=50
+```
+
+### Відкат
+
+Відкочується сама гілка `prod` на GitHub (з машини власника), потім звичайний реліз:
+
+```bash
+git switch prod && git pull --ff-only
+git revert <поганий-коміт>          # або кілька; історію prod не переписувати
+git push origin prod
+# на сервері:
+~/www/agency-abect/scripts/restart-frontend.sh
+```
+
+## Перехід на новий патерн (одноразово, з поточного стану сервера)
+
+Стан до переходу (2026-11-13): контейнер `agency-abect-frontend` з образу `frontend-app` (3 міс.), порт `0.0.0.0:3333`, мережі `abect-shared` + `mongodb-net`, секрети `~/www/agency-abect/.env.db` + `.env.frontend`, у `frontend/` — гілка `main` на `88deb2a`, `scripts/restart.sh` старий (`down` → `up --build`), `mongodb/` — залишок окремого Mongo.
+
+**0. Підготовка на машині власника:** гілку `chore/deploy-like-abect` злито в `main`; створити `prod`:
+
+```bash
+git switch main && git pull --ff-only
+git switch -c prod && git push -u origin prod
+git switch main
+```
+
+**1. На сервері — страхувальні копії** (без sudo):
+
+```bash
+ssh admin@forze-main-server
+cd ~/www/agency-abect
+set -a; source .env.db; set +a
+docker exec mongodb mongodump --uri "$DATABASE_URI" --archive --gzip > ~/agency-abect-db-before-2026-11.archive.gz
+tar -czf ~/agency-abect-media-before-2026-11.tar.gz -C frontend media
+ls -lh ~/agency-abect-*-before-2026-11.*
+```
+
+**2. Секрети в `secrets/`** (старі `.env.db` / `.env.frontend` поки не видаляти — потрібні для відкату):
+
+```bash
+mkdir -p secrets backups && chmod 700 secrets
+{ grep -h '^DATABASE_URI=' .env.db; cat .env.frontend; } > secrets/.env.frontend
+chmod 600 secrets/.env.frontend
+nano secrets/.env.frontend
+#   - до DATABASE_URI дописати &replicaSet=rs0
+#   - NEXT_PUBLIC_SERVER_URL=https://agency.abect.com
+#   - за потреби NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_CLARITY_ID
+```
+
+**3. Скрипти** — з машини власника (з теки `AgencyAbect/`):
+
+```bash
+scp -P 54321 scripts/restart-frontend.sh scripts/backup-media.sh admin@forze-main-server:/home/admin/www/agency-abect/scripts/
+```
+
+На сервері:
+
+```bash
+cd ~/www/agency-abect
+chmod +x scripts/*.sh && sed -i 's/\r$//' scripts/*.sh
+rm scripts/restart.sh                              # старий скрипт
+```
+
+**4. Реліз:**
+
+```bash
+~/www/agency-abect/scripts/restart-frontend.sh
+```
+
+Перший запуск сам перемкне `frontend/` з `main` на `prod`, збере образ `agency-abect-frontend:latest`, виправить власника `media/`, прибере старий контейнер (compose-проект `frontend`) і підніме новий. Простій — секунди.
+
+**5. Перевірка:**
+
+```bash
+curl -s http://127.0.0.1:3333/api/health                              # {"status":"ok"}
+docker port agency-abect-frontend                                      # 3000/tcp -> 127.0.0.1:3333
+docker inspect agency-abect-frontend --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'   # mongodb-net
+```
+
+З машини власника: `https://agency.abect.com` відкривається, `/api/health` → `ok`, `http://agency.abect.com:3333` **не** відповідає. Відкрити головну, `/services`, `/portfolio`, `/blog` (UA і EN), адмінку, надіслати тестову заявку.
+
+**Якщо щось не так — повернути стару версію** (працює, поки не виконано крок 6):
+
+```bash
+cd ~/www/agency-abect/frontend
+docker rm -f agency-abect-frontend
+git checkout main                                  # локальний main на сервері — стара версія 88deb2a
+docker compose up -d                               # старий compose, старий образ frontend-app, старі .env
+```
+
+**6. Прибирання — лише після успішної перевірки:**
+
+```bash
+cd ~/www/agency-abect
+docker image rm frontend-app                       # старий образ
+docker network inspect abect-shared -f '{{len .Containers}}'   # має бути 0
+docker network rm abect-shared                     # мережа більше нікому не потрібна
+rm -rf mongodb                                     # залишок окремого Mongo
+rm .env.db .env.frontend                           # тепер усе в secrets/.env.frontend
+git -C frontend branch -D main                     # на сервері потрібна лише prod
+```
+
+**7. Cron для бекапу файлів** (під admin, без sudo): `crontab -e`, додати рядок з `AgencyAbect/scripts/README.md` (розділ `backup-media.sh`).
+
+**8. Задачі після першого релізу** (ISS-027): змінити паролі користувачів адмінки, призначити собі `superadmin`, перевірити контент.
 
 ## Docker
 
@@ -137,17 +201,18 @@ curl -s https://agency.abect.com/sitemap.xml | grep -c "<loc>"             # б�
 
 | Параметр | Значення |
 |---|---|
+| `name` / `image` | `agency-abect` / `agency-abect-frontend:latest` — **не прибирати** (збіг тегів з іншими проектами на сервері вже клав чужий прод) |
 | build args | заглушки БД + `NEXT_PUBLIC_*` з shell (`${VAR}`) |
 | container | `agency-abect-frontend` |
-| env_file | `../.env.db`, `../.env.frontend` (runtime) |
+| env_file | `../secrets/.env.frontend` |
 | ports | `127.0.0.1:3333:3000` — лише для nginx |
 | volumes | `./media:/app/media` |
-| networks | `abect-shared` (external) |
+| networks | `mongodb-net` (external) — доступ до спільного `mongodb` |
 | limits | 2 CPU / 2 GB |
 
 ## nginx (`/etc/nginx/sites-available/agency.abect.com`)
 
-Еталонна версія. Застосунок бере IP клієнта з `X-Real-IP` (rate limit заявок), тож цей заголовок **обов'язковий**. Конфіг на сервері треба звірити з еталоном (ISS-014): Next.js уже ставить HSTS та інші security-заголовки, nginx їх не дублює.
+Еталонна версія. Застосунок бере IP клієнта з `X-Real-IP` (rate limit заявок), тож цей заголовок **обов'язковий**. Конфіг на сервері треба звірити з еталоном (ISS-014; потрібен sudo): Next.js уже ставить HSTS та інші security-заголовки, nginx їх не дублює.
 
 ```nginx
 server {
@@ -205,16 +270,19 @@ server {
 
 ## Бекапи
 
-`scripts/backup.sh` (поза git) → `mongodb/backups/abect_db_*.gz` + `mongodb/backups/abect_media_*.tar.gz`, ротація 14 днів, опційна копія через rclone. Cron і відновлення — у `AgencyAbect/scripts/README.md`.
+| Що | Скрипт | Коли | Куди |
+|---|---|---|---|
+| База `agency-abect` | `/opt/mongodb/backup-mongo.sh` (спільний, root) | 03:00 | `/opt/mongodb/backups/mongodb_full_*.archive.gz`, 7 днів |
+| `frontend/media/` | `~/www/agency-abect/scripts/backup-media.sh` (admin) | 03:10 | `~/www/agency-abect/backups/agency-abect_media_*.tar.gz`, 7 днів |
+
+Cron для `backup-media.sh` і відновлення — `AgencyAbect/scripts/README.md`. ⚠️ Відновлюючи базу з повного дампу, обмежувати `--nsInclude='agency-abect.*'`: контейнер спільний.
 
 ## Корисні команди
 
 ```bash
-docker ps
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
 docker logs agency-abect-frontend --tail=100 -f
 docker inspect -f '{{.State.Health.Status}}' agency-abect-frontend
-docker logs abect-mongo --tail=50
-docker compose -f /home/admin/www/abect/frontend/docker-compose.yml ps
-df -h && docker system df             # місце на диску
-sudo tail -f /var/log/nginx/agency.abect.com.error.log
+docker compose -f ~/www/agency-abect/frontend/docker-compose.yml ps
+df -h / && docker system df          # місце на диску (кеш збірки росте з кожним релізом)
 ```

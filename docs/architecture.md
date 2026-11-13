@@ -41,7 +41,7 @@
                                     ├── (payload)/admin         адмінка Payload
                                     ├── (payload)/api/*         Payload REST (GraphQL вимкнено)
                                     ├── api/leads, api/health   власні ендпоінти
-                                    └── Payload Local API ──► MongoDB (abect-mongo)
+                                    └── Payload Local API ──► MongoDB (спільний контейнер mongodb, БД agency-abect)
                                                                     │
                                            Telegram Bot API ◄───────┘ (нова заявка)
 ```

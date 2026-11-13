@@ -66,23 +66,25 @@ npm run seed:services:extra  # seed додаткових послуг
 
 ## Що поза репозиторієм
 
-Git-репозиторій — це лише папка `frontend/`. Поруч на диску власника (і на VPS) лежать папки, які **не відстежуються git** (рішення власника):
+Git-репозиторій — це лише папка `frontend/`. Поруч на диску власника лежить папка, яка **не відстежується git** (рішення власника):
 
 ```
 AgencyAbect/
 ├── frontend/   ← git (цей репозиторій)
-├── mongodb/    ← docker-compose MongoDB, README.md всередині
-└── scripts/    ← restart.sh (деплой), backup.sh (бекапи), README.md всередині
+└── scripts/    ← restart-frontend.sh (реліз), backup-media.sh (бекап файлів), README.md
 ```
 
-У розробника, який клонує лише репозиторій, цих папок немає — вони потрібні тільки для сервера.
+База — спільний контейнер `mongodb` на VPS (`/opt/mongodb`), власного Mongo в проекту немає. Розробнику ці речі не потрібні.
 
 ## Деплой
 
-Деплоїть власник, вручну, завжди з `main`:
+Деплоїть власник, вручну, з гілки **`prod`** — так само, як QRHUB (`abect.com`) на тому ж сервері:
 
 ```bash
-/home/admin/www/abect/scripts/restart.sh
+# локально: main → prod
+git switch prod && git pull --ff-only && git merge main && git push origin prod && git switch main
+# на сервері
+~/www/agency-abect/scripts/restart-frontend.sh
 ```
 
-Повна інструкція (структура сервера, env, nginx, бекапи, міграція): [`docs/deployment.md`](docs/deployment.md).
+Повна інструкція (структура сервера, секрети, nginx, бекапи, перехід на цей патерн): [`docs/deployment.md`](docs/deployment.md).

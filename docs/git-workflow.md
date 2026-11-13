@@ -174,7 +174,7 @@ git merge origin/feature/<гілка>      # якщо гілка від свіж
 git push
 ```
 
-Далі — деплой `main` на VPS: `/home/admin/www/abect/scripts/restart.sh` (див. [deployment.md](deployment.md)). Гілку після злиття можна видалити: `git push origin --delete feature/<гілка>`.
+Далі — реліз: коли `main` готовий до продакшну, власник переносить його в гілку `prod` (`git switch prod && git merge main && git push origin prod`) і на VPS запускає `~/www/agency-abect/scripts/restart-frontend.sh` (див. [deployment.md](deployment.md#регулярний-реліз)). На проді завжди гілка `prod`; на Vercel вона, як і `main`, не деплоїться (`vercel.json`). Гілку після злиття можна видалити: `git push origin --delete feature/<гілка>`.
 
 ## 6. Робота з Claude
 

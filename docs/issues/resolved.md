@@ -35,10 +35,10 @@
 | ISS-002 | Порт `3333:3000` відкритий в інтернет (адмінка по HTTP в обхід nginx) | `127.0.0.1:3333:3000` |
 | ISS-004 | Критичні CVE: `next` 15.4.10, `payload`/`@payloadcms/*` 3.72.0 (pre-auth account takeover), `next-intl` 4.4, `sharp` 0.34 та ін. (41 вразливість, 6 critical) | Next 16.4.5, Payload 3.93.0, React 19.2.9, next-intl 4.14.9, sharp 0.35.5, eslint-config-next 16.4.5; overrides `happy-dom`, `dompurify`, `minimatch`. Лишилось 7 low (ISS-025) |
 | ISS-003 | `NEXT_PUBLIC_*` не потрапляли в Docker-білд (аналітика мертва, Origin-check вимкнений) | `ARG`/`ENV` у Dockerfile + build args `${VAR}` у compose. Серверні запити більше не залежать від `NEXT_PUBLIC_SERVER_URL` (`payloadFetch` → `127.0.0.1:$PORT`) |
-| ISS-005 | Зайва external-мережа `mongodb-net` | Видалено з compose |
-| ISS-006 | Бекапи без `media/`, ротації, `trap`, копії поза сервером | `../scripts/backup.sh` (поза git): БД + `media/`, ротація 14 днів, `trap`, `chmod 600`, опційно `rclone`. Cron — задача власника (ISS-027) |
+| ISS-005 | Зайва external-мережа `mongodb-net` | ~~Видалено з compose~~ — **помилка, виправлено 2026-11-13**: через `mongodb-net` застосунок ходить у спільний `mongodb`; мережу повернуто, зайвою була `abect-shared` |
+| ISS-006 | Бекапи без `media/`, ротації, `trap`, копії поза сервером | База — у спільному нічному дампі `/opt/mongodb/backup-mongo.sh`; `media/` — `../scripts/backup-media.sh` (з 2026-11-13; ротація, `trap`, перевірка архіву, опційно `rclone`). Cron — задача власника (ISS-027) |
 | ISS-007 | Sitemap без динамічних сторінок (статичний, згенерований на білді без БД) | `sitemap.ts` — `force-dynamic`; послуги фільтруються за `published` (раніше потрапляли б і чернетки) |
-| ISS-008 | Простій ~5 хв на кожному деплої | `restart.sh`: `build` → `up -d` → health-check → `image prune`; lock-файл |
+| ISS-008 | Простій ~5 хв на кожному деплої | `restart-frontend.sh` (до 2026-11-13 — `restart.sh`): `build` → `up -d` → health-check → `image prune`; lock-файл |
 | ISS-009 | OG-зображення 404 (14 файлів) і `/logo.png` 404 (JSON-LD) | Згенеровано `public/seo/*.jpg` (1200×630, фірмовий стиль) і `public/logo.png` (512×512) |
 | ISS-010 | `Link: hreflang="ua"`, у Payload ішов `locale=ua` | `alternateLinks: false` у proxy (hreflang — у metadata), `toPayloadLocale()` мапить `ua → uk` |
 | ISS-011 | Ролі майже не перевірялись: будь-хто залогінений міг створювати користувачів і змінювати собі роль | `src/access/`: users — create/delete лише superadmin, update — себе або superadmin, поле `role` — лише superadmin; `calculator-config` — admin; запобіжник «немає superadmin»; перший користувач → superadmin. Перевірено в роботі |
