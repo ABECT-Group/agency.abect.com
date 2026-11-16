@@ -68,6 +68,17 @@
       flex: 1;
       margin-bottom: 0;
     }
+
+    // Телефон: «Почати спочатку» — окремим рядком над прогресом, щоб смуга не стискалась
+    @media (max-width: 480px) {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 12px;
+
+      .calculator__reset {
+        align-self: flex-end;
+      }
+    }
   }
 
   &__reset {

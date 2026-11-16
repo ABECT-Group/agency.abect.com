@@ -43,19 +43,21 @@
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 12px;
 
+      // minmax(0, 1fr): без нього колонка не стискається менше за найдовше слово («Корпоративний»)
+      // і на телефоні права картка виходила за екран — уся сторінка прокручувалась убік
       @media (max-width: 480px) {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
       }
     }
 
     &--two {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
 
       @media (max-width: 500px) {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 

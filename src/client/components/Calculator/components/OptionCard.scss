@@ -148,6 +148,37 @@
       font-size: 16px;
     }
 
+    .option-card__title,
+    .option-card__description {
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    // Телефон: дві картки в ряд — менші поля, іконка й шрифт
+    @media (max-width: 480px) {
+      min-width: 0;
+      padding: 18px 10px;
+
+      .option-card__icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 10px;
+
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .option-card__title {
+        font-size: 14px;
+      }
+
+      .option-card__description {
+        font-size: 12px;
+      }
+    }
+
     .option-card__check {
       position: absolute;
       top: 12px;
