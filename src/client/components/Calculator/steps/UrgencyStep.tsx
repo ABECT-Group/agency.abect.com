@@ -17,11 +17,12 @@ const getUrgencyIcon = (coefficient: number): JSX.Element => {
 
 export default function UrgencyStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.urgency');
-  const { state, setUrgency, nextStep } = useCalculator();
+  const { state, setUrgency, dispatch } = useCalculator();
 
   const handleSelect = (slug: string) => {
     setUrgency(slug);
-    setTimeout(() => nextStep(), 300);
+    // Перехід на конкретний крок, а не «наступний»: подвійний клік інакше перескакував крок
+    setTimeout(() => dispatch({ type: 'SET_STEP', payload: 5 }), 300);
   };
 
   return (

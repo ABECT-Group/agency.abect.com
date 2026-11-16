@@ -1,9 +1,10 @@
 'use client';
 
-import { JSX } from 'react';
+import { CSSProperties, JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import './AboutStats.scss';
 
+// Цифри «Хто ми?» — картки з тонкою рамкою й товщими кутиками (як «Етапи» головної)
 export default function AboutStats(): JSX.Element {
 	const t = useTranslations('AboutPage');
 
@@ -14,13 +15,18 @@ export default function AboutStats(): JSX.Element {
 	];
 
 	return (
-		<section className="about-stats">
+		<ul className="about-stats">
 			{stats.map((stat, index) => (
-				<div key={index} className="about-stats__card">
-					<div className="about-stats__value">{stat.value}</div>
-					<div className="about-stats__label">{stat.label}</div>
-				</div>
+				<li
+					key={stat.label}
+					className="about-stats__card"
+					data-reveal=""
+					style={{ '--reveal-delay': `${0.08 * index}s` } as CSSProperties}
+				>
+					<span className="about-stats__value">{stat.value}</span>
+					<span className="about-stats__label">{stat.label}</span>
+				</li>
 			))}
-		</section>
+		</ul>
 	);
 }

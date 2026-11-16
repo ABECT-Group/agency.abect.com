@@ -74,12 +74,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
+// Порожній масив у CMS (global створено, але списки не заповнені) = «не задано»:
+// `[] || default` дає `[]`, і калькулятор лишався без типів проєкту — далі першого кроку не пройти.
+function orDefault<A, B>(value: A[] | null | undefined, fallback: B[]): Array<A | B> {
+  return value && value.length > 0 ? value : fallback;
+}
+
 // Helper to transform API config to CalculatorConfig (converts null to undefined)
 function transformConfig(apiConfig: Awaited<ReturnType<typeof getCalculatorConfig>>): CalculatorConfig {
   if (!apiConfig) return defaultCalculatorConfig;
 
   return {
-    projectTypes: (apiConfig.projectTypes || defaultCalculatorConfig.projectTypes).map((p) => ({
+    projectTypes: orDefault(apiConfig.projectTypes, defaultCalculatorConfig.projectTypes).map((p) => ({
       slug: p.slug,
       name: p.name,
       description: p.description ?? undefined,
@@ -89,14 +95,14 @@ function transformConfig(apiConfig: Awaited<ReturnType<typeof getCalculatorConfi
       customBasePrice: p.customBasePrice,
     })),
     pagesConfig: apiConfig.pagesConfig || defaultCalculatorConfig.pagesConfig,
-    additionalServices: (apiConfig.additionalServices || defaultCalculatorConfig.additionalServices).map((s) => ({
+    additionalServices: orDefault(apiConfig.additionalServices, defaultCalculatorConfig.additionalServices).map((s) => ({
       slug: s.slug,
       name: s.name,
       description: s.description ?? undefined,
       price: s.price,
       icon: s.icon ?? undefined,
     })),
-    urgencyOptions: (apiConfig.urgencyOptions || defaultCalculatorConfig.urgencyOptions).map((u) => ({
+    urgencyOptions: orDefault(apiConfig.urgencyOptions, defaultCalculatorConfig.urgencyOptions).map((u) => ({
       slug: u.slug,
       name: u.name,
       description: u.description ?? undefined,

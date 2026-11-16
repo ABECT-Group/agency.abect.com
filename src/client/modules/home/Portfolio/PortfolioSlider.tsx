@@ -46,7 +46,7 @@ export default function PortfolioSlider({ slides }: { slides: PortfolioSlide[] }
 		<div className="portfolio__slider">
 			<button
 				type="button"
-				className="portfolio__arrow portfolio__arrow--prev"
+				className="portfolio__arrow portfolio__arrow--prev glass"
 				onClick={() => scrollByCard(-1)}
 				disabled={edges.start}
 				aria-label={t('prevAriaLabel')}
@@ -63,7 +63,11 @@ export default function PortfolioSlider({ slides }: { slides: PortfolioSlide[] }
 						style={{ '--reveal-delay': `${0.07 * Math.min(index, 3)}s` } as CSSProperties}
 					>
 						<Link href={`/portfolio/${slide.slug}`} className="portfolio__card">
-							<span className="portfolio__card-image">
+							{/* Фото вписується повністю (contain); порожні смуги — розмита копія того ж фото (--cover) */}
+							<span
+								className="portfolio__card-image"
+								style={{ '--cover': `url("${encodeURI(slide.image)}")` } as CSSProperties}
+							>
 								<Image
 									src={slide.image}
 									alt={slide.title}
@@ -79,7 +83,7 @@ export default function PortfolioSlider({ slides }: { slides: PortfolioSlide[] }
 
 			<button
 				type="button"
-				className="portfolio__arrow portfolio__arrow--next"
+				className="portfolio__arrow portfolio__arrow--next glass"
 				onClick={() => scrollByCard(1)}
 				disabled={edges.end}
 				aria-label={t('nextAriaLabel')}

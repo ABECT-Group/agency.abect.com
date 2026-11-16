@@ -1,0 +1,117 @@
+/* Фільтр-колонка ліворуч від списку — скляна панель (стиль навігації хедера); до 1024px — ChipBar */
+
+.side-filter {
+	// Колонка на всю висоту списку — щоб панель могла «їхати» (position: sticky)
+	align-self: stretch;
+	min-width: 0;
+}
+
+.side-filter__panel {
+	--glass-bg: var(--toggle-glass-bg);
+	--glass-blur: 12px;
+	position: sticky;
+	top: 110px;
+	max-height: calc(100vh - 130px);
+	padding: 24px 16px 16px;
+	overflow-y: auto;
+	border-radius: 20px;
+	scrollbar-width: thin;
+}
+
+.side-filter__title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 8px 16px;
+	color: var(--logo-mark);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+
+	&::before {
+		content: "";
+		width: 6px;
+		height: 5px;
+		background: var(--logo-mark);
+	}
+}
+
+.side-filter__list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	list-style: none;
+}
+
+.side-filter__item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-height: 44px;
+	padding: 8px 10px 8px 14px;
+	border: none;
+	border-radius: 30px;
+	background: transparent;
+	color: var(--hero-text);
+	font: inherit;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+
+	&:hover {
+		background: var(--pill-surface);
+		color: var(--white);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: -2px;
+	}
+}
+
+.side-filter__item--active,
+.side-filter__item--active:hover {
+	background: var(--header-active);
+	box-shadow: var(--glass-pill-shadow);
+	color: var(--white);
+}
+
+.side-filter__count {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	min-width: 26px;
+	height: 22px;
+	padding: 0 7px;
+	border-radius: 11px;
+	background: var(--pill-surface);
+	color: var(--white);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.side-filter__item--active .side-filter__count {
+	background: var(--cta-medium);
+}
+
+.side-filter__chips {
+	display: none;
+}
+
+@media (max-width: 1024px) {
+	.side-filter__panel {
+		display: none;
+	}
+
+	.side-filter__chips {
+		display: block;
+	}
+}

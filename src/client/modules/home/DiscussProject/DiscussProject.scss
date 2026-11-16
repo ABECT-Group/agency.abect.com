@@ -1,0 +1,344 @@
+/* «Обговорити проєкт» — Figma «ABECT», Desktop 6 (226:31: заголовок 166:313, опис 171:29,
+ * поля 226:33 … 227:41, кнопка 227:44, синій 3D-об'єкт ліворуч 182:11) */
+
+.discuss {
+	position: relative;
+	// Декор виходить за лівий край — обрізаємо лише по горизонталі
+	overflow-x: clip;
+	margin: 0;
+	padding: 40px 0 120px;
+}
+
+.discuss__inner {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 707px);
+	gap: 40px;
+	align-items: start;
+}
+
+// Синій об'єкт ліворуч від форми (у макеті ~390px, нахил −25.6°)
+.discuss__decor {
+	align-self: center;
+	justify-self: center;
+	width: min(420px, 100%);
+	height: auto;
+	rotate: -25.58deg;
+	pointer-events: none;
+
+	img {
+		width: 100%;
+		height: auto;
+	}
+}
+
+.discuss__content {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.discuss__title {
+	align-self: flex-end;
+	color: var(--white);
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 1.24;
+	letter-spacing: -0.04em;
+	text-align: right;
+	text-transform: uppercase;
+}
+
+.discuss__subtitle {
+	align-self: flex-end;
+	max-width: 742px;
+	margin-top: 22px;
+	color: var(--section-text);
+	font-size: 18px;
+	line-height: 28px;
+	text-align: right;
+}
+
+.discuss__form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-top: 40px;
+}
+
+.discuss__field {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+// Підписи полів — для скрінрідерів (у макеті поля з placeholder)
+.discuss__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.discuss__input {
+	width: 100%;
+	height: 54px;
+	padding: 0 20px;
+	border: 1px solid var(--white);
+	border-radius: 10px;
+	background: transparent;
+	color: var(--white);
+	font: inherit;
+	font-size: 18px;
+	line-height: 28px;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+	&::placeholder {
+		color: var(--form-placeholder);
+		opacity: 1;
+	}
+
+	&:focus-visible {
+		outline: none;
+		border-color: var(--logo-mark);
+		box-shadow: 0 0 0 3px var(--accent-alpha-10);
+	}
+
+	&:disabled {
+		opacity: 0.6;
+	}
+}
+
+.discuss__input--error {
+	border-color: var(--form-error-border);
+}
+
+// «Обрати тип сайту»: темний фон і трикутник праворуч, як у макеті (226:36, 226:38)
+.discuss__select {
+	padding-right: 52px;
+	background:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='8' viewBox='0 0 15 8'%3E%3Cpath d='M7.36 0 14.72 8H0z' fill='%23fff'/%3E%3C/svg%3E")
+			right 20px center / 15px 8px no-repeat,
+		var(--form-select-bg);
+	cursor: pointer;
+	appearance: none;
+
+	option {
+		background: var(--black);
+		color: var(--white);
+	}
+}
+
+.discuss__select--empty {
+	color: var(--white);
+}
+
+.discuss__textarea {
+	height: 115px;
+	padding: 13px 20px;
+	resize: vertical;
+}
+
+// «Прикріпити файл» — посилання-кнопка під коментарем (227:43); сам input прихований, але доступний з клавіатури
+.discuss__file {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 16px;
+	padding: 0 25px;
+	font-size: 16px;
+	line-height: 28px;
+}
+
+.discuss__file-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.discuss__file-label,
+.discuss__file-remove {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--logo-mark);
+	font: inherit;
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.discuss__file-input:focus-visible + .discuss__file-label {
+	outline: 2px solid var(--logo-mark);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+.discuss__file-chosen {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.discuss__file-name {
+	overflow: hidden;
+	color: var(--white);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.discuss__file-remove {
+	flex-shrink: 0;
+	font-size: 14px;
+}
+
+.discuss__file-hint {
+	color: var(--form-placeholder);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.discuss__privacy {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 0 20px;
+	color: var(--section-text);
+	font-size: 14px;
+	line-height: 1.5;
+	cursor: pointer;
+
+	input {
+		flex-shrink: 0;
+		width: 18px;
+		height: 18px;
+		margin-top: 1px;
+		accent-color: var(--cta-strong);
+		cursor: pointer;
+	}
+
+	a {
+		color: var(--logo-mark);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.discuss__privacy--error {
+	color: var(--form-error);
+}
+
+.discuss__error {
+	padding: 0 20px;
+	color: var(--form-error);
+	font-size: 13px;
+}
+
+.discuss__error--submit {
+	padding: 12px 20px;
+	border: 1px solid var(--form-error-border);
+	border-radius: 10px;
+	background: var(--form-error-bg);
+}
+
+// Кнопка на всю ширину форми; скляне коло — всередині правого краю (227:44, 227:46)
+.discuss__submit {
+	width: 100%;
+	margin-top: 4px;
+
+	.arrow-btn__label {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.arrow-btn__arrow {
+		margin-left: -44px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.75;
+	}
+}
+
+@media (max-width: 1024px) {
+	.discuss__inner {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	// Об'єкт — у кутку за заголовком
+	.discuss__decor {
+		position: absolute;
+		top: -30px;
+		left: -60px;
+		z-index: 0;
+		width: 220px;
+		opacity: 0.9;
+	}
+
+	.discuss__content {
+		position: relative;
+		z-index: 1;
+	}
+}
+
+@media (max-width: 768px) {
+	.discuss {
+		padding: 24px 0 72px;
+	}
+
+	.discuss__decor {
+		top: -20px;
+		left: -70px;
+		width: 160px;
+	}
+
+	.discuss__title {
+		font-size: 26px;
+	}
+
+	.discuss__subtitle {
+		margin-top: 14px;
+		font-size: 15px;
+		line-height: 1.55;
+	}
+
+	.discuss__form {
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	.discuss__input {
+		height: 50px;
+		padding: 0 16px;
+		font-size: 16px; // ≥ 16px — iOS не масштабує сторінку при фокусі
+	}
+
+	.discuss__select {
+		padding-right: 44px;
+		background-position: right 16px center, 0 0;
+	}
+
+	.discuss__textarea {
+		height: 110px;
+		padding: 12px 16px;
+	}
+
+	.discuss__privacy,
+	.discuss__error,
+	.discuss__file {
+		padding: 0 4px;
+	}
+}

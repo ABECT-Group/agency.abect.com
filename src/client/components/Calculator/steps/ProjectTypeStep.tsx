@@ -30,12 +30,13 @@ const iconMap: Record<string, JSX.Element> = {
 
 export default function ProjectTypeStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.projectType');
-  const { state, setProjectType, nextStep } = useCalculator();
+  const { state, setProjectType, dispatch } = useCalculator();
 
   const handleSelect = (slug: string) => {
     setProjectType(slug);
     // Auto-advance after short delay
-    setTimeout(() => nextStep(), 300);
+    // Перехід на конкретний крок, а не «наступний»: подвійний клік інакше перескакував крок
+    setTimeout(() => dispatch({ type: 'SET_STEP', payload: 1 }), 300);
   };
 
   return (
@@ -46,7 +47,7 @@ export default function ProjectTypeStep(): JSX.Element {
       </div>
 
       <div className="calculator-step__options calculator-step__options--grid">
-        {state.config?.projectTypes
+        {[...(state.config?.projectTypes ?? [])]
           .sort((a, b) => (a.order || 0) - (b.order || 0))
           .map((project) => (
             <OptionCard

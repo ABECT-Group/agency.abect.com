@@ -248,40 +248,33 @@
 	list-style: none;
 }
 
-// Розміри з макета: 117 / 179 / 184px, накладання 18px, текст із 21 / 18 / 22px.
+// Ширина — за текстом (у макеті «Лендінг / Сайт / Магазин від …» — плашки ~110px), накладання 18px;
+// праве поле більше за накладання, щоб наступна плашка не закривала текст.
 // Матове скло сильніше за базове + відблиск по лівому краю (як у Figma на стику плашок).
 .hero__price {
 	--glass-bg: var(--hero-plate-bg);
 	--glass-blur: 10px;
 	--glass-saturate: 110%;
-	--plate-w: 117px;
-	--plate-pl: 21px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	min-width: var(--plate-w);
 	min-height: 76px;
-	padding: 0 26px 0 var(--plate-pl);
+	padding: 0 38px 0 20px;
 	border-radius: 10px;
 	box-shadow:
 		inset 14px 0 18px -14px rgba(255, 255, 255, 0.16),
 		inset 0 0 18px rgba(255, 255, 255, 0.03),
 		-6px 0 14px rgba(0, 0, 0, 0.25);
 
-	&:nth-child(2) {
-		--plate-w: 179px;
-		--plate-pl: 18px;
-	}
-
-	&:nth-child(3) {
-		--plate-w: 184px;
-		--plate-pl: 22px;
-	}
 	color: var(--white);
 	font-size: 16px;
 	font-weight: 500;
 	line-height: 1.22;
 	white-space: nowrap;
+
+	&:last-child {
+		padding-right: 26px;
+	}
 
 	& + & {
 		margin-left: -18px;

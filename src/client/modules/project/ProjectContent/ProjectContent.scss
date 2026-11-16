@@ -14,6 +14,11 @@
 		}
 	}
 
+	// Колонка змісту на всю висоту тексту — інакше position: sticky змісту не має де «їхати»
+	&__sidebar {
+		align-self: stretch;
+	}
+
 	&__sidebar:empty {
 		display: none;
 	}

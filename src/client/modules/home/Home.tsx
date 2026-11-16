@@ -5,6 +5,7 @@ import Services from './Services/Services';
 import Portfolio from './Portfolio/Portfolio';
 import Process from './Process/Process';
 import Faq from './Faq/Faq';
+import DiscussProject from './DiscussProject/DiscussProject';
 import ScrollReveal from '@/client/components/ScrollReveal/ScrollReveal';
 import './Home.scss';
 
@@ -23,6 +24,7 @@ function Home({ locale, heroPrices }: HomeProps): JSX.Element {
 			<Portfolio locale={locale}/>
 			<Process />
 			<Faq />
+			<DiscussProject />
 			<ScrollReveal />
 		</main>
 	);

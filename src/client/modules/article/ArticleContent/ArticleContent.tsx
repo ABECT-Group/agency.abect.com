@@ -1,6 +1,7 @@
 'use client';
 
 import { JSX } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Post, User } from '@/payload-types';
 import RichTextWithAnchors from '@/client/components/RichText/RichText';
 import RichTextHeadings from '@/client/components/RichTextHeadings/RichTextHeadings';
@@ -11,10 +12,9 @@ interface ArticleContentProps {
 }
 
 export default function ArticleContent({ post }: ArticleContentProps): JSX.Element {
-	const author = post.author as User | null;
-	const authorName = author
-		? `${author.firstName} ${author.lastName}`
-		: 'ABECT Studio';
+	const t = useTranslations('ProjectDetail.sidebar');
+	const author = typeof post.author === 'object' ? (post.author as User | null) : null;
+	const authorName = [author?.firstName, author?.lastName].filter(Boolean).join(' ') || 'ABECT Studio';
 
 	return (
 		<section
@@ -29,7 +29,7 @@ export default function ArticleContent({ post }: ArticleContentProps): JSX.Eleme
 						role="complementary"
 						aria-label="Table of contents"
 					>
-						<RichTextHeadings content={post.content} />
+						<RichTextHeadings content={post.content} title={t('tableOfContents')} />
 					</aside>
 
 					<article

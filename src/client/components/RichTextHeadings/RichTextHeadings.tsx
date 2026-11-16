@@ -1,67 +1,44 @@
 'use client';
 import { JSX } from 'react';
-import type { Portfolio } from '@/payload-types';
-import { generateSlug } from '@/utils/generateSlug';
-import "./RichTextHeadings.scss"
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import { tocHeadings } from '@/utils/richTextHeadings';
+import './RichTextHeadings.scss';
 
-interface RichTextHeadings {
-    content: Portfolio["content"];
-    title?: string;
+interface RichTextHeadingsProps {
+	content: SerializedEditorState | null | undefined;
+	title?: string;
 }
 
-export default function RichTextHeadings({ content, title = "Table of Contents" }: RichTextHeadings): JSX.Element | null {
-    if (!content?.root?.children) return null;
+// Зміст тексту з CMS: пункти — h2 (або h3, якщо h2 немає); id збігаються з RichText (utils/richTextHeadings)
+export default function RichTextHeadings({ content, title = 'Table of Contents' }: RichTextHeadingsProps): JSX.Element | null {
+	const headings = tocHeadings(content);
 
-    const headings: Array<{ id: string; text: string; }> = [];
+	if (headings.length === 0) return null;
 
-    interface LexicalTextNode { type?: string; text?: string; }
-    interface LexicalNode { type?: string; tag?: string; children?: LexicalTextNode[]; }
-
-    content.root.children.forEach((node: LexicalNode) => {
-        if (node.type === 'heading') {
-            const level = Number(node.tag?.replace('h', '') || 0);
-
-            if (level === 2) {
-                const text = node.children?.map((c: LexicalTextNode) => c.text || '').join('').trim();
-                if (!text) return;
-
-                const id = generateSlug(text)
-
-                headings.push({ id, text });
-            }
-        }
-    });
-
-    if (headings.length === 0) return null;
-
-    return (
-        <nav
-            role="navigation"
-            aria-label={title}
-            itemScope
-            itemType="https://schema.org/SiteNavigationElement"
-            className='RichTextHeadings'
-        >
-            <div className="RichTextHeadings__title">{title}</div>
-            <ol itemProp="about" className='RichTextHeadings__list'>
-                {headings.map((h, idx) => (
-                    <li
-                        key={h.id}
-                        itemProp="itemListElement"
-                        itemScope
-                        itemType="https://schema.org/ListItem"
-                        className='RichTextHeadings__item'
-                    >
-                        <a
-                            href={`#${h.id}`}
-                            itemProp="url"
-                        >
-                            <span itemProp="name">{h.text}</span>
-                        </a>
-                        <meta itemProp="position" content={String(idx + 1)} />
-                    </li>
-                ))}
-            </ol>
-        </nav>
-    );
+	return (
+		<nav
+			aria-label={title}
+			itemScope
+			itemType="https://schema.org/SiteNavigationElement"
+			className="RichTextHeadings"
+		>
+			<div className="RichTextHeadings__title">{title}</div>
+			<ol itemProp="about" className="RichTextHeadings__list">
+				{headings.map((h, idx) => (
+					<li
+						key={h.id}
+						itemProp="itemListElement"
+						itemScope
+						itemType="https://schema.org/ListItem"
+						className="RichTextHeadings__item"
+					>
+						<a href={`#${h.id}`} itemProp="url">
+							<span itemProp="name">{h.text}</span>
+						</a>
+						<meta itemProp="position" content={String(idx + 1)} />
+					</li>
+				))}
+			</ol>
+		</nav>
+	);
 }

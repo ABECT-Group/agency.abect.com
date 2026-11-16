@@ -37,6 +37,17 @@ export const Leads: CollectionConfig = {
       label: 'Коментар',
     },
 
+    {
+      name: 'attachment',
+      type: 'upload',
+      relationTo: 'lead-files',
+      label: 'Прикріплений файл',
+      admin: {
+        readOnly: true,
+        description: 'Файл, який клієнт прикріпив у формі «Обговорити проєкт»',
+      },
+    },
+
     // ============ ТИП ЗАЯВКИ ============
     {
       name: 'type',

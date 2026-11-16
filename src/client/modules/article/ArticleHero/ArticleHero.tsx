@@ -21,10 +21,9 @@ export default function ArticleHero({ post, locale }: ArticleHeroProps): JSX.Ele
 	const imageUrl = cover?.url || '/images/placeholder-blog.jpg';
 
 	// Отримуємо автора
-	const author = post.author as UserType | null;
-	const authorName = author
-		? `${author.firstName} ${author.lastName}`
-		: 'ABECT';
+	// Автор може прийти лише як id (без доступу до users) або без імені — тоді «ABECT», а не «undefined undefined»
+	const author = typeof post.author === 'object' ? (post.author as UserType | null) : null;
+	const authorName = [author?.firstName, author?.lastName].filter(Boolean).join(' ') || 'ABECT';
 
 	// Отримуємо категорію
 	const category = post.category as Category | null;

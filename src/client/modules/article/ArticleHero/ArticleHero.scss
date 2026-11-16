@@ -8,12 +8,8 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 32px;
-		background: var(--back);
-		border: 1px solid var(--border-subtle);
+		// Без рамки й тіні (рішення розробника 2026-11-16) — блок лежить прямо на чорному фоні сторінки
 		border-radius: 12px;
-		box-shadow:
-			0 8px 32px var(--shadow-dark),
-			inset 0 1px 0 rgba(255, 255, 255, 0.1);
 	}
 
 	/* Hero Image */

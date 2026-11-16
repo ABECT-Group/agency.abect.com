@@ -13,6 +13,7 @@ import { Portfolio } from './collections/Portfolio'
 import { Services } from './collections/Services'
 import { ServiceTypes } from './collections/ServiceTypes'
 import { Leads } from './collections/Leads'
+import { LeadFiles } from './collections/LeadFiles'
 
 import { CalculatorConfig } from './globals/CalculatorConfig'
 
@@ -43,6 +44,7 @@ export default buildConfig({
     Categories,
     Media,
     Leads,
+    LeadFiles,
     Users
   ],
   globals: [

@@ -7,9 +7,9 @@ export type HeroPrice = { label: string; price: number };
 
 // Ціни з макета. Показуються, поки в CMS (Калькулятор → «Ціни на головній») нічого не задано.
 const DEFAULT_PRICES = [
-	{ key: 'landing', price: 199 },
-	{ key: 'businessCard', price: 399 },
-	{ key: 'corporate', price: 799 }
+	{ key: 'landing', price: 120 },
+	{ key: 'website', price: 300 },
+	{ key: 'store', price: 450 }
 ] as const;
 
 const TAGS = ['modern', 'fast', 'adaptive', 'websites'] as const;

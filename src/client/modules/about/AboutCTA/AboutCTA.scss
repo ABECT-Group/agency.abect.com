@@ -1,101 +1,85 @@
-/* About CTA */
+/* Заклик до дії — скляний блок по центру */
 .about-cta {
+	padding: 80px 0 40px;
+}
+
+.about-cta__box {
+	--glass-bg: var(--card-surface-accent);
+	--glass-blur: 14px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	padding: 48px 32px;
+	border-radius: 16px;
 	text-align: center;
-	padding: 60px 40px;
-	background: linear-gradient(
-		135deg,
-		rgba(55, 93, 251, 0.1) 0%,
-		rgba(80, 115, 255, 0.05) 100%
-	);
-	border: 1px solid var(--accent);
-	border-radius: 24px;
-	position: relative;
-	overflow: hidden;
-	margin: 60px 0;
+}
 
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: linear-gradient(135deg, var(--accent) 0%, var(--accentLight) 100%);
-		opacity: 0.05;
-		z-index: 0;
-	}
+.about-cta__title {
+	color: var(--white);
+	font-size: 32px;
+	font-weight: 700;
+	line-height: 1.24;
+	letter-spacing: -0.03em;
+	text-transform: uppercase;
+}
 
-	> * {
-		position: relative;
-		z-index: 1;
-	}
+.about-cta__text {
+	max-width: 640px;
+	color: var(--section-text);
+	font-size: 17px;
+	line-height: 1.6;
+}
 
-	&__title {
-		font-size: 32px;
-		font-weight: 700;
-		margin-bottom: 16px;
-		color: var(--white);
-	}
+.about-cta__contacts {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+	margin-bottom: 6px;
+}
 
-	&__text {
-		font-size: 18px;
-		color: var(--nav-text);
-		margin-bottom: 24px;
-		max-width: 600px;
-		margin-left: auto;
-		margin-right: auto;
-	}
+.about-cta__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border: 1px solid var(--hero-chip-border);
+	border-radius: 30px;
+	background: var(--hero-chip-bg);
+	color: var(--white);
+	font-size: 15px;
+	text-decoration: none;
+	transition: border-color 0.3s ease;
 
-	&__contacts {
-		display: flex;
-		justify-content: center;
-		gap: 24px;
-		margin-bottom: 32px;
-	}
-
-	&__link {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 24px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid var(--border-subtle);
-		border-radius: 12px;
-		color: var(--white);
-		text-decoration: none;
-		font-size: 15px;
-		font-weight: 500;
-		transition: all 0.3s ease;
-
-		&:hover {
-			background: var(--accent-alpha-10);
-			border-color: var(--accent);
-			color: var(--accent);
-		}
+	&:hover {
+		border-color: var(--logo-mark);
 	}
 }
 
-/* Responsive */
 @media (max-width: 768px) {
 	.about-cta {
-		padding: 40px 24px;
+		padding-top: 56px;
+	}
 
-		&__title {
-			font-size: 24px;
-		}
+	.about-cta__box {
+		padding: 32px 18px;
+	}
 
-		&__text {
-			font-size: 16px;
-		}
+	.about-cta__title {
+		font-size: 22px;
+	}
 
-		&__contacts {
-			flex-direction: column;
-			gap: 12px;
-		}
+	.about-cta__text {
+		font-size: 15px;
+	}
 
-		&__link {
-			width: 100%;
-			justify-content: center;
+	.about-cta .arrow-btn {
+		width: 100%;
+
+		.arrow-btn__label {
+			flex: 1;
+			min-width: 0;
 		}
 	}
 }

@@ -4,6 +4,7 @@ import type { DataFromCollectionSlug } from 'payload';
 import config from '@payload-config';
 import { sendTelegramNotification } from '@/utils/telegram';
 import type { Lead } from '@/utils/telegram';
+import { LEAD_FILE_MAX_SIZE, LEAD_FILE_MIME_TYPES } from '@/collections/LeadFiles';
 
 // In-memory rate limiter (5 requests / IP / 60s). Один інстанс — достатньо.
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -145,6 +146,134 @@ function isAllowedOrigin(request: NextRequest): boolean {
   return allowed.has(originHost);
 }
 
+// ============ ВКЛАДЕННЯ (форма «Обговорити проєкт») ============
+
+type Attachment = { data: Buffer; mimetype: string; name: string; size: number };
+
+/** Розширення → MIME. Тип визначаємо самі (за розширенням + сигнатурою), а не довіряємо браузеру. */
+const EXTENSION_MIME: Record<string, string> = {
+  pdf: 'application/pdf',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xls: 'application/vnd.ms-excel',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  txt: 'text/plain',
+};
+
+const MAX_FILE_MB = Math.round(LEAD_FILE_MAX_SIZE / 1024 / 1024);
+
+const startsWith = (data: Buffer, bytes: number[], offset = 0) =>
+  data.length >= offset + bytes.length && bytes.every((byte, i) => data[offset + i] === byte);
+
+/** Чи відповідає вміст файлу заявленому типу (сигнатура) — щоб під .pdf не підсунули щось інше */
+function matchesSignature(data: Buffer, mimetype: string): boolean {
+  switch (mimetype) {
+    case 'application/pdf':
+      return startsWith(data, [0x25, 0x50, 0x44, 0x46]); // %PDF
+    case 'image/png':
+      return startsWith(data, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    case 'image/jpeg':
+      return startsWith(data, [0xff, 0xd8, 0xff]);
+    case 'image/webp':
+      return startsWith(data, [0x52, 0x49, 0x46, 0x46]) && startsWith(data, [0x57, 0x45, 0x42, 0x50], 8); // RIFF….WEBP
+    case 'application/msword':
+    case 'application/vnd.ms-excel':
+      return startsWith(data, [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]); // OLE2
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      return startsWith(data, [0x50, 0x4b, 0x03, 0x04]); // ZIP (OOXML)
+    case 'text/plain':
+      // Текст: без нульових байтів у перших 8 КБ
+      return !data.subarray(0, 8192).includes(0);
+    default:
+      return false;
+  }
+}
+
+/** Безпечне ім'я файлу: лише латиниця, цифри, «-», «_»; без шляхів; розширення — з білого списку */
+function safeFileName(original: string, extension: string): string {
+  const base = original
+    .replace(/\.[^.]*$/, '')
+    .normalize('NFKD')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 60);
+  return `lead-${Date.now()}-${base || 'file'}.${extension}`;
+}
+
+/** Перевіряє файл із форми. Повертає вкладення або текст помилки для користувача. */
+async function readAttachment(file: File): Promise<Attachment | { error: string }> {
+  if (file.size === 0) return { error: 'Файл порожній' };
+  if (file.size > LEAD_FILE_MAX_SIZE) {
+    return { error: `Файл завеликий (максимум ${MAX_FILE_MB} МБ)` };
+  }
+
+  const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+  const mimetype = EXTENSION_MIME[extension];
+  if (!mimetype || !LEAD_FILE_MIME_TYPES.includes(mimetype)) {
+    return { error: 'Непідтримуваний тип файлу. Дозволено: PDF, DOC(X), XLS(X), TXT, PNG, JPG, WEBP' };
+  }
+
+  const data = Buffer.from(await file.arrayBuffer());
+  if (!matchesSignature(data, mimetype)) {
+    return { error: 'Вміст файлу не відповідає його типу' };
+  }
+
+  return { data, mimetype, name: safeFileName(file.name, extension), size: data.length };
+}
+
+/**
+ * Тіло запиту: JSON (звичайні заявки, калькулятор) або multipart/form-data (заявка з файлом).
+ * У multipart текстові поля — як у JSON, `utm` — JSON-рядком, файл — у полі `file`.
+ */
+async function readRequest(
+  request: NextRequest
+): Promise<{ body: LeadRequest; file?: File } | { error: string; status: number }> {
+  const contentType = request.headers.get('content-type') ?? '';
+
+  if (!contentType.startsWith('multipart/form-data')) {
+    return { body: (await request.json()) as LeadRequest };
+  }
+
+  // Грубий запобіжник до розбору тіла (точний розмір файлу перевіряється далі)
+  const length = Number(request.headers.get('content-length'));
+  if (Number.isFinite(length) && length > LEAD_FILE_MAX_SIZE + 64 * 1024) {
+    return { error: `Файл завеликий (максимум ${MAX_FILE_MB} МБ)`, status: 413 };
+  }
+
+  const form = await request.formData();
+  const text = (key: string) => {
+    const value = form.get(key);
+    return typeof value === 'string' ? value : undefined;
+  };
+
+  let utm: SimpleLeadRequest['utm'];
+  try {
+    const raw = text('utm');
+    utm = raw ? JSON.parse(raw) : undefined;
+  } catch {
+    utm = undefined;
+  }
+
+  const file = form.get('file');
+  return {
+    body: {
+      type: text('type') as 'simple',
+      name: text('name') ?? '',
+      contact: text('contact') ?? '',
+      message: text('message'),
+      source: text('source'),
+      utm,
+    },
+    file: file instanceof File && file.size > 0 ? file : undefined,
+  };
+}
+
 function clip(value: unknown, max: number): string | undefined {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
@@ -203,7 +332,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body: LeadRequest = await request.json();
+    const parsed = await readRequest(request);
+    if ('error' in parsed) {
+      return NextResponse.json({ success: false, error: parsed.error }, { status: parsed.status });
+    }
+    const { body, file } = parsed;
 
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ success: false, error: 'Невірний формат запиту' }, { status: 400 });
@@ -239,6 +372,19 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+    }
+
+    // Файл — лише до простої заявки (форма «Обговорити проєкт»)
+    let attachment: Attachment | undefined;
+    if (file) {
+      if (body.type !== 'simple') {
+        return NextResponse.json({ success: false, error: 'Файл можна додати лише до простої заявки' }, { status: 400 });
+      }
+      const result = await readAttachment(file);
+      if ('error' in result) {
+        return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+      }
+      attachment = result;
     }
 
     if (typeof body.message === 'string' && body.message.length > MAX_MESSAGE) {
@@ -286,9 +432,24 @@ export async function POST(request: NextRequest) {
 
     const payload = await getPayload({ config });
 
+    // Спершу файл (Local API обходить access: створювати lead-files ззовні заборонено)
+    let attachmentId: string | undefined;
+    if (attachment) {
+      const stored = await payload.create({
+        collection: 'lead-files',
+        data: {},
+        file: attachment,
+        overrideAccess: true,
+      });
+      attachmentId = String(stored.id);
+    }
+
     const lead = await payload.create({
       collection: 'leads',
-      data: leadData as unknown as DataFromCollectionSlug<'leads'>,
+      data: {
+        ...leadData,
+        ...(attachmentId ? { attachment: attachmentId } : {}),
+      } as unknown as DataFromCollectionSlug<'leads'>,
     });
 
     const telegramData: Lead = calc
@@ -306,6 +467,9 @@ export async function POST(request: NextRequest) {
           contact,
           message,
           source,
+          attachment: attachment
+            ? { name: attachment.name, size: attachment.size, leadId: String(lead.id) }
+            : undefined,
         };
 
     sendTelegramNotification(telegramData).catch((err) => {

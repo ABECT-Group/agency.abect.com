@@ -7,6 +7,8 @@ interface SimpleLeadData {
   name: string;
   contact: string;
   message?: string;
+  /** Вкладення (форма «Обговорити проєкт»): тоді запит іде як multipart/form-data */
+  file?: File | null;
 }
 
 interface CalculatorLeadData {
@@ -71,17 +73,34 @@ function getCurrentSource(): string {
  */
 export async function submitLead(data: LeadData): Promise<LeadResponse> {
   try {
-    const response = await fetch('/api/leads', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-        source: getCurrentSource(),
-        utm: getUtmParams(),
-      }),
-    });
+    let response: Response;
+
+    if (data.type === 'simple' && data.file) {
+      // Заявка з файлом — multipart (Content-Type з boundary ставить браузер)
+      const form = new FormData();
+      form.append('type', data.type);
+      form.append('name', data.name);
+      form.append('contact', data.contact);
+      if (data.message) form.append('message', data.message);
+      form.append('source', getCurrentSource());
+      const utm = getUtmParams();
+      if (utm) form.append('utm', JSON.stringify(utm));
+      form.append('file', data.file);
+      response = await fetch('/api/leads', { method: 'POST', body: form });
+    } else {
+      response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          file: undefined, // JSON.stringify відкидає undefined
+          source: getCurrentSource(),
+          utm: getUtmParams(),
+        }),
+      });
+    }
 
     const result = await response.json();
 
@@ -127,6 +146,18 @@ export function isValidPhone(phone: string): boolean {
  */
 export function isValidContact(contact: string): boolean {
   return isValidEmail(contact) || isValidPhone(contact);
+}
+
+/**
+ * Токен для сторінки подяки: `<13 цифр часу>-<рівно 9 символів a-z0-9>` (формат перевіряє thx/page.tsx).
+ * `Math.random().toString(36)` зрідка дає коротший рядок — тоді подяка не показувалась (ISS-032).
+ */
+export function createThxToken(): string {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const bytes = new Uint8Array(9);
+  crypto.getRandomValues(bytes);
+  const random = Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('');
+  return `${Date.now()}-${random}`;
 }
 
 export type { LeadData, SimpleLeadData, CalculatorLeadData, LeadResponse };

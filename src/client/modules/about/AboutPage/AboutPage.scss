@@ -1,13 +1,10 @@
-/* About Page */
+/* Сторінка «Про нас» — Figma «ABECT», Desktop 8. Секції — кожна зі своїм .container (команда — на всю ширину). */
 .about-page {
-	min-height: calc(100vh - 80px);
-	padding-top: 30px;
+	padding-bottom: 40px;
 	color: var(--white);
-}
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-	.about-page {
-		padding-top: 0px;
+	// Глобальні 120px між секціями тут не потрібні: відступи задають самі секції (як у макеті)
+	> section {
+		margin: 0;
 	}
 }

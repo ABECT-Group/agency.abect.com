@@ -35,36 +35,65 @@
 	list-style: none;
 }
 
-// Картки з білими «кутиками» (квадратна рамка під заокругленим фоном у макеті)
+// Картка (Figma 170:391 … 170:395): строго квадратна рамка — по сторонах ледь помітна волосяна лінія,
+// у кутах — товщі білі «дужки» 2px; усередині — скляний фон із заокругленням 10px.
+// ::before — фон, ::after — рамка з кутиками (поверх фону, не перехоплює кліки).
 .process__step {
 	--step-bg: var(--step-bg-1);
-	--tick: 9px;
+	--tick: 12px; // довжина кутика
+	--tick-w: 2px; // товщина кутика
+	position: relative;
+	isolation: isolate;
 	min-height: 279px;
 	padding: 28px 19px 24px;
-	border-radius: 10px;
-	background:
-		linear-gradient(var(--white), var(--white)) top left / var(--tick) 1px,
-		linear-gradient(var(--white), var(--white)) top left / 1px var(--tick),
-		linear-gradient(var(--white), var(--white)) top right / var(--tick) 1px,
-		linear-gradient(var(--white), var(--white)) top right / 1px var(--tick),
-		linear-gradient(var(--white), var(--white)) bottom left / var(--tick) 1px,
-		linear-gradient(var(--white), var(--white)) bottom left / 1px var(--tick),
-		linear-gradient(var(--white), var(--white)) bottom right / var(--tick) 1px,
-		linear-gradient(var(--white), var(--white)) bottom right / 1px var(--tick),
-		var(--step-bg);
-	background-repeat: no-repeat;
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-	backdrop-filter: blur(6px);
 	// Поява без розмиття (filter зламав би backdrop-filter); наведення — легке збільшення
 	--reveal-blur: 0px;
-	transition: scale 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+	transition: scale 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: 10px;
+		background: var(--step-bg);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 24px rgba(117, 161, 250, 0.05);
+		backdrop-filter: blur(8px);
+		pointer-events: none;
+		transition: box-shadow 0.4s ease;
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border: 1px solid var(--step-frame);
+		background:
+			linear-gradient(var(--white), var(--white)) top left / var(--tick) var(--tick-w),
+			linear-gradient(var(--white), var(--white)) top left / var(--tick-w) var(--tick),
+			linear-gradient(var(--white), var(--white)) top right / var(--tick) var(--tick-w),
+			linear-gradient(var(--white), var(--white)) top right / var(--tick-w) var(--tick),
+			linear-gradient(var(--white), var(--white)) bottom left / var(--tick) var(--tick-w),
+			linear-gradient(var(--white), var(--white)) bottom left / var(--tick-w) var(--tick),
+			linear-gradient(var(--white), var(--white)) bottom right / var(--tick) var(--tick-w),
+			linear-gradient(var(--white), var(--white)) bottom right / var(--tick-w) var(--tick);
+		background-origin: border-box;
+		background-repeat: no-repeat;
+		pointer-events: none;
+	}
+
+	// Тінь наведення — на фоні (::before), а не filter на картці: filter робить картку межею для
+	// backdrop-filter, і розмиття під карткою зникало
 	@media (hover: hover) {
 		&:hover {
 			scale: 1.03;
-			box-shadow:
-				inset 0 0 0 1px rgba(255, 255, 255, 0.2),
-				0 18px 40px rgba(0, 40, 160, 0.3);
+
+			&::before {
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.06),
+					inset 0 0 24px rgba(117, 161, 250, 0.05),
+					0 18px 40px rgba(0, 40, 160, 0.3);
+			}
 		}
 	}
 

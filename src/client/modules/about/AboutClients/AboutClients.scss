@@ -1,55 +1,29 @@
-/* About Clients */
+/* «З ким ми працюємо» — скляна картка з текстом (переноси рядків — з перекладу) */
 .about-clients {
-	margin: 60px 0;
-
-	&__title {
-		font-size: 32px;
-		font-weight: 700;
-		color: var(--white);
-		margin-bottom: 24px;
-		text-align: center;
-	}
-
-	&__content {
-		background: rgba(255, 255, 255, 0.03);
-		backdrop-filter: blur(10px);
-		border: 1px solid var(--border-subtle);
-		border-radius: 24px;
-		padding: 40px;
-		box-shadow:
-			0 8px 32px var(--shadow-dark),
-			inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
-		p {
-			font-size: 16px;
-			line-height: 1.8;
-			color: var(--nav-text);
-			white-space: pre-line;
-		}
-	}
+	padding: 80px 0 20px;
 }
 
-/* Responsive */
+.about-clients__text {
+	--glass-bg: var(--card-surface);
+	--glass-blur: 14px;
+	max-width: 900px;
+	margin-top: 28px;
+	padding: 28px 32px;
+	border-radius: 12px;
+	color: var(--section-text);
+	font-size: 17px;
+	line-height: 1.65;
+	white-space: pre-line;
+}
+
 @media (max-width: 768px) {
 	.about-clients {
-		&__title {
-			font-size: 24px;
-		}
-
-		&__content {
-			padding: 24px;
-
-			p {
-				font-size: 15px;
-			}
-		}
+		padding-top: 56px;
 	}
-}
 
-@media (max-width: 480px) {
-	.about-clients {
-		&__title {
-			font-size: 20px;
-		}
+	.about-clients__text {
+		margin-top: 20px;
+		padding: 20px 18px;
+		font-size: 15px;
 	}
 }

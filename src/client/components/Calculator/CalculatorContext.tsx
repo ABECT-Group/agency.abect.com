@@ -102,7 +102,18 @@ type CalculatorAction =
   | { type: 'SET_SUBMITTING'; payload: boolean }
   | { type: 'SET_SUBMIT_ERROR'; payload: string | null }
   | { type: 'SET_SUBMIT_SUCCESS'; payload: boolean }
+  | { type: 'RESTORE'; payload: SavedSelections }
   | { type: 'RESET' };
+
+/** Вибір користувача, що зберігається в localStorage між візитами */
+type SavedSelections = {
+  currentStep?: number;
+  projectType?: string | null;
+  platform?: 'weblium' | 'custom' | null;
+  pagesCount?: number;
+  additionalServices?: string[];
+  urgency?: string | null;
+};
 
 const STORAGE_KEY = 'abect-calculator-state';
 
@@ -279,6 +290,31 @@ function calculatorReducer(state: CalculatorState, action: CalculatorAction): Ca
       newState = { ...state, submitSuccess: action.payload };
       break;
 
+    // Відновлення збереженого вибору однією дією: окремі TOGGLE_SERVICE у StrictMode (подвійний ефект)
+    // знімали щойно відновлені послуги. Значення, яких уже немає в конфігу (змінили в CMS), відкидаються.
+    case 'RESTORE': {
+      const saved = action.payload;
+      const config = state.config;
+      const restoredProject = config?.projectTypes.find((p) => p.slug === saved.projectType);
+      if (!config || !restoredProject) return state;
+
+      const platform =
+        saved.platform === 'weblium' && restoredProject.hasWebliumOption ? 'weblium' : saved.platform === 'custom' || !restoredProject.hasWebliumOption ? 'custom' : null;
+      const { minPages, maxPages } = config.pagesConfig;
+      const pagesCount =
+        typeof saved.pagesCount === 'number' ? Math.min(Math.max(saved.pagesCount, minPages), maxPages) : state.pagesCount;
+      const additionalServices = (saved.additionalServices ?? []).filter((slug) =>
+        config.additionalServices.some((s) => s.slug === slug)
+      );
+      const urgency = config.urgencyOptions.some((u) => u.slug === saved.urgency) ? (saved.urgency as string) : null;
+      // Крок — не далі першого незаповненого
+      const maxStep = !platform ? 1 : !urgency ? 4 : state.totalSteps - 1;
+      const currentStep = Math.min(Math.max(saved.currentStep ?? 0, 0), maxStep);
+
+      newState = { ...state, projectType: restoredProject.slug, platform, pagesCount, additionalServices, urgency, currentStep };
+      break;
+    }
+
     case 'RESET':
       newState = {
         ...initialState,
@@ -288,7 +324,11 @@ function calculatorReducer(state: CalculatorState, action: CalculatorAction): Ca
       };
       // Clear localStorage
       if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEY);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+          // localStorage may be unavailable in private mode
+        }
       }
       return newState;
 
@@ -344,24 +384,14 @@ export function CalculatorProvider({ children, initialConfig }: CalculatorProvid
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Restore only user selections, not config or form state
-        if (parsed.projectType) dispatch({ type: 'SET_PROJECT_TYPE', payload: parsed.projectType });
-        if (parsed.platform) dispatch({ type: 'SET_PLATFORM', payload: parsed.platform });
-        if (parsed.pagesCount) dispatch({ type: 'SET_PAGES_COUNT', payload: parsed.pagesCount });
-        if (parsed.additionalServices) {
-          parsed.additionalServices.forEach((s: string) => {
-            dispatch({ type: 'TOGGLE_SERVICE', payload: s });
-          });
-        }
-        if (parsed.urgency) dispatch({ type: 'SET_URGENCY', payload: parsed.urgency });
-        if (parsed.currentStep) dispatch({ type: 'SET_STEP', payload: parsed.currentStep });
-      } catch (e) {
-        console.error('Failed to parse saved calculator state:', e);
-      }
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      const parsed = JSON.parse(saved) as SavedSelections;
+      // Restore only user selections, not config or form state
+      if (parsed && typeof parsed === 'object') dispatch({ type: 'RESTORE', payload: parsed });
+    } catch {
+      // Пошкоджений запис або недоступний localStorage — починаємо з нуля
     }
   }, []);
 

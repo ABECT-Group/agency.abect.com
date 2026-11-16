@@ -4,7 +4,7 @@ import { JSX, useState, useEffect, useRef, FormEvent } from 'react';
 import { X, Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter, Link } from '@/client/i18n/navigation';
-import { submitLead, isValidContact } from '@/client/lib/leads';
+import { submitLead, isValidContact, createThxToken } from '@/client/lib/leads';
 import './ContactModal.scss';
 
 interface ContactModalProps {
@@ -142,7 +142,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps): JS
     if (result.success) {
       resetForm();
       onClose();
-      const token = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      const token = createThxToken();
       router.push(`/thx?form=simple&token=${token}`);
     } else {
       setFormState('error');

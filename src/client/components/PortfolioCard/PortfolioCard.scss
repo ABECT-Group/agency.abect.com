@@ -9,9 +9,12 @@
 	flex-direction: column;
 	height: 100%;
 	overflow: hidden;
-	border: 1px solid var(--card-border);
+	// Скло, як у картках цін і «Наших роботах»
+	border: 1px solid var(--card-glass-border);
 	border-radius: 10px;
-	background: var(--portfolio-card-bg);
+	background: var(--card-glass-sheen), var(--portfolio-card-bg);
+	backdrop-filter: blur(16px) saturate(160%);
+	box-shadow: var(--card-glass-shadow);
 	color: var(--card-heading);
 	text-decoration: none;
 	transition:
@@ -23,11 +26,7 @@
 		&:hover {
 			translate: 0 -6px;
 			border-color: rgba(117, 161, 250, 0.45);
-			box-shadow: 0 18px 40px rgba(0, 40, 160, 0.25);
-
-			.portfolio-card__image img {
-				scale: 1.04;
-			}
+			box-shadow: var(--card-glass-shadow), 0 18px 40px rgba(0, 40, 160, 0.25);
 		}
 	}
 
@@ -40,15 +39,27 @@
 .portfolio-card__image {
 	position: relative;
 	display: block;
+	// Пропорція рамки — з макета (370 / 231.25). Обкладинки в CMS різні (760×475, 1200×630), тому фото
+	// не обрізається: вписується повністю (contain), а порожні смуги заповнює розмита копія (--cover).
 	aspect-ratio: 370 / 231.25;
 	overflow: hidden;
 	border-bottom: 1px solid var(--card-border);
 	border-radius: 10px;
+	background: var(--portfolio-card-bg);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: -24px;
+		background: var(--cover) center / cover no-repeat;
+		filter: blur(18px) brightness(0.55) saturate(1.2);
+		pointer-events: none;
+	}
 
 	img {
-		object-fit: cover;
-		object-position: top center;
-		transition: scale 0.5s ease;
+		z-index: 1;
+		object-fit: contain;
+		object-position: center;
 	}
 }
 
@@ -133,8 +144,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.portfolio-card__link,
-	.portfolio-card__image img {
+	.portfolio-card__link {
 		transition: none;
 	}
 }

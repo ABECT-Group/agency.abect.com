@@ -15,7 +15,7 @@ interface PortfolioPageProps {
 	initialProjects: Portfolio[];
 }
 
-// «Портфоліо»: PageHero → фільтр за типом (ChipBar, на клієнті) → сітка карток проєктів
+// «Портфоліо»: PageHero → фільтр за типом ліворуч (SideFilter, на клієнті) + сітка карток проєктів
 export default function PortfolioPage({ locale, initialProjects }: PortfolioPageProps): JSX.Element {
 	const t = useTranslations('PortfolioPage');
 	const [activeFilter, setActiveFilter] = useState<FilterType>('all');
@@ -45,32 +45,34 @@ export default function PortfolioPage({ locale, initialProjects }: PortfolioPage
 				<meta itemProp="numberOfItems" content={String(filteredProjects.length)} />
 
 				<div className="container container--design">
-					<div className="list-toolbar">
+					<div className="list-layout">
 						<PortfolioFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} counts={filterCounts} />
-					</div>
 
-					{filteredProjects.length > 0 ? (
-						<>
-							<PortfolioList projects={filteredProjects} locale={locale} startRows={3} eagerFirstRow />
+						<div className="list-layout__content">
+							{filteredProjects.length > 0 ? (
+								<>
+									<PortfolioList projects={filteredProjects} locale={locale} startRows={2} eagerFirstRow />
 
-							<footer className="list-stats">
-								<p>{t('showingResults', { count: filteredProjects.length })}</p>
-								{activeFilter !== 'all' && (
-									<button type="button" className="pill-btn pill-btn--outline" onClick={() => setActiveFilter('all')}>
+									<footer className="list-stats">
+										<p>{t('showingResults', { count: filteredProjects.length })}</p>
+										{activeFilter !== 'all' && (
+											<button type="button" className="pill-btn pill-btn--outline" onClick={() => setActiveFilter('all')}>
+												{t('viewAllButton')}
+											</button>
+										)}
+									</footer>
+								</>
+							) : (
+								<div className="list-empty glass">
+									<h2>{t('noResults')}</h2>
+									<p>{t('noResultsDescription')}</p>
+									<button type="button" className="pill-btn pill-btn--gradient" onClick={() => setActiveFilter('all')}>
 										{t('viewAllButton')}
 									</button>
-								)}
-							</footer>
-						</>
-					) : (
-						<div className="list-empty glass">
-							<h2>{t('noResults')}</h2>
-							<p>{t('noResultsDescription')}</p>
-							<button type="button" className="pill-btn pill-btn--gradient" onClick={() => setActiveFilter('all')}>
-								{t('viewAllButton')}
-							</button>
+								</div>
+							)}
 						</div>
-					)}
+					</div>
 				</div>
 			</section>
 			<ScrollReveal />

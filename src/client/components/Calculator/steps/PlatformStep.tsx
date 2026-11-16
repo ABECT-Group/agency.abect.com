@@ -1,6 +1,6 @@
 'use client';
 
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Blocks, Code } from 'lucide-react';
 import { useCalculator } from '../CalculatorContext';
@@ -9,21 +9,25 @@ import './Steps.scss';
 
 export default function PlatformStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.platform');
-  const { state, setPlatform, nextStep, getSelectedProjectType } = useCalculator();
+  const { state, setPlatform, dispatch, getSelectedProjectType } = useCalculator();
 
   const selectedProject = getSelectedProjectType();
   const hasWebliumOption = selectedProject?.hasWebliumOption ?? false;
 
   const handleSelect = (platform: 'weblium' | 'custom') => {
     setPlatform(platform);
-    setTimeout(() => nextStep(), 300);
+    // Перехід на конкретний крок, а не «наступний»: подвійний клік інакше перескакував крок
+    setTimeout(() => dispatch({ type: 'SET_STEP', payload: 2 }), 300);
   };
 
-  // If no Weblium option, auto-select custom and skip
+  // Без варіанта на конструкторі — лише Custom. Оновлення стану не під час рендеру, а в ефекті
+  // (setState у рендері дає попередження React «Cannot update a component while rendering»).
+  const needsCustom = !hasWebliumOption && state.platform !== 'custom';
+  useEffect(() => {
+    if (needsCustom) setPlatform('custom');
+  }, [needsCustom, setPlatform]);
+
   if (!hasWebliumOption) {
-    if (state.platform !== 'custom') {
-      setPlatform('custom');
-    }
     return (
       <div className="calculator-step">
         <div className="calculator-step__header">

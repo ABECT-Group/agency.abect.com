@@ -18,8 +18,8 @@
 			"priceFormat": "from ${price}",
 			"defaultPrices": {
 				"landing": "Landing",
-				"businessCard": "Business card",
-				"corporate": "Corporate"
+				"website": "Website",
+				"store": "Online store"
 			}
 		},
 		"Services": {
@@ -245,6 +245,27 @@
 					"answer": "A finished website on your domain with an SSL certificate, working request forms and all the accesses to the site and hosting. After the launch we stay in touch and help with support and changes."
 				}
 			}
+		},
+		"Discuss": {
+			"title": "Discuss your project",
+			"subtitle": "Tell us about your project, its goals and needs. We will find the best solution, suggest an implementation format and estimate the development cost.",
+			"namePlaceholder": "Your name",
+			"contactPlaceholder": "Phone or Email",
+			"siteTypeLabel": "Website type",
+			"siteTypePlaceholder": "Choose website type",
+			"siteTypes": {
+				"landing": "Landing page",
+				"multipage": "Multi-page website",
+				"store": "Online store",
+				"other": "Other / not sure yet"
+			},
+			"commentPlaceholder": "Comment",
+			"attachFile": "Attach a file",
+			"removeFile": "Remove",
+			"fileHint": "PDF, DOC(X), XLS(X), TXT, PNG, JPG, WEBP — up to {size} MB",
+			"fileTypeError": "Unsupported file type",
+			"fileSizeError": "The file is too large (max {size} MB)",
+			"submitButton": "Send"
 		}
 	},
 	"AboutPage": {
@@ -259,10 +280,9 @@
 			"button": "Discuss Project"
 		},
 		"story": {
-			"title": "Who We Are",
-			"paragraph1": "ABECT started as an idea to create quality web solutions for the Ukrainian and European markets. Over time, we've grown from simple landing pages to complex fintech platforms and banking integrations. Today, we are a team of professionals who combine technical expertise, creative design, and effective marketing.",
-			"paragraph2": "We believe in a practical approach: no excessive theory, only working solutions that deliver results. Our team combines development, design, and marketing under one roof, allowing us to quickly implement projects of any complexity. We don't just execute technical tasks — we delve into the client's business, understand their goals, and offer solutions that actually work.",
-			"paragraph3": "Every project for us is an opportunity to create something valuable. We work with businesses of all sizes: from startups just launching to established companies needing modernization or scaling. Our goal is not just to make a website, but to create a tool that will help your business grow and thrive in the digital environment."
+			"title": "Who we are?",
+			"paragraph1": "ABECT is a team of experts in web development, design and digital marketing. We build modern web solutions for the Ukrainian and European markets: from landing pages to complex platforms and integrations.",
+			"paragraph2": "We combine technical expertise, creative design and a marketing mindset to build effective solutions that help businesses grow and scale."
 		},
 		"stats": {
 			"years": "2.5+",
@@ -523,6 +543,7 @@
 		},
 		"content": {
 			"aboutTitle": "About the Service",
+			"tableOfContents": "Table of Contents",
 			"includedTitle": "What's Included",
 			"comparisonTitle": "Options Comparison",
 			"technologiesTitle": "Technologies",

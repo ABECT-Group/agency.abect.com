@@ -74,6 +74,7 @@ export interface Config {
     categories: Category;
     media: Media;
     leads: Lead;
+    'lead-files': LeadFile;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -89,6 +90,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    'lead-files': LeadFilesSelect<false> | LeadFilesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -532,6 +534,10 @@ export interface Lead {
   name: string;
   contact: string;
   message?: string | null;
+  /**
+   * Файл, який клієнт прикріпив у формі «Обговорити проєкт»
+   */
+  attachment?: (string | null) | LeadFile;
   type: 'simple' | 'calculator';
   calculatorData?: {
     projectType?: string | null;
@@ -560,6 +566,24 @@ export interface Lead {
   notes?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lead-files".
+ */
+export interface LeadFile {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -612,6 +636,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads';
         value: string | Lead;
+      } | null)
+    | ({
+        relationTo: 'lead-files';
+        value: string | LeadFile;
       } | null)
     | ({
         relationTo: 'users';
@@ -846,6 +874,7 @@ export interface LeadsSelect<T extends boolean = true> {
   name?: T;
   contact?: T;
   message?: T;
+  attachment?: T;
   type?: T;
   calculatorData?:
     | T
@@ -870,6 +899,23 @@ export interface LeadsSelect<T extends boolean = true> {
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lead-files_select".
+ */
+export interface LeadFilesSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1006,7 +1052,7 @@ export interface CalculatorConfig {
     minimumOrderPrice?: number | null;
   };
   /**
-   * Плашки «Лендінг за 199 $» у першому екрані головної. Якщо порожньо — показуються ціни за замовчуванням із перекладів.
+   * Плашки «Лендінг від 120 $» у першому екрані головної (до 3 штук). Якщо порожньо — показуються ціни за замовчуванням: Лендінг 120, Сайт 300, Магазин 450.
    */
   heroPrices?:
     | {

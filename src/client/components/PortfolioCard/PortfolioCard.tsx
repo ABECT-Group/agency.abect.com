@@ -1,6 +1,6 @@
 'use client';
 
-import { JSX } from 'react';
+import { CSSProperties, JSX } from 'react';
 import Image from 'next/image';
 import { Link } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -35,7 +35,11 @@ export default function PortfolioCard({ project, locale, eager = false }: Portfo
 				className="portfolio-card__link"
 				aria-label={`${t('viewCase')}: ${project.title}`}
 			>
-				<span className="portfolio-card__image">
+				{/* Фото вписується повністю (contain); порожні смуги — розмита копія того ж фото (--cover) */}
+				<span
+					className="portfolio-card__image"
+					style={{ '--cover': `url("${encodeURI(imageUrl)}")` } as CSSProperties}
+				>
 					<Image
 						src={imageUrl}
 						alt={project.title}

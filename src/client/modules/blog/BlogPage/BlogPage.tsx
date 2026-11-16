@@ -72,8 +72,8 @@ export default function BlogPage({
 				<meta itemProp="description" content={pageSubtitle} />
 				<div className="container container--design">
 
-					{/* Main Layout: Filter (1fr) + Content (3fr) */}
-					<div className="blog-page__layout">
+					{/* Фільтр ліворуч (SideFilter) + список статей */}
+					<div className="list-layout">
 						{/* Sidebar with filter */}
 						<BlogFilter
 							activeCategory={currentCategory?.slug}
@@ -82,22 +82,17 @@ export default function BlogPage({
 						/>
 
 						{/* Content */}
-						<div className="blog-page__content">
+						<div className="list-layout__content">
 							{/* If there are posts */}
 							{posts.length > 0 ? (
 								<>
 									<BlogList posts={posts} locale={locale} startRows={2} />
 
 									{/* Stats Footer */}
-									<footer className="blog-page__stats">
-										<p>
-											{t('showingResults', { count: posts.length })}
-										</p>
+									<footer className="list-stats">
+										<p>{t('showingResults', { count: posts.length })}</p>
 										{currentCategory && (
-											<Link
-												href="/blog"
-												className="blog-page__reset-btn"
-											>
+											<Link href="/blog" className="pill-btn pill-btn--outline">
 												{t('viewAllButton')}
 											</Link>
 										)}
@@ -105,10 +100,10 @@ export default function BlogPage({
 								</>
 							) : (
 								/* Empty State */
-								<div className="blog-page__empty">
-									<h3>{t('noResults')}</h3>
+								<div className="list-empty glass">
+									<h2>{t('noResults')}</h2>
 									<p>{t('noResultsDescription')}</p>
-									<Link href="/blog" className="cta">
+									<Link href="/blog" className="pill-btn pill-btn--gradient">
 										{t('viewAllButton')}
 									</Link>
 								</div>

@@ -2,7 +2,7 @@
 
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import ChipBar from '@/client/components/ChipBar/ChipBar';
+import SideFilter from '@/client/components/SideFilter/SideFilter';
 
 export type FilterType = 'all' | 'design' | 'website' | 'promotion';
 
@@ -21,14 +21,16 @@ interface PortfolioFilterProps {
 
 const FILTERS: FilterType[] = ['all', 'design', 'website', 'promotion'];
 
-// Фільтр портфоліо за типом послуги — стрічка ChipBar (фільтр на клієнті); порожні типи не показуються
+// Фільтр портфоліо за типом послуги — скляна панель ліворуч (SideFilter; до 1024px — стрічка над списком).
+// Показуються всі типи, зокрема з нулем (рішення розробника 2026-11-16).
 export default function PortfolioFilter({ activeFilter, onFilterChange, counts }: PortfolioFilterProps): JSX.Element {
 	const t = useTranslations('PortfolioPage.filter');
 
 	return (
-		<ChipBar
+		<SideFilter
+			title={t('title')}
 			ariaLabel={t('ariaLabel')}
-			items={FILTERS.filter((value) => value === 'all' || counts[value] > 0).map((value) => ({
+			items={FILTERS.map((value) => ({
 				key: value,
 				label: t(value),
 				count: counts[value],

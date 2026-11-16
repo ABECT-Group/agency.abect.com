@@ -11,6 +11,18 @@ interface SimpleLead {
   contact: string;
   message?: string;
   source?: string;
+  /** Прикріплений файл (форма «Обговорити проєкт»): сам файл — лише в адмінці, тут посилання */
+  attachment?: { name: string; size: number; leadId: string };
+}
+
+/** Адреса заявки в адмінці (на превʼю — адреса самого деплою) */
+function adminLeadUrl(leadId: string): string {
+  const base = previewLabel().url || process.env.NEXT_PUBLIC_SERVER_URL || 'https://agency.abect.com';
+  return `${base.replace(/\/$/, '')}/admin/collections/leads/${encodeURIComponent(leadId)}`;
+}
+
+function formatSize(bytes: number): string {
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(bytes / 1024))} КБ`;
 }
 
 interface CalculatorLead {
@@ -82,6 +94,9 @@ function formatSimpleMessage(lead: SimpleLead): string {
     `👤 <b>Ім'я:</b> ${esc(lead.name)}`,
     `📞 <b>Контакт:</b> ${esc(lead.contact)}`,
     lead.message ? `💬 <b>Коментар:</b> ${esc(lead.message)}` : null,
+    lead.attachment
+      ? `📎 <b>Файл:</b> ${esc(lead.attachment.name)} (${formatSize(lead.attachment.size)}) — ${esc(adminLeadUrl(lead.attachment.leadId))}`
+      : null,
     '',
     `📍 <b>Сторінка:</b> ${esc(lead.source || 'Невідомо')}`,
     `🕐 <b>Час:</b> ${formatTimestamp()}`,

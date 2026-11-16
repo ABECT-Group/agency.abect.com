@@ -80,7 +80,10 @@ modules/service/
 ### Спільні елементи нового дизайну
 
 - «Шапка» внутрішньої сторінки — `PageHero` (`src/client/components/PageHero/`): крихти, H1, опис, кнопки; секція сторінки йде одразу після нього.
-- Фільтри сторінок-списків — `ChipBar` (`src/client/components/ChipBar/`); рядок фільтрів / підсумок / порожній стан — глобальні `.list-toolbar` / `.list-stats` / `.list-empty`; картки проєктів — `PortfolioList` / `PortfolioCard`.
+- Фільтри сторінок-списків: панель ліворуч від списку — `SideFilter` (`src/client/components/SideFilter/`, портфоліо й блог; до 1024px сам перемикається на стрічку `ChipBar`), розмітка сторінки — глобальні `.list-layout` / `.list-layout__content`; стрічка над списком — `ChipBar` (послуги). Підсумок / порожній стан — глобальні `.list-stats` / `.list-empty`; картки проєктів — `PortfolioList` / `PortfolioCard`.
+- Текст із CMS зі змістом: `RichText` + `RichTextHeadings` (кейс, стаття, послуга). Заголовки й `id` — з `src/utils/richTextHeadings.ts` (одна функція для змісту й тексту, щоб якорі збігались); у змісті — h2, а якщо їх немає — h3. Колонка змісту має тягнутися на висоту тексту (`align-self: stretch`), інакше `position: sticky` не працює.
+- Нахилені картки з номерами («Етапи» головної, «Як ми працюємо» на «Про нас») — `Process` (`modules/home/Process/`) з пропсами `id`, `title`, `subtitle`, `steps`, `cta` (`null` — без кнопки). Картки з тонкою рамкою й товщими кутиками — `::before` (скляний фон) + `::after` (рамка `--step-frame` і кутики); тінь наведення — лише `box-shadow`, не `filter` (він вимикає `backdrop-filter`).
+- Форми нового дизайну — як `DiscussProject` (`modules/home/DiscussProject/`): поля з білою рамкою, кольори — `--form-*` у `globals.scss`, відправка — `submitLead`, перехід на подяку — `createThxToken()` з `lib/leads.ts`.
 - Картки послуг — `ServicesList` (сітка `PlanCard`); перемикач «кодом / на конструкторі» — `VariantToggle`; акордеон питань — `FaqList`; кнопки-пігулки — глобальні `.pill-btn--gradient` / `.pill-btn--outline`.
 - Заголовок секції — `SectionHeading` (`src/client/components/SectionHeading/`): H2 + опис, опційно `aside` праворуч (перемикач, кнопка), `size="lg" | "md"`.
 - Синя пігулка зі скляною стрілкою — `ArrowButton` (`src/client/components/ArrowButton/`): з `href` — посилання, без нього — кнопка з `data-open-modal` (відкриває форму заявки).
@@ -151,13 +154,13 @@ export const Things: CollectionConfig = {
 ## 5. Заявка з клієнта
 
 ```ts
-import { submitLead } from '@/client/lib/leads'
+import { submitLead, createThxToken } from '@/client/lib/leads'
 const result = await submitLead({ type: 'simple', name: name.trim(), contact: contact.trim(), message })
 if (result.success) {
-  router.push(`/thx?form=simple&token=${token}`)   // token = `${Date.now()}-<9 символів a-z0-9>`
+  router.push(`/thx?form=simple&token=${createThxToken()}`)   // токен — лише через createThxToken()
 }
 ```
-`submitLead` додає `source` (поточна сторінка) і `utm` (з URL). Сервер (`src/app/api/leads/route.ts`) валідує, нормалізує, зберігає в `leads` і надсилає в Telegram. Див. [api.md](api.md).
+`submitLead` додає `source` (поточна сторінка) і `utm` (з URL); з `file` — відправляє multipart (див. api.md). Сервер (`src/app/api/leads/route.ts`) валідує, нормалізує, зберігає в `leads` і надсилає в Telegram. Див. [api.md](api.md).
 
 ## 6. Модалка
 

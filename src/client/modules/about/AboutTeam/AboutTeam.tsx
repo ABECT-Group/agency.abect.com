@@ -1,82 +1,59 @@
 'use client';
 
-import { JSX } from 'react';
+import { CSSProperties, JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import './AboutTeam.scss';
 
+const TEAM = [
+	{ key: 'member1', tags: ['Node.js', 'React', 'MongoDB', 'Next.js', 'FinTech APIs'], image: '/images/team/team1.webp' },
+	{ key: 'member2', tags: ['Figma', 'UI/UX', 'Prototyping', 'Web Design'], image: '/images/team/team2.webp' },
+	{ key: 'member4', tags: ['Project Management', 'Client Relations', 'Agile', 'Coordination'], image: '/images/team/team3.webp' },
+	{ key: 'member3', tags: ['Social Media', 'Content Strategy', 'Analytics', 'Automation'], image: '/images/team/team4.webp' }
+] as const;
+
+// «Команда» — Figma Desktop 8: «рваний» темно-синій фон (як «Наші роботи»), заголовок по центру, картки людей
 export default function AboutTeam(): JSX.Element {
 	const t = useTranslations('AboutPage');
 
-	const team = [
-		{
-			name: t('team.member1.name'),
-			position: t('team.member1.position'),
-			description: t('team.member1.description'),
-			tags: ['Node.js', 'React', 'MongoDB', 'Next.js', 'FinTech APIs'],
-			image: '/images/team/team1.webp',
-			isFounder: true
-		},
-		{
-			name: t('team.member2.name'),
-			position: t('team.member2.position'),
-			description: t('team.member2.description'),
-			tags: ['Figma', 'UI/UX', 'Prototyping', 'Web Design'],
-			image: '/images/team/team2.webp',
-			isFounder: false
-		},
-		{
-			name: t('team.member4.name'),
-			position: t('team.member4.position'),
-			description: t('team.member4.description'),
-			tags: ['Project Management', 'Client Relations', 'Agile', 'Coordination'],
-			image: '/images/team/team3.webp',
-			isFounder: false
-		},
-		{
-			name: t('team.member3.name'),
-			position: t('team.member3.position'),
-			description: t('team.member3.description'),
-			tags: ['Social Media', 'Content Strategy', 'Analytics', 'Automation'],
-			image: '/images/team/team4.webp',
-			isFounder: false
-		}
-	];
-
 	return (
-		<section className="about-team">
-			<h2 className="about-team__title">{t('team.title')}</h2>
-			<p className="about-team__subtitle">{t('team.subtitle')}</p>
+		<section className="about-team" aria-labelledby="about-team-title">
+			<div className="about-team__bg" aria-hidden="true" />
+			<div className="container container--design">
+				<h2 className="about-team__title" id="about-team-title" data-reveal="">
+					{t('team.title')}
+				</h2>
+				<p className="about-team__subtitle" data-reveal="">
+					{t('team.subtitle')}
+				</p>
 
-			<div className="about-team__grid">
-				{team.map((member, index) => (
-					<div
-						key={index}
-						className={`about-team__card ${member.isFounder ? 'about-team__card--founder' : ''}`}
-					>
-						<div className="about-team__image">
-							<Image
-								src={member.image}
-								alt={member.name}
-								width={300}
-								height={300}
-								className="about-team__photo"
-							/>
-						</div>
-						<div className="about-team__info">
-							<h3 className="about-team__name">{member.name}</h3>
-							<p className="about-team__position">{member.position}</p>
-							<p className="about-team__description">{member.description}</p>
-							<div className="about-team__tags">
-								{member.tags.map((tag, tagIndex) => (
-									<span key={tagIndex} className="about-team__tag">
-										{tag}
-									</span>
-								))}
+				<ul className="about-team__grid">
+					{TEAM.map((member, index) => (
+						<li
+							key={member.key}
+							className="about-team__card"
+							data-reveal=""
+							style={{ '--reveal-delay': `${0.08 * index}s` } as CSSProperties}
+						>
+							<div className="about-team__photo">
+								<Image
+									src={member.image}
+									alt={t(`team.${member.key}.name`)}
+									fill
+									sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 320px"
+								/>
 							</div>
-						</div>
-					</div>
-				))}
+							<h3 className="about-team__name">{t(`team.${member.key}.name`)}</h3>
+							<p className="about-team__position">{t(`team.${member.key}.position`)}</p>
+							<p className="about-team__description">{t(`team.${member.key}.description`)}</p>
+							<ul className="about-team__tags">
+								{member.tags.map((tag) => (
+									<li key={tag}>{tag}</li>
+								))}
+							</ul>
+						</li>
+					))}
+				</ul>
 			</div>
 		</section>
 	);

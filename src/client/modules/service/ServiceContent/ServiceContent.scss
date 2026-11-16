@@ -1,4 +1,4 @@
-/* «Про послугу» — опис із CMS у картці нового дизайну (+ зображення послуги, якщо є) */
+/* «Про послугу» — липкий зміст ліворуч + опис із CMS у картці нового дизайну (як ProjectContent) */
 
 .service-content {
 	margin: 96px 0 0;
@@ -6,42 +6,41 @@
 
 .service-content__body {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
 	gap: 24px;
 	margin-top: 32px;
+
+	// Без заголовків у тексті змісту немає — текст на всю ширину
+	&:has(.service-content__sidebar:empty) {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
 
-.service-content__body--with-image {
-	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-	align-items: start;
+// Колонка змісту на всю висоту тексту — інакше position: sticky змісту не має де «їхати»
+.service-content__sidebar {
+	align-self: stretch;
+
+	&:empty {
+		display: none;
+	}
 }
 
+// Без рамки й фону-картки (як у статті, рішення розробника 2026-11-16) — текст прямо на сторінці
 .service-content__text {
-	padding: 32px 36px;
-	border: 1px solid var(--card-border);
-	border-radius: 12px;
-	background: var(--card-surface);
+	align-self: start;
+	min-width: 0;
 	color: var(--section-text);
 	font-size: 16px;
 	line-height: 1.65;
 }
 
-.service-content__image {
-	overflow: hidden;
-	margin: 0;
-	border: 1px solid var(--card-border);
-	border-radius: 12px;
-
-	img {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
-}
-
 @media (max-width: 1024px) {
-	.service-content__body--with-image {
+	.service-content__body {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.service-content__sidebar {
+		display: none;
 	}
 }
 
@@ -55,7 +54,6 @@
 	}
 
 	.service-content__text {
-		padding: 22px 18px;
 		font-size: 15px;
 	}
 }

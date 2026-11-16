@@ -277,18 +277,27 @@
             margin-bottom: 22px;
         }
 
+        // Заголовки на телефоні менші: 28px у колонці ~300px давали 4–5 рядків на заголовок
         h2 {
+            font-size: 22px;
             margin-top: 32px;
             margin-bottom: 16px;
         }
 
         h3 {
+            font-size: 18px;
             margin-top: 26px;
             margin-bottom: 12px;
         }
 
         h4 {
+            font-size: 17px;
             margin-top: 20px;
+        }
+
+        h5,
+        h6 {
+            font-size: 16px;
         }
 
         blockquote {

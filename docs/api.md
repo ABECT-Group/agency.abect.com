@@ -25,6 +25,13 @@
 }
 ```
 
+**Проста форма з файлом** (форма «Обговорити проєкт» на головній) — `multipart/form-data` замість JSON: поля `type` (`simple`), `name`, `contact`, `message`, `source`, `utm` (JSON-рядком) і файл у полі `file`. `submitLead({ …, file })` перемикається на multipart сам.
+- Дозволено: PDF, DOC, DOCX, XLS, XLSX, TXT, PNG, JPG/JPEG, WEBP, до **10 МБ** (`LEAD_FILE_MAX_SIZE` у `src/collections/LeadFiles.ts`).
+- Тип визначається за розширенням із білого списку **і** перевіряється сигнатурою вмісту (`%PDF`, PNG, JPEG, `RIFF…WEBP`, OLE2 для DOC/XLS, ZIP для DOCX/XLSX; TXT — без нульових байтів). MIME від браузера не враховується; ім'я файлу замінюється безпечним (`lead-<час>-<латиниця>.<розширення>`).
+- `Content-Length` більше за ліміт — `413` ще до розбору тіла. Файл можна додати лише до `type: "simple"`.
+- Файл зберігається в колекцію `lead-files` (`media/lead-files`, читання — лише залогіненим), заявка посилається на нього полем `attachment`; у Telegram — ім'я, розмір і посилання на заявку в адмінці.
+- ⚠️ На превʼю Vercel файлова система лише для читання, а тіло запиту обмежене 4,5 МБ — заявки з файлом там можуть не зберегтися. Перевіряти завантаження — локально або на VPS.
+
 **Тіло: калькулятор** — ті самі поля плюс:
 ```json
 {
@@ -49,13 +56,14 @@
 | Код | Тіло |
 |---|---|
 | 200 | `{ "success": true, "message": "Заявка успішно відправлена", "id": "<mongoId>" }` |
-| 400 | `{ "success": false, "error": "…" }` — ім'я, контакт, тип, коментар задовгий, неповні дані калькулятора, невірний формат |
+| 400 | `{ "success": false, "error": "…" }` — ім'я, контакт, тип, коментар задовгий, неповні дані калькулятора, невірний формат; файл: порожній, завеликий, непідтримуваний тип, вміст не відповідає типу, файл до заявки калькулятора |
+| 413 | `{ "success": false, "error": "Файл завеликий (максимум 10 МБ)" }` — за `Content-Length` |
 | 403 | `{ "success": false, "error": "Forbidden" }` (Origin) |
 | 429 | `{ "success": false, "error": "Забагато запитів. Спробуйте через хвилину." }` |
 | 500 | `{ "success": false, "error": "Внутрішня помилка сервера" }` |
 | 405 | на `GET /api/leads`: роут перекриває Payload REST для `leads` |
 
-**Побічні ефекти:** запис у колекцію `leads` (`status: "new"`) через Payload Local API (`overrideAccess`), потім асинхронне повідомлення в Telegram (відповідь клієнту його не чекає).
+**Побічні ефекти:** якщо є файл — спершу запис у `lead-files`; потім запис у колекцію `leads` (`status: "new"`, `attachment` → файл) через Payload Local API (`overrideAccess`), потім асинхронне повідомлення в Telegram (відповідь клієнту його не чекає).
 
 ### Службові маршрути
 
@@ -95,6 +103,7 @@ GET /api/globals/calculator-config?locale=uk
 | `service-types`, `categories`, `media` | 🌐 | 🔐 | 🔐 | 🔐 |
 | global `calculator-config` | 🌐 | — | 👑 admin / superadmin | — |
 | `leads` | 🔐 | ❌ лише через `POST /api/leads` | 🔐 | 👑 admin / superadmin |
+| `lead-files` (вкладення заявок; файл — `/api/lead-files/file/<name>`) | 🔐 | ❌ лише через `POST /api/leads` | 👑 admin / superadmin | 👑 admin / superadmin |
 | `users` | 🔐 | ⭐ superadmin | себе; ⭐ superadmin — будь-кого | ⭐ superadmin |
 | поле `users.role` | — | ⭐ superadmin | ⭐ superadmin | — |
 

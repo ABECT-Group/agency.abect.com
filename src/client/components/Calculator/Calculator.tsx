@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { RotateCcw } from 'lucide-react';
 import { useRouter } from '@/client/i18n/navigation';
 import { useCalculator, CalculatorConfig } from './CalculatorContext';
-import { submitLead } from '@/client/lib/leads';
+import { submitLead, createThxToken } from '@/client/lib/leads';
 import ProgressBar from './components/ProgressBar';
 import PriceDisplay from './components/PriceDisplay';
 import StepNavigation from './components/StepNavigation';
@@ -54,7 +54,7 @@ function CalculatorContent({ config }: CalculatorContentProps): JSX.Element {
       });
 
       if (result.success) {
-        const token = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        const token = createThxToken();
         router.push(`/thx?form=calculator&token=${token}`);
       } else {
         dispatch({ type: 'SET_SUBMIT_ERROR', payload: result.error || tForm('errorMessage') });
