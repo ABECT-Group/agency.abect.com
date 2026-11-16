@@ -251,14 +251,9 @@
 			"subtitle": "Розкажіть про свій проєкт, його цілі та потреби. Ми підберемо оптимальне рішення, запропонуємо формат реалізації та розрахуємо вартість розробки.",
 			"namePlaceholder": "Ваше Ім'я",
 			"contactPlaceholder": "Телефон або Email",
-			"siteTypeLabel": "Тип сайту",
-			"siteTypePlaceholder": "Обрати тип сайту",
-			"siteTypes": {
-				"landing": "Лендінг",
-				"multipage": "Багатосторінковий сайт",
-				"store": "Інтернет-магазин",
-				"other": "Інше / ще не знаю"
-			},
+			"serviceLabel": "Послуга",
+			"servicePlaceholder": "Обрати послугу",
+			"serviceOther": "Інше / ще не знаю",
 			"commentPlaceholder": "Коментар",
 			"attachFile": "Прикріпити файл",
 			"removeFile": "Прибрати",

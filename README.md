@@ -60,6 +60,7 @@ npm run lint                 # ESLint
 npm run generate:types       # типи Payload після зміни колекцій
 npm run generate:importmap   # import map адмінки
 
+npm run import:blog          # статті з content/blog-drafts/*.md → CMS як чернетки (REST, логін адмінки; див. коментар у src/scripts/import-blog-drafts.ts)
 npm run seed:services        # seed базових послуг
 npm run seed:services:extra  # seed додаткових послуг
 ```

@@ -75,6 +75,7 @@
 	--step-bg-1: rgba(0, 0, 0, 0.5);
 	--step-bg-2: rgba(0, 33, 82, 0.5);
 	--step-bg-3: rgba(39, 47, 63, 0.5);
+	--edge-fill: rgba(0, 13, 56, 0.3); /* заливка «рваного» силуету (public/images/bg/edge-*.svg) */
 	--step-frame: rgba(255, 255, 255, 0.16); /* волосяна рамка карток «Етапів» (кутики — білі) */
 	/* Форма «Обговорити проєкт» (226:31) */
 	--form-placeholder: #ababae;
@@ -311,8 +312,11 @@ section {
 	gap: 16px;
 	margin-bottom: 32px;
 
+	// nowrap: у колонці з wrap ширина «рядка» = найширшому елементу — стрічка фільтрів
+	// розпирала сторінку на вузьких телефонах замість прокрутки всередині себе
 	@media (max-width: 768px) {
 		flex-direction: column;
+		flex-wrap: nowrap;
 		align-items: stretch;
 		margin-bottom: 24px;
 	}

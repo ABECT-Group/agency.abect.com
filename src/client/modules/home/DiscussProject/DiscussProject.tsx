@@ -8,7 +8,11 @@ import { createThxToken, isValidContact, submitLead } from '@/client/lib/leads';
 import FloatingDecor from '@/client/components/FloatingDecor/FloatingDecor';
 import './DiscussProject.scss';
 
-const SITE_TYPES = ['landing', 'multipage', 'store', 'other'] as const;
+/** Група послуг для списку (тип послуги з CMS → послуги цього типу) */
+export type ServiceGroup = { label: string; options: { value: string; label: string }[] };
+
+// Останній пункт списку — завжди є, навіть якщо послуг у CMS немає
+const OTHER = 'other';
 
 // Ті самі обмеження перевіряє сервер (/api/leads, collections/LeadFiles.ts); тут — щоб підказати одразу
 const FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'png', 'jpg', 'jpeg', 'webp'];
@@ -16,19 +20,29 @@ const FILE_MAX_MB = 10;
 
 type Errors = Partial<Record<'name' | 'contact' | 'privacy' | 'file', string>>;
 
+type DiscussProjectProps = {
+	/** Послуги з CMS, згруповані за типом (DiscussProjectSection) */
+	serviceGroups: ServiceGroup[];
+};
+
 /**
  * «Обговорити проєкт» — форма заявки внизу головної (Figma «ABECT», Desktop 6: 226:31, 166:313, 171:29,
  * поля 226:33 … 227:44, синій 3D-об'єкт 182:11). Заявка — `type: 'simple'` у /api/leads:
  * тип сайту й коментар ідуть у повідомлення (окремих полів у колекції leads немає).
  */
-export default function DiscussProject(): JSX.Element {
+export default function DiscussProject({ serviceGroups }: DiscussProjectProps): JSX.Element {
 	const t = useTranslations('HomePage.Discuss');
 	const tForm = useTranslations('ContactForm');
 	const router = useRouter();
 
 	const [name, setName] = useState('');
 	const [contact, setContact] = useState('');
-	const [siteType, setSiteType] = useState('');
+	const [serviceSlug, setServiceSlug] = useState('');
+	// Назва обраної послуги — у коментар заявки (у колекції leads окремого поля немає)
+	const serviceLabel =
+		serviceSlug === OTHER
+			? t('serviceOther')
+			: serviceGroups.flatMap((group) => group.options).find((option) => option.value === serviceSlug)?.label;
 	const [comment, setComment] = useState('');
 	const [privacyAccepted, setPrivacyAccepted] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
@@ -78,7 +92,7 @@ export default function DiscussProject(): JSX.Element {
 		setSubmitError('');
 
 		const message = [
-			siteType ? `${t('siteTypeLabel')}: ${t(`siteTypes.${siteType}`)}` : '',
+			serviceLabel ? `${t('serviceLabel')}: ${serviceLabel}` : '',
 			comment.trim()
 		]
 			.filter(Boolean)
@@ -167,23 +181,36 @@ export default function DiscussProject(): JSX.Element {
 							</div>
 
 							<div className="discuss__field discuss__field--select">
-								<label className="discuss__sr" htmlFor="discuss-type">
-									{t('siteTypeLabel')}
+								<label className="discuss__sr" htmlFor="discuss-service">
+									{t('serviceLabel')}
 								</label>
 								<select
-									id="discuss-type"
-									className={`discuss__input discuss__select${siteType ? '' : ' discuss__select--empty'}`}
-									name="siteType"
-									value={siteType}
-									onChange={(event) => setSiteType(event.target.value)}
+									id="discuss-service"
+									className="discuss__input discuss__select"
+									name="service"
+									value={serviceSlug}
+									onChange={(event) => setServiceSlug(event.target.value)}
 									disabled={loading}
 								>
-									<option value="">{t('siteTypePlaceholder')}</option>
-									{SITE_TYPES.map((type) => (
-										<option key={type} value={type}>
-											{t(`siteTypes.${type}`)}
-										</option>
-									))}
+									<option value="">{t('servicePlaceholder')}</option>
+									{serviceGroups.map((group) =>
+										group.label ? (
+											<optgroup key={group.label} label={group.label}>
+												{group.options.map((option) => (
+													<option key={option.value} value={option.value}>
+														{option.label}
+													</option>
+												))}
+											</optgroup>
+										) : (
+											group.options.map((option) => (
+												<option key={option.value} value={option.value}>
+													{option.label}
+												</option>
+											))
+										)
+									)}
+									<option value={OTHER}>{t('serviceOther')}</option>
 								</select>
 							</div>
 

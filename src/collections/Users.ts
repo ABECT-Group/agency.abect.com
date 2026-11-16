@@ -21,10 +21,20 @@ export const Users: CollectionConfig = {
   hooks: {
     beforeChange: [
       // Перший користувач, створений через /admin/create-first-user, стає superadmin.
+      // Не payload.count без умови: адаптер MongoDB тоді робить estimatedDocumentCount, а він заборонений
+      // у транзакції (на проді MongoDB — replica set, створення користувача падало з 500:
+      // «Cannot run 'count' in a multi-document transaction»). Достатньо знати, чи є хоч один запис.
       async ({ data, operation, req }) => {
         if (operation !== 'create') return data
-        const { totalDocs } = await req.payload.count({ collection: 'users', overrideAccess: true, req })
-        if (totalDocs === 0) return { ...data, role: 'superadmin' }
+        const { docs } = await req.payload.find({
+          collection: 'users',
+          limit: 1,
+          pagination: false,
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+        if (docs.length === 0) return { ...data, role: 'superadmin' }
         return data
       },
     ],

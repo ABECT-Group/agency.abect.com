@@ -116,7 +116,7 @@
 	border-color: var(--form-error-border);
 }
 
-// «Обрати тип сайту»: темний фон і трикутник праворуч, як у макеті (226:36, 226:38)
+// «Обрати послугу»: темний фон і трикутник праворуч, як у макеті (226:36, 226:38)
 .discuss__select {
 	padding-right: 52px;
 	background:
@@ -130,10 +130,6 @@
 		background: var(--black);
 		color: var(--white);
 	}
-}
-
-.discuss__select--empty {
-	color: var(--white);
 }
 
 .discuss__textarea {

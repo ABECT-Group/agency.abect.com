@@ -33,9 +33,14 @@ export default function ServicesPage({
 	const [variant, setVariant] = useState<PlanVariant>('custom');
 	const [switched, setSwitched] = useState(false);
 
-	const servicesForCounting = allServices || services;
+	// Перемикач «кодом / на конструкторі» фільтрує: на конструкторі — лише послуги з цим варіантом
+	// (раніше змінювались тільки ціни в тих самих картках). «Кодом» є в кожної послуги.
+	const byVariant = (list: Service[]) =>
+		variant === 'weblium' ? list.filter((service) => service.hasWebliumOption) : list;
+	const visibleServices = byVariant(services);
+	const servicesForCounting = byVariant(allServices || services);
 
-	// Кількість послуг у кожній категорії
+	// Кількість послуг у кожній категорії (з урахуванням варіанта)
 	const filterCounts = useMemo(() => {
 		const counts: Record<string, number> = { all: 0 };
 		serviceTypes.forEach((type) => {
@@ -51,7 +56,7 @@ export default function ServicesPage({
 
 	const pageTitle = currentType ? currentType.name : t('title');
 	const pageSubtitle = currentType ? currentType.description : t('subtitle');
-	const hasToggle = services.some((service) => service.hasWebliumOption);
+	const hasToggle = (allServices || services).some((service) => service.hasWebliumOption);
 
 	return (
 		<>
@@ -64,7 +69,7 @@ export default function ServicesPage({
 				{/* Назва й опис сторінки для schema.org (видимі — у PageHero) */}
 				<meta itemProp="name" content={pageTitle} />
 				<meta itemProp="description" content={pageSubtitle} />
-				<meta itemProp="numberOfItems" content={String(services.length)} />
+				<meta itemProp="numberOfItems" content={String(visibleServices.length)} />
 
 				<div className="container container--design">
 					<div className="list-toolbar">
@@ -80,12 +85,12 @@ export default function ServicesPage({
 						)}
 					</div>
 
-					{services.length > 0 ? (
+					{visibleServices.length > 0 ? (
 						<>
-							<ServicesList services={services} variant={variant} animateSwap={switched} />
+							<ServicesList services={visibleServices} variant={variant} animateSwap={switched} />
 
 							<footer className="list-stats">
-								<p>{t('showingResults', { count: services.length })}</p>
+								<p>{t('showingResults', { count: visibleServices.length })}</p>
 								{currentType && (
 									<Link href="/services" className="pill-btn pill-btn--outline">
 										{t('viewAllButton')}

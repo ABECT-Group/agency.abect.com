@@ -21,18 +21,21 @@ export default function RelatedArticles({ posts, locale }: RelatedArticlesProps)
 
 	return (
 		<section className="related-articles">
-			<header className="related-articles__header">
-				<h2 className="related-articles__title">{t('title')}</h2>
-				<p className="related-articles__subtitle">{t('subtitle')}</p>
-			</header>
+			{/* Контейнер — як у решти секцій: без нього сітка карток тягнулась від краю до краю екрана */}
+			<div className="container container--design">
+				<header className="related-articles__header">
+					<h2 className="related-articles__title">{t('title')}</h2>
+					<p className="related-articles__subtitle">{t('subtitle')}</p>
+				</header>
 
-			<BlogList posts={posts} locale={locale} startRows={3} />
+				<BlogList posts={posts} locale={locale} startRows={3} />
 
-			<footer className="related-articles__footer">
-				<Link href="/blog" className="cta cta-secondary">
-					{t('viewAll')}
-				</Link>
-			</footer>
+				<footer className="related-articles__footer">
+					<Link href="/blog" className="cta cta-secondary">
+						{t('viewAll')}
+					</Link>
+				</footer>
+			</div>
 		</section>
 	);
 }

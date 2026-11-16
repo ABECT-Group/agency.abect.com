@@ -11,6 +11,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "eslint .",
     "pl": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "import:blog": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/import-blog-drafts.ts",
     "seed:services": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-services.ts",
     "seed:services:extra": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-services-extra.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",

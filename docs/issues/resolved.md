@@ -11,6 +11,7 @@
 |---|---|---|
 | ISS-032 | Токен для `/thx` зрідка коротший за 9 символів → замість подяки перекидало на головну | Хелпер `createThxToken()` у `src/client/lib/leads.ts` (`crypto.getRandomValues`, рівно 9 символів); використовується в модалці, калькуляторі й новій формі |
 | ISS-037 | Розмиття в калькуляторі не працювало в Chrome / Edge (Lightning CSS лишав лише `-webkit-backdrop-filter`) | Прибрано рядок `-webkit-backdrop-filter` у `Calculator.scss` |
+| — | Створення користувача в адмінці на проді давало 500: хук `users` рахував користувачів `payload.count` без умови → `estimatedDocumentCount`, заборонений у транзакції MongoDB (replica set) | Перевірка через `payload.find({ limit: 1, pagination: false })` (запит 12 ченджлогу) |
 
 ## 2026-11-13 — Реліз на прод ([ченджлог](../changelogs/2026-11-13.md), запити 5–6)
 

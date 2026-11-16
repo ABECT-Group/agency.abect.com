@@ -126,16 +126,15 @@ export default function Footer() {
 								itemType="https://schema.org/ContactPoint"
 							>
 								{contactInfo.map((contact, index) => (
-									<div key={index} className="footer__contact-item">
-										<span className="footer__contact-label glass">
+									// Посилання — увесь рядок: клікабельні й іконка, і текст
+									<a key={index} href={contact.href} className="footer__contact-item">
+										<span className="footer__contact-label glass" aria-hidden="true">
 											{contact.icon}
 										</span>
-										<div className="footer__contact-value">
-											<a href={contact.href} itemProp={contact.type}>
-												{contact.text}
-											</a>
-										</div>
-									</div>
+										<span className="footer__contact-value" itemProp={contact.type}>
+											{contact.text}
+										</span>
+									</a>
 								))}
 							</div>
 						</div>

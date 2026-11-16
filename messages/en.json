@@ -251,14 +251,9 @@
 			"subtitle": "Tell us about your project, its goals and needs. We will find the best solution, suggest an implementation format and estimate the development cost.",
 			"namePlaceholder": "Your name",
 			"contactPlaceholder": "Phone or Email",
-			"siteTypeLabel": "Website type",
-			"siteTypePlaceholder": "Choose website type",
-			"siteTypes": {
-				"landing": "Landing page",
-				"multipage": "Multi-page website",
-				"store": "Online store",
-				"other": "Other / not sure yet"
-			},
+			"serviceLabel": "Service",
+			"servicePlaceholder": "Choose a service",
+			"serviceOther": "Other / not sure yet",
 			"commentPlaceholder": "Comment",
 			"attachFile": "Attach a file",
 			"removeFile": "Remove",

@@ -127,9 +127,15 @@
 		padding: 72px 0 100px;
 	}
 
-	// Силует з пропорціями — без сплющування на вузькому екрані
+	// Секція на телефоні дуже висока (картки одна під одною): один силует на всю висоту розтягувався
+	// в ~6000px завширшки — замість зубців лишалась одна велика «трапеція». Тому рваний край — окремі
+	// смуги зверху й знизу нормального розміру, між ними — та сама заливка, що й у силуеті.
 	.about-team__bg {
-		background-size: auto 100%;
+		--edge-h: 152px; // 200 / 1445 × 1100
+		background:
+			url('/images/bg/edge-portfolio-top.svg') center top / 1100px var(--edge-h) no-repeat,
+			url('/images/bg/edge-portfolio-bottom.svg') center bottom / 1100px var(--edge-h) no-repeat,
+			linear-gradient(var(--edge-fill), var(--edge-fill)) center / 100% calc(100% - 2 * var(--edge-h) + 2px) no-repeat;
 	}
 
 	.about-team__title {

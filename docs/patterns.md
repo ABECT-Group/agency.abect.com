@@ -147,6 +147,7 @@ export const Things: CollectionConfig = {
   ],
 }
 ```
+- У хуках і правах доступу не викликати `payload.count` **без `where`**: адаптер MongoDB тоді робить `estimatedDocumentCount`, а він заборонений у транзакції (на проді MongoDB — replica set з транзакціями) → 500. Щоб перевірити «чи є хоч один запис» — `payload.find({ limit: 1, pagination: false, depth: 0 })`.
 - `access` задавати **завжди явно**. Дані з персональною інформацією — ніколи не `read: () => true`.
 - Після змін: `npm run generate:types` (і `npm run generate:importmap`, якщо змінились кастомні компоненти адмінки).
 - Slug генерується через `src/utils/generateSlug.ts` (транслітерація UA → латиниця).
