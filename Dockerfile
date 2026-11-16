@@ -44,8 +44,8 @@ ENV HOSTNAME=0.0.0.0
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
-# media/ монтується з хоста (docker-compose.yml); restart.sh виставляє власника node (uid 1000)
-RUN mkdir -p /app/media && chown node:node /app/media
+# media/ і lead-files/ монтуються з хоста (docker-compose.yml); restart-frontend.sh виставляє власника node (uid 1000)
+RUN mkdir -p /app/media /app/lead-files && chown node:node /app/media /app/lead-files
 
 USER node
 EXPOSE 3000
