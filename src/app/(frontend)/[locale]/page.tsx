@@ -23,11 +23,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 	const title = isUa
 		? 'Розробка сайтів. Запуск реклами | ABECT'
-		: 'Website Development. Marketing Launch - ABECT';
+		: 'Website Development & Marketing Launch | ABECT';
 
 	const description = isUa
-		? 'ABECT професійна розробка сайтів для бізнесу. Ми створюємо адаптивні, швидкі та SEO-оптимізовані сайти для вашого успіху в інтернеті. З нами Ваш бізнес вийде на новий рівень!'
-		: 'ABECT provides professional website development for businesses. We build fast, responsive, and SEO-optimized websites to help your brand grow online. Take your business to the next level with us!';
+		? 'Розробка сайтів для бізнесу від ABECT: лендінги, корпоративні сайти й інтернет-магазини. Швидкі, адаптивні, SEO-оптимізовані. Ціни від 120 $.'
+		: 'Website development for business by ABECT: landing pages, corporate websites and online stores. Fast, responsive and SEO-optimized. From $120.';
 
 	const keywords = isUa
 		? 'сайт, Next.js, розробка сайтів, створення сайтів, веб-дизайн, SEO оптимізація, бізнес сайт, корпоративний сайт, інтернет-магазин, landing page, WordPress, React'

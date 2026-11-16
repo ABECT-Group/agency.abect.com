@@ -75,6 +75,10 @@
 	--step-bg-1: rgba(0, 0, 0, 0.5);
 	--step-bg-2: rgba(0, 33, 82, 0.5);
 	--step-bg-3: rgba(39, 47, 63, 0.5);
+	/* Вертикальні смуги фону шапок / футера — одна плитка шару (background-size: 43–44px 100%, repeat-x).
+	 * Раніше — PNG 38–46 КБ (stripe*.png), тепер градієнт тих самих кольорів і прозорості (ISS-052). */
+	--stripe: linear-gradient(90deg, rgba(84, 84, 84, 0) 0%, rgba(79, 79, 136, 0.0103) 50%, rgba(163, 150, 246, 0.0197) 100%);
+	--stripe-hero: linear-gradient(90deg, rgba(40, 40, 53, 0) 0%, rgba(78, 78, 121, 0.0255) 50%, rgba(164, 146, 255, 0.0491) 100%);
 	--edge-fill: rgba(0, 13, 56, 0.3); /* заливка «рваного» силуету (public/images/bg/edge-*.svg) */
 	--step-frame: rgba(255, 255, 255, 0.16); /* волосяна рамка карток «Етапів» (кутики — білі) */
 	/* Форма «Обговорити проєкт» (226:31) */
@@ -592,4 +596,14 @@ section {
 	.scrolling-list li {
 		font-size: 14px;
 	}
+}
+
+/* Текст лише для скрінрідерів і пошуковиків (наприклад, H2 перед сіткою карток) */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }

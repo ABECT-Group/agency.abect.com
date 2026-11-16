@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Calendar, Clock, Eye, User } from 'lucide-react';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
-import type { Post, Media, User as UserType, Category } from '@/payload-types';
+import type { CardPost } from '@/client/lib/cards';
 import './ArticleHero.scss';
 
 interface ArticleHeroProps {
-	post: Post;
+	post: CardPost;
 	locale: string;
 }
 
@@ -17,16 +17,16 @@ export default function ArticleHero({ post, locale }: ArticleHeroProps): JSX.Ele
 	const t = useTranslations('ArticleDetail');
 
 	// Отримуємо URL зображення
-	const cover = post.cover as Media | null;
+	const cover = post.cover;
 	const imageUrl = cover?.url || '/images/placeholder-blog.jpg';
 
 	// Отримуємо автора
 	// Автор може прийти лише як id (без доступу до users) або без імені — тоді «ABECT», а не «undefined undefined»
-	const author = typeof post.author === 'object' ? (post.author as UserType | null) : null;
+	const author = post.author;
 	const authorName = [author?.firstName, author?.lastName].filter(Boolean).join(' ') || 'ABECT';
 
 	// Отримуємо категорію
-	const category = post.category as Category | null;
+	const category = post.category;
 
 	// Форматуємо дату
 	const formattedDate = new Date(post.date).toLocaleDateString(

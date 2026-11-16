@@ -5,6 +5,7 @@ import PortfolioPage from '@/client/modules/portfolio/PortfolioPage/PortfolioPag
 import { Fragment } from 'react';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
+import { toCardPortfolio } from '@/client/lib/cards';
 
 type Params = {
 	params: Promise<{
@@ -97,7 +98,7 @@ export default async function PortfolioServerPage({ params }: Params) {
 	return (
 		<Fragment>
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-			<PortfolioPage locale={locale} initialProjects={projects} />
+			<PortfolioPage locale={locale} initialProjects={projects.map(toCardPortfolio)} />
 		</Fragment>
 	);
 }

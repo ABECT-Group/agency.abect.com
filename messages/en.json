@@ -147,6 +147,7 @@
 			"detailsLink": "Learn more"
 		},
 		"Portfolio": {
+			"imageAlt": "Website screenshot: “{title}”",
 			"sectionLabel": "#Our_works",
 			"title": "Our work",
 			"subtitle": "Every project starts with understanding the business goals. We build websites around the target audience, the product and the needs of future customers.",
@@ -442,6 +443,7 @@
 		}
 	},
 	"PortfolioPage": {
+		"listTitle": "Projects",
 		"title": "Our Portfolio",
 		"subtitle": "Over 50 successful web development, design and marketing projects for businesses",
 		"breadcrumbHome": "Home",

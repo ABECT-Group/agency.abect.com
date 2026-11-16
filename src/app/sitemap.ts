@@ -71,119 +71,84 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ]
 
-  // Dynamic routes from Payload CMS
+  // Dynamic routes from Payload CMS (ISS-054):
+  // - лише потрібні поля (select / populate), не повні документи з depth 2;
+  // - EN-адреса — лише якщо документ має англійський переклад (без нього /en показує UA-текст = дубль);
+  // - сторінки категорій блогу й типів послуг, у яких є опубліковані записи.
   try {
     const payload = await getPayload({ config })
+    const published = { status: { equals: 'published' } } as const
 
-    const [postsUa, postsEn, portfolioUa, portfolioEn, servicesUa, servicesEn] = await Promise.all([
-      payload.find({ collection: 'posts', where: { status: { equals: 'published' } }, limit: 500, locale: 'uk' as never }),
-      payload.find({ collection: 'posts', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
-      payload.find({ collection: 'portfolio', where: { status: { equals: 'published' } }, limit: 500, locale: 'uk' as never }),
-      payload.find({ collection: 'portfolio', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
-      payload.find({ collection: 'services', where: { status: { equals: 'published' } }, limit: 500, locale: 'uk' as never }),
-      payload.find({ collection: 'services', where: { status: { equals: 'published' } }, limit: 500, locale: 'en' as never }),
+    const [posts, postsEn, projects, projectsEn, services, servicesEn] = await Promise.all([
+      payload.find({ collection: 'posts', where: published, limit: 1000, depth: 1, locale: 'uk' as never, select: { slug: true, category: true, updatedAt: true }, populate: { categories: { slug: true } } }),
+      payload.find({ collection: 'posts', where: published, limit: 1000, depth: 0, locale: 'en' as never, fallbackLocale: false as never, select: { title: true } }),
+      payload.find({ collection: 'portfolio', where: published, limit: 1000, depth: 0, locale: 'uk' as never, select: { slug: true, updatedAt: true } }),
+      payload.find({ collection: 'portfolio', where: published, limit: 1000, depth: 0, locale: 'en' as never, fallbackLocale: false as never, select: { title: true } }),
+      payload.find({ collection: 'services', where: published, limit: 1000, depth: 1, locale: 'uk' as never, select: { slug: true, serviceType: true, updatedAt: true }, populate: { 'service-types': { slug: true } } }),
+      payload.find({ collection: 'services', where: published, limit: 1000, depth: 0, locale: 'en' as never, fallbackLocale: false as never, select: { title: true } }),
     ])
 
-    const postUrls: MetadataRoute.Sitemap = [
-      ...postsUa.docs.filter(p => p.slug && p.category).map(p => {
-        const catSlug = typeof p.category === 'object' ? p.category?.slug : p.category
-        return {
-          url: url(`/blog/${catSlug}/${p.slug}`, 'ua'),
-          lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
-          changeFrequency: 'monthly' as const,
-          priority: 0.6,
-          alternates: {
-            languages: {
-              'uk-UA': `${BASE_URL}/blog/${catSlug}/${p.slug}`,
-              'en-US': `${BASE_URL}/en/blog/${catSlug}/${p.slug}`,
-              'x-default': `${BASE_URL}/en/blog/${catSlug}/${p.slug}`,
-            },
-          },
-        }
-      }),
-      ...postsEn.docs.filter(p => p.slug && p.category).map(p => {
-        const catSlug = typeof p.category === 'object' ? p.category?.slug : p.category
-        return {
-          url: url(`/blog/${catSlug}/${p.slug}`, 'en'),
-          lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
-          changeFrequency: 'monthly' as const,
-          priority: 0.6,
-          alternates: {
-            languages: {
-              'uk-UA': `${BASE_URL}/blog/${catSlug}/${p.slug}`,
-              'en-US': `${BASE_URL}/en/blog/${catSlug}/${p.slug}`,
-              'x-default': `${BASE_URL}/en/blog/${catSlug}/${p.slug}`,
-            },
-          },
-        }
-      }),
-    ]
+    const translated = (docs: { id: string | number; title?: unknown }[]) =>
+      new Set(docs.filter((d) => typeof d.title === 'string' && d.title.trim()).map((d) => String(d.id)))
+    const postsWithEn = translated(postsEn.docs)
+    const projectsWithEn = translated(projectsEn.docs)
+    const servicesWithEn = translated(servicesEn.docs)
 
-    const portfolioUrls: MetadataRoute.Sitemap = [
-      ...portfolioUa.docs.filter(p => p.slug).map(p => ({
-        url: url(`/portfolio/${p.slug}`, 'ua'),
-        lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-        alternates: {
-          languages: {
-            'uk-UA': `${BASE_URL}/portfolio/${p.slug}`,
-            'en-US': `${BASE_URL}/en/portfolio/${p.slug}`,
-            'x-default': `${BASE_URL}/en/portfolio/${p.slug}`,
-          },
-        },
-      })),
-      ...portfolioEn.docs.filter(p => p.slug).map(p => ({
-        url: url(`/portfolio/${p.slug}`, 'en'),
-        lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-        alternates: {
-          languages: {
-            'uk-UA': `${BASE_URL}/portfolio/${p.slug}`,
-            'en-US': `${BASE_URL}/en/portfolio/${p.slug}`,
-            'x-default': `${BASE_URL}/en/portfolio/${p.slug}`,
-          },
-        },
-      })),
-    ]
+    const slugOf = (rel: unknown) => (rel && typeof rel === 'object' ? (rel as { slug?: string }).slug : undefined)
 
-    const serviceUrls: MetadataRoute.Sitemap = [
-      ...servicesUa.docs.filter(s => s.slug && s.serviceType).map(s => {
-        const typeSlug = typeof s.serviceType === 'object' ? s.serviceType?.slug : s.serviceType
-        return {
-          url: url(`/services/${typeSlug}/${s.slug}`, 'ua'),
-          lastModified: s.updatedAt ? new Date(s.updatedAt) : undefined,
-          changeFrequency: 'monthly' as const,
-          priority: 0.7,
-          alternates: {
-            languages: {
-              'uk-UA': `${BASE_URL}/services/${typeSlug}/${s.slug}`,
-              'en-US': `${BASE_URL}/en/services/${typeSlug}/${s.slug}`,
-              'x-default': `${BASE_URL}/en/services/${typeSlug}/${s.slug}`,
-            },
-          },
-        }
-      }),
-      ...servicesEn.docs.filter(s => s.slug && s.serviceType).map(s => {
-        const typeSlug = typeof s.serviceType === 'object' ? s.serviceType?.slug : s.serviceType
-        return {
-          url: url(`/services/${typeSlug}/${s.slug}`, 'en'),
-          lastModified: s.updatedAt ? new Date(s.updatedAt) : undefined,
-          changeFrequency: 'monthly' as const,
-          priority: 0.7,
-          alternates: {
-            languages: {
-              'uk-UA': `${BASE_URL}/services/${typeSlug}/${s.slug}`,
-              'en-US': `${BASE_URL}/en/services/${typeSlug}/${s.slug}`,
-              'x-default': `${BASE_URL}/en/services/${typeSlug}/${s.slug}`,
-            },
-          },
-        }
-      }),
-    ]
+    // UA-адреса + (якщо є переклад) EN-адреса з взаємними hreflang
+    const entries = (
+      path: string,
+      opts: { hasEn: boolean; lastModified?: string; priority: number; changeFrequency: 'weekly' | 'monthly' }
+    ): MetadataRoute.Sitemap => {
+      const ua = `${BASE_URL}${path}`
+      const en = `${BASE_URL}/en${path}`
+      const languages: Record<string, string> = opts.hasEn
+        ? { 'uk-UA': ua, 'en-US': en, 'x-default': en }
+        : { 'uk-UA': ua, 'x-default': ua }
+      const base = {
+        lastModified: opts.lastModified ? new Date(opts.lastModified) : undefined,
+        changeFrequency: opts.changeFrequency,
+        priority: opts.priority,
+        alternates: { languages },
+      }
+      return opts.hasEn ? [{ url: ua, ...base }, { url: en, ...base }] : [{ url: ua, ...base }]
+    }
 
-    return [...staticRoutes, ...postUrls, ...portfolioUrls, ...serviceUrls]
+    const postUrls = posts.docs.flatMap((p) => {
+      const category = slugOf(p.category)
+      if (!p.slug || !category) return []
+      return entries(`/blog/${category}/${p.slug}`, { hasEn: postsWithEn.has(String(p.id)), lastModified: p.updatedAt, priority: 0.6, changeFrequency: 'monthly' })
+    })
+
+    const portfolioUrls = projects.docs.flatMap((p) =>
+      p.slug ? entries(`/portfolio/${p.slug}`, { hasEn: projectsWithEn.has(String(p.id)), lastModified: p.updatedAt, priority: 0.7, changeFrequency: 'monthly' }) : []
+    )
+
+    const serviceUrls = services.docs.flatMap((s) => {
+      const type = slugOf(s.serviceType)
+      if (!s.slug || !type) return []
+      return entries(`/services/${type}/${s.slug}`, { hasEn: servicesWithEn.has(String(s.id)), lastModified: s.updatedAt, priority: 0.7, changeFrequency: 'monthly' })
+    })
+
+    // Категорії блогу й типи послуг — лише з опублікованими записами (дата — найсвіжіший запис)
+    const listingUrls = (prefix: string, docs: { rel: unknown; updatedAt?: string }[], priority: number) => {
+      const latest = new Map<string, string>()
+      for (const doc of docs) {
+        const slug = slugOf(doc.rel)
+        if (!slug) continue
+        const prev = latest.get(slug)
+        if (doc.updatedAt && (!prev || doc.updatedAt > prev)) latest.set(slug, doc.updatedAt)
+        else if (!prev) latest.set(slug, doc.updatedAt ?? '')
+      }
+      return [...latest].flatMap(([slug, updatedAt]) =>
+        entries(`${prefix}/${slug}`, { hasEn: true, lastModified: updatedAt || undefined, priority, changeFrequency: 'weekly' })
+      )
+    }
+    const categoryUrls = listingUrls('/blog', posts.docs.map((p) => ({ rel: p.category, updatedAt: p.updatedAt })), 0.6)
+    const serviceTypeUrls = listingUrls('/services', services.docs.map((s) => ({ rel: s.serviceType, updatedAt: s.updatedAt })), 0.7)
+
+    return [...staticRoutes, ...serviceTypeUrls, ...serviceUrls, ...categoryUrls, ...postUrls, ...portfolioUrls]
   } catch (err) {
     console.error('[sitemap] Payload CMS unavailable — returning static routes only:', err)
     return staticRoutes

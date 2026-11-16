@@ -4,6 +4,7 @@ import { getAllServices, getAllServiceTypes } from '@/client/lib/services';
 import ServicesPage from '@/client/modules/services/ServicesPage/ServicesPage';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
+import { toCardService } from '@/client/lib/cards';
 
 type Params = {
 	params: Promise<{
@@ -125,7 +126,7 @@ export default async function ServicesServerPage({ params }: Params) {
 
 			<ServicesPage
 				locale={locale}
-				services={services}
+				services={services.map(toCardService)}
 				serviceTypes={serviceTypes}
 			/>
 		</>

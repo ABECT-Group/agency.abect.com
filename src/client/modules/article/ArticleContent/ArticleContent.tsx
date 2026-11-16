@@ -2,18 +2,20 @@
 
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Post, User } from '@/payload-types';
+import type { Post } from '@/payload-types';
+import type { CardAuthor } from '@/client/lib/cards';
 import RichTextWithAnchors from '@/client/components/RichText/RichText';
 import RichTextHeadings from '@/client/components/RichTextHeadings/RichTextHeadings';
 import './ArticleContent.scss';
 
 interface ArticleContentProps {
-	post: Post;
+	/** Лише текст статті й поля для мікророзмітки — не весь документ (ISS-049) */
+	post: Pick<Post, 'content' | 'title' | 'description' | 'date' | 'updatedAt'> & { author: CardAuthor | null };
 }
 
 export default function ArticleContent({ post }: ArticleContentProps): JSX.Element {
 	const t = useTranslations('ProjectDetail.sidebar');
-	const author = typeof post.author === 'object' ? (post.author as User | null) : null;
+	const author = post.author;
 	const authorName = [author?.firstName, author?.lastName].filter(Boolean).join(' ') || 'ABECT Studio';
 
 	return (

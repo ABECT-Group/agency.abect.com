@@ -3,7 +3,8 @@
 import { JSX, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
-import type { Post, Category } from '@/payload-types';
+import type { Category } from '@/payload-types';
+import type { CardPost } from '@/client/lib/cards';
 import BlogFilter from '../BlogFilter/BlogFilter';
 import BlogList from '@/client/components/BlogList/BlogList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
@@ -12,8 +13,8 @@ import './BlogPage.scss';
 
 interface BlogPageProps {
 	locale: string;
-	posts: Post[];           // Статті для відображення (всі або категорії)
-	allPosts?: Post[];       // Всі статті для підрахунку (опціонально)
+	posts: CardPost[];           // Статті для відображення (всі або категорії)
+	allPosts?: CardPost[];       // Всі статті для підрахунку (опціонально)
 	categories: Category[];
 	currentCategory?: Category; // Поточна категорія (undefined = всі)
 }
@@ -42,7 +43,7 @@ export default function BlogPage({
 		// Підраховуємо статті по категоріях
 		postsForCounting.forEach(post => {
 			counts.all++;
-			const catSlug = typeof post.category === 'object' ? post.category.slug : null;
+			const catSlug = post.category?.slug ?? null;
 			if (catSlug && counts[catSlug] !== undefined) {
 				counts[catSlug]++;
 			}

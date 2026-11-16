@@ -4,6 +4,7 @@ import { getAllServices, getAllServiceTypes, getServiceTypeBySlug, getServicesBy
 import ServicesPage from '@/client/modules/services/ServicesPage/ServicesPage';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
+import { toCardService } from '@/client/lib/cards';
 
 export const dynamicParams = true;
 
@@ -134,8 +135,8 @@ export default async function ServiceTypePage({ params }: Params) {
 
 			<ServicesPage
 				locale={locale}
-				services={services}
-				allServices={allServices}
+				services={services.map(toCardService)}
+				allServices={allServices.map(toCardService)}
 				serviceTypes={serviceTypes}
 				currentType={serviceType}
 			/>

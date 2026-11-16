@@ -5,6 +5,7 @@ import ProjectHero from './ProjectHero/ProjectHero';
 import ProjectContent from './ProjectContent/ProjectContent';
 import RelatedProjects from './RelatedProjects/RelatedProjects';
 import ScrollReveal from '@/client/components/ScrollReveal/ScrollReveal';
+import { toCardPortfolio } from '@/client/lib/cards';
 
 interface ProjectProps {
     project: Portfolio;
@@ -16,9 +17,12 @@ interface ProjectProps {
 function Project({ locale, relatedProjects, project }: ProjectProps): JSX.Element {
     return (
         <main>
-            <ProjectHero project={project} locale={locale} />
-            <ProjectContent project={project} />
-            <RelatedProjects projects={relatedProjects} locale={locale} />
+            {/* У клієнтські компоненти — лише потрібні поля, не весь документ (ISS-049) */}
+            <ProjectHero project={toCardPortfolio(project)} locale={locale} />
+            <ProjectContent
+                project={{ content: project.content, title: project.title, shortDescription: project.shortDescription, projectDate: project.projectDate }}
+            />
+            <RelatedProjects projects={relatedProjects.map(toCardPortfolio)} locale={locale} />
             <ScrollReveal />
         </main>
     );

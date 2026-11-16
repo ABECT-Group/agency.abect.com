@@ -2,7 +2,7 @@
 
 import { JSX, useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Portfolio } from '@/payload-types';
+import type { CardPortfolio } from '@/client/lib/cards';
 import PortfolioFilter, { FilterType } from '../PortfolioFilter/PortfolioFilter';
 import PortfolioList from '@/client/components/PortfolioList/PortfolioList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
@@ -12,7 +12,7 @@ import './PortfolioPage.scss';
 
 interface PortfolioPageProps {
 	locale: string;
-	initialProjects: Portfolio[];
+	initialProjects: CardPortfolio[];
 }
 
 // «Портфоліо»: PageHero → фільтр за типом ліворуч (SideFilter, на клієнті) + сітка карток проєктів
@@ -49,6 +49,8 @@ export default function PortfolioPage({ locale, initialProjects }: PortfolioPage
 						<PortfolioFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} counts={filterCounts} />
 
 						<div className="list-layout__content">
+							{/* H2 між H1 шапки та H3 карток — правильна ієрархія заголовків (ISS-057) */}
+							<h2 className="visually-hidden">{t('listTitle')}</h2>
 							{filteredProjects.length > 0 ? (
 								<>
 									<PortfolioList projects={filteredProjects} locale={locale} startRows={2} eagerFirstRow />

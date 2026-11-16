@@ -5,6 +5,7 @@ import PortfolioList from '@/client/components/PortfolioList/PortfolioList';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import type { Portfolio } from '@/payload-types';
 import './PortfolioShowcase.scss';
+import { toCardPortfolios } from '@/client/lib/cards';
 
 interface PortfolioShowcaseProps {
 	projects: (string | number | Portfolio)[];
@@ -36,7 +37,7 @@ export default function PortfolioShowcase({ projects, locale }: PortfolioShowcas
 				/>
 
 				<div className="portfolio-showcase__list">
-					<PortfolioList projects={validProjects} locale={locale} startRows={3} />
+					<PortfolioList projects={toCardPortfolios(validProjects)} locale={locale} startRows={3} />
 				</div>
 			</div>
 		</section>

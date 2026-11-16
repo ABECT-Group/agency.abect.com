@@ -34,7 +34,7 @@
   }
 
   &__link {
-    color: var(--color-primary);
+    color: var(--logo-mark); /* Контраст ≥ 4.5:1 на темному фоні (було var(--accent) #375dfb — 3.3–4.0, ISS-057) */
     text-decoration: underline;
     text-underline-offset: 2px;
 

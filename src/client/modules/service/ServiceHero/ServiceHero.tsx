@@ -5,10 +5,11 @@ import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
 import PageHero from '@/client/components/PageHero/PageHero';
 import ArrowButton from '@/client/components/ArrowButton/ArrowButton';
-import type { Service, ServiceType } from '@/payload-types';
+import type { ServiceType } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 
 interface ServiceHeroProps {
-	service: Service;
+	service: CardService;
 	locale: string;
 	serviceType?: ServiceType;
 }
@@ -18,7 +19,7 @@ interface ServiceHeroProps {
 export default function ServiceHero({ service, serviceType }: ServiceHeroProps): JSX.Element {
 	const t = useTranslations('ServiceDetail');
 
-	const type = serviceType || (service.serviceType as ServiceType | null);
+	const type = serviceType || service.serviceType;
 	const tags = [type?.name, service.customTimeline && `${t('timeline')}: ${service.customTimeline}`].filter(
 		(tag): tag is string => Boolean(tag)
 	);

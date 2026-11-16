@@ -3,13 +3,13 @@
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
-import type { Portfolio } from '@/payload-types';
+import type { CardPortfolio } from '@/client/lib/cards';
 import PortfolioList from '@/client/components/PortfolioList/PortfolioList';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import './RelatedProjects.scss';
 
 interface RelatedProjectsProps {
-	projects: Portfolio[];
+	projects: CardPortfolio[];
 	locale: string;
 }
 

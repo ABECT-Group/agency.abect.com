@@ -1,14 +1,14 @@
 'use client';
 
 import { JSX, useState } from 'react';
-import type { Service } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 import type { PlanVariant } from '@/client/components/PlanCard/PlanCard';
 import ServicesList from '@/client/components/ServicesList/ServicesList';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import VariantToggle from '@/client/components/VariantToggle/VariantToggle';
 
 type ServicePlansProps = {
-	services: Service[];
+	services: CardService[];
 	headingId: string;
 	title: string;
 	subtitle: string;

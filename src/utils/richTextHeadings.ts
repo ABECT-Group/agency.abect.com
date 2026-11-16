@@ -34,14 +34,16 @@ export function collectHeadings(content: LexicalContent): TocHeading[] {
 	const headings: TocHeading[] = [];
 
 	children.forEach((node) => {
-		if (node?.type !== 'heading' || (node.tag !== 'h2' && node.tag !== 'h3')) return;
+		// H1 з тексту CMS рендериться як H2 (RichText) — і в змісті він рівня H2
+		if (node?.type !== 'heading' || !['h1', 'h2', 'h3'].includes(node.tag ?? '')) return;
+		const tag = node.tag === 'h3' ? 'h3' : 'h2';
 		const text = nodeText(node).trim();
 		if (!text) return;
 
 		const base = generateSlug(text) || 'section';
 		const count = (used.get(base) ?? 0) + 1;
 		used.set(base, count);
-		headings.push({ node, id: count === 1 ? base : `${base}-${count}`, text, tag: node.tag });
+		headings.push({ node, id: count === 1 ? base : `${base}-${count}`, text, tag });
 	});
 
 	return headings;

@@ -3,12 +3,12 @@
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
-import type { Post } from '@/payload-types';
+import type { CardPost } from '@/client/lib/cards';
 import BlogList from '@/client/components/BlogList/BlogList';
 import './RelatedArticles.scss';
 
 interface RelatedArticlesProps {
-	posts: Post[];
+	posts: CardPost[];
 	locale: string;
 }
 

@@ -1,14 +1,14 @@
 'use client';
 
-import { CSSProperties, JSX } from 'react';
+import { JSX } from 'react';
 import Image from 'next/image';
 import { Link } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import type { Portfolio } from '@/payload-types';
+import type { CardPortfolio } from '@/client/lib/cards';
 import './PortfolioCard.scss';
 
 interface PortfolioCardProps {
-	project: Portfolio;
+	project: CardPortfolio;
 	locale: string;
 	/** Обкладинка видима одразу (перший ряд на сторінці портфоліо) — завантажувати пріоритетно (LCP) */
 	eager?: boolean;
@@ -33,13 +33,11 @@ export default function PortfolioCard({ project, locale, eager = false }: Portfo
 			<Link
 				href={`/portfolio/${project.slug}`}
 				className="portfolio-card__link"
-				aria-label={`${t('viewCase')}: ${project.title}`}
 			>
-				{/* Фото вписується повністю (contain); порожні смуги — розмита копія того ж фото (--cover) */}
-				<span
-					className="portfolio-card__image"
-					style={{ '--cover': `url("${encodeURI(imageUrl)}")` } as CSSProperties}
-				>
+				{/* Фото вписується повністю (contain); порожні смуги — розмита крихітна копія того ж фото
+				    (32px через next/image: кілька КБ і не стає LCP-елементом, як сирий JPG у CSS-фоні) */}
+				<span className="portfolio-card__image">
+					<Image src={imageUrl} alt="" aria-hidden="true" fill sizes="32px" quality={40} priority={eager} className="portfolio-card__backdrop" />
 					<Image
 						src={imageUrl}
 						alt={project.title}

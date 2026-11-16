@@ -286,7 +286,7 @@
 		// Прокрутка всередині меню не «протікає» на сторінку
 		overscroll-behavior: contain;
 		background-color: var(--black);
-		background-image: url('/images/bg/glow.svg'), url('/images/bg/stripe.png');
+		background-image: url('/images/bg/glow.svg'), var(--stripe);
 		background-repeat: no-repeat, repeat-x;
 		background-size: 1361px 1361px, 44px 100%;
 		background-position: -485px -251px, 0 0;

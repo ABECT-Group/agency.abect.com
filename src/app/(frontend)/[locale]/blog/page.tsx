@@ -5,6 +5,7 @@ import BlogPage from '@/client/modules/blog/BlogPage/BlogPage';
 import { Fragment } from 'react';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
+import { toCardPost } from '@/client/lib/cards';
 
 type Params = {
 	params: Promise<{
@@ -102,7 +103,7 @@ export default async function BlogServerPage({ params }: Params) {
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 			<BlogPage
 				locale={locale}
-				posts={posts}
+				posts={posts.map(toCardPost)}
 				categories={categories}
 			/>
 		</Fragment>

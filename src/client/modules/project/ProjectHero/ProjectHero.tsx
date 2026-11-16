@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
 import PageHero from '@/client/components/PageHero/PageHero';
 import ArrowButton from '@/client/components/ArrowButton/ArrowButton';
-import type { Portfolio, Media } from '@/payload-types';
+import type { CardPortfolio } from '@/client/lib/cards';
 import './ProjectHero.scss';
 
 interface ProjectHeroProps {
-	project: Portfolio;
+	project: CardPortfolio;
 	locale: string;
 }
 
@@ -18,7 +18,7 @@ interface ProjectHeroProps {
 export default function ProjectHero({ project, locale }: ProjectHeroProps): JSX.Element {
 	const t = useTranslations('ProjectDetail');
 
-	const ogImage = project.seo.ogImage as Media | null;
+	const ogImage = project.seo.ogImage;
 	const imageUrl = ogImage?.url || '/images/placeholder-project.jpg';
 
 	const formattedDate = new Date(project.projectDate).toLocaleDateString(locale === 'en' ? 'en-US' : 'uk-UA', {

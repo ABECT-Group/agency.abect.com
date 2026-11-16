@@ -3,7 +3,8 @@
 import { JSX, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
-import type { Service, ServiceType } from '@/payload-types';
+import type { ServiceType } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 import ServicesFilter from '../ServicesFilter/ServicesFilter';
 import ServicesList from '@/client/components/ServicesList/ServicesList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
@@ -15,8 +16,8 @@ import './ServicesPage.scss';
 
 interface ServicesPageProps {
 	locale: string;
-	services: Service[]; // Послуги для показу (усі або відфільтровані за категорією)
-	allServices?: Service[]; // Усі послуги — для лічильників у фільтрі
+	services: CardService[]; // Послуги для показу (усі або відфільтровані за категорією)
+	allServices?: CardService[]; // Усі послуги — для лічильників у фільтрі
 	serviceTypes: ServiceType[];
 	currentType?: ServiceType; // Поточна категорія (undefined = усі)
 }
@@ -35,7 +36,7 @@ export default function ServicesPage({
 
 	// Перемикач «кодом / на конструкторі» фільтрує: на конструкторі — лише послуги з цим варіантом
 	// (раніше змінювались тільки ціни в тих самих картках). «Кодом» є в кожної послуги.
-	const byVariant = (list: Service[]) =>
+	const byVariant = (list: CardService[]) =>
 		variant === 'weblium' ? list.filter((service) => service.hasWebliumOption) : list;
 	const visibleServices = byVariant(services);
 	const servicesForCounting = byVariant(allServices || services);
@@ -48,7 +49,7 @@ export default function ServicesPage({
 		});
 		servicesForCounting.forEach((service) => {
 			counts.all++;
-			const typeSlug = typeof service.serviceType === 'object' ? service.serviceType.slug : null;
+			const typeSlug = service.serviceType?.slug ?? null;
 			if (typeSlug && counts[typeSlug] !== undefined) counts[typeSlug]++;
 		});
 		return counts;

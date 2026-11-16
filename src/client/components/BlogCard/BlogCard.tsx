@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { Link } from '@/client/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Clock } from 'lucide-react';
-import type { Post, Media, Category, User } from '@/payload-types';
+import type { CardPost } from '@/client/lib/cards';
 import './BlogCard.scss';
 
 interface BlogCardProps {
-	post: Post;
+	post: CardPost;
 	locale: string;
 }
 
@@ -17,12 +17,12 @@ export default function BlogCard({ post, locale }: BlogCardProps): JSX.Element {
 	const t = useTranslations('Common.BlogCard');
 
 	// Отримуємо URL зображення
-	const cover = post.cover as Media | null;
+	const cover = post.cover;
 	const imageUrl = cover?.url || '/images/placeholder-blog.jpg';
 
 	// Отримуємо категорію та автора
-	const category = post.category as Category | null;
-	const author = post.author as User | null;
+	const category = post.category;
+	const author = post.author;
 
 	// Формуємо URL статті: /blog/[category]/[slug]
 	const categorySlug = category?.slug || 'uncategorized';
@@ -46,7 +46,6 @@ export default function BlogCard({ post, locale }: BlogCardProps): JSX.Element {
 			<Link
 				href={articleUrl}
 				className="blog-card__link"
-				aria-label={`${t('readArticle')}: ${post.title}`}
 			>
 				{/* Cover Image */}
 				<div className="blog-card__image">

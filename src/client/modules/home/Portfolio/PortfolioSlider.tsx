@@ -63,14 +63,12 @@ export default function PortfolioSlider({ slides }: { slides: PortfolioSlide[] }
 						style={{ '--reveal-delay': `${0.07 * Math.min(index, 3)}s` } as CSSProperties}
 					>
 						<Link href={`/portfolio/${slide.slug}`} className="portfolio__card">
-							{/* Фото вписується повністю (contain); порожні смуги — розмита копія того ж фото (--cover) */}
-							<span
-								className="portfolio__card-image"
-								style={{ '--cover': `url("${encodeURI(slide.image)}")` } as CSSProperties}
-							>
+							{/* Фото вписується повністю (contain); порожні смуги — розмита крихітна копія того ж фото */}
+							<span className="portfolio__card-image">
+								<Image src={slide.image} alt="" aria-hidden="true" fill sizes="32px" quality={40} className="portfolio__card-backdrop" />
 								<Image
 									src={slide.image}
-									alt={slide.title}
+									alt={t('imageAlt', { title: slide.title })}
 									fill
 									sizes="(max-width: 768px) 85vw, (max-width: 1024px) 45vw, 400px"
 								/>

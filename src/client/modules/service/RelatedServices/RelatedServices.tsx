@@ -5,6 +5,7 @@ import ServicesList from '@/client/components/ServicesList/ServicesList';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import type { Service } from '@/payload-types';
 import './RelatedServices.scss';
+import { toCardService } from '@/client/lib/cards';
 
 interface RelatedServicesProps {
 	services: Service[];
@@ -32,7 +33,7 @@ export default function RelatedServices({ services }: RelatedServicesProps): JSX
 					}
 				/>
 
-				<ServicesList className="related-services__list" services={services} />
+				<ServicesList className="related-services__list" services={services.map(toCardService)} />
 			</div>
 		</section>
 	);

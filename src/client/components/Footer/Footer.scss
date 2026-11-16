@@ -16,7 +16,7 @@
 	position: absolute;
 	inset: 0;
 	z-index: -1;
-	background-image: url('/images/bg/glow-section.svg'), url('/images/bg/stripe-hero.png');
+	background-image: url('/images/bg/glow-section.svg'), var(--stripe-hero);
 	background-repeat: no-repeat, repeat-x;
 	background-size: 1136px 1136px, 43px 100%;
 	background-position: calc(50% - 560px) calc(100% + 568px - 40px), 0 0;

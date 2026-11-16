@@ -47,19 +47,21 @@
 	border-radius: 10px;
 	background: var(--portfolio-card-bg);
 
-	&::before {
-		content: "";
-		position: absolute;
-		inset: -24px;
-		background: var(--cover) center / cover no-repeat;
-		filter: blur(18px) brightness(0.55) saturate(1.2);
-		pointer-events: none;
-	}
-
 	img {
 		z-index: 1;
 		object-fit: contain;
 		object-position: center;
+	}
+
+	// Розмита копія під фото: заповнює смуги, коли пропорція обкладинки інша
+	img.portfolio-card__backdrop {
+		z-index: 0;
+		inset: -24px !important;
+		width: calc(100% + 48px) !important;
+		height: calc(100% + 48px) !important;
+		object-fit: cover;
+		filter: blur(18px) brightness(0.55) saturate(1.2);
+		pointer-events: none;
 	}
 }
 

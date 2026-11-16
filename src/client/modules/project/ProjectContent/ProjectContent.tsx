@@ -8,7 +8,8 @@ import RichTextHeadings from '@/client/components/RichTextHeadings/RichTextHeadi
 import './ProjectContent.scss';
 
 interface ProjectContentProps {
-	project: Portfolio;
+	/** Лише текст кейсу й поля для мікророзмітки — не весь документ (ISS-049) */
+	project: Pick<Portfolio, 'content' | 'title' | 'shortDescription' | 'projectDate'>;
 	author?: string;
 }
 

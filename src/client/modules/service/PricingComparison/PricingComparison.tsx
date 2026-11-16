@@ -2,13 +2,13 @@
 
 import { CSSProperties, JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Service } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import PlanCard from '@/client/components/PlanCard/PlanCard';
 import './PricingComparison.scss';
 
 interface PricingComparisonProps {
-	service: Service;
+	service: CardService;
 	locale: string;
 }
 

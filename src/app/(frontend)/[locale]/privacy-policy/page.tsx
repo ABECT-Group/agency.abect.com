@@ -39,6 +39,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       siteName: 'ABECT',
       locale: isUa ? 'uk_UA' : 'en_US',
       type: 'website',
+      // Загальна OG-картинка сайту — без неї прев'ю посилання в месенджерах порожнє
+      images: [{ url: `${SITE_URL}/seo/${isUa ? '' : 'en-'}og.jpg`, width: 1200, height: 630 }],
     },
   };
 }

@@ -18,7 +18,9 @@ const makeConverters = (ids: WeakMap<object, string>): JSXConvertersFunction<Def
     ...defaultConverters,
     heading: ({ node, nodesToJSX }) => {
         const text = nodesToJSX({ nodes: node.children });
-        const Tag = node.tag;
+        // H1 сторінки — її заголовок (PageHero / шапка статті); H1 з тексту CMS — як H2,
+        // інакше на сторінці два H1 (ISS-055)
+        const Tag = node.tag === 'h1' ? 'h2' : node.tag;
         const id = ids.get(node);
         return id ? <Tag id={id}>{text}</Tag> : <Tag>{text}</Tag>;
     },

@@ -3,6 +3,7 @@ import type { Post } from '@/payload-types';
 import ArticleHero from './ArticleHero/ArticleHero';
 import ArticleContent from './ArticleContent/ArticleContent';
 import RelatedArticles from './RelatedArticles/RelatedArticles';
+import { toCardPost } from '@/client/lib/cards';
 
 interface ArticleProps {
 	post: Post;
@@ -11,11 +12,15 @@ interface ArticleProps {
 }
 
 export default function Article({ post, relatedPosts, locale }: ArticleProps): JSX.Element {
+	const card = toCardPost(post);
 	return (
 		<main>
-			<ArticleHero post={post} locale={locale} />
-			<ArticleContent post={post} />
-			<RelatedArticles posts={relatedPosts} locale={locale} />
+			{/* У клієнтські компоненти — лише потрібні поля, не весь документ (ISS-049) */}
+			<ArticleHero post={card} locale={locale} />
+			<ArticleContent
+				post={{ content: post.content, title: post.title, description: post.description, date: post.date, updatedAt: post.updatedAt, author: card.author }}
+			/>
+			<RelatedArticles posts={relatedPosts.map(toCardPost)} locale={locale} />
 		</main>
 	);
 }

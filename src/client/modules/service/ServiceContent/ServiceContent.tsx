@@ -9,7 +9,8 @@ import type { Service } from '@/payload-types';
 import './ServiceContent.scss';
 
 interface ServiceContentProps {
-	service: Service;
+	/** Лише текст «Про послугу» — не весь документ (ISS-049) */
+	service: Pick<Service, 'detailedDescription'>;
 }
 
 // «Про послугу»: липкий зміст ліворуч (як у кейсах) + детальний опис із CMS у картці.

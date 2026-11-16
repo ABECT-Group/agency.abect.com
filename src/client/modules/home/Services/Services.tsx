@@ -4,6 +4,7 @@ import { getFeaturedServices } from '@/client/lib/services';
 import { Link } from '@/client/i18n/navigation';
 import ServicePlans from './ServicePlans';
 import './Services.scss';
+import { toCardService } from '@/client/lib/cards';
 
 interface ServicesProps {
 	locale: string;
@@ -20,7 +21,7 @@ export default async function Services({ locale }: ServicesProps): Promise<JSX.E
 	return (
 		<section className="services" id="services" aria-labelledby="services-title">
 			<div className="container container--design">
-				<ServicePlans services={services} headingId="services-title" title={t('title')} subtitle={t('subtitle')} />
+				<ServicePlans services={services.map(toCardService)} headingId="services-title" title={t('title')} subtitle={t('subtitle')} />
 
 				<footer className="services__footer" data-reveal="">
 					<p className="services__footer-text">{t('footerText')}</p>

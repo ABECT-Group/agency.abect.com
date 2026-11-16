@@ -3,7 +3,7 @@
 import { JSX } from 'react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import type { Service, ServiceType } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 import { Link } from '@/client/i18n/navigation';
 import ArrowButton from '../ArrowButton/ArrowButton';
 import FloatingDecor from '../FloatingDecor/FloatingDecor';
@@ -12,7 +12,7 @@ import './PlanCard.scss';
 export type PlanVariant = 'custom' | 'weblium';
 
 type PlanCardProps = {
-	service: Service;
+	service: CardService;
 	/** Порядковий номер (01 / …) і декор картки */
 	index: number;
 	variant: PlanVariant;
@@ -61,7 +61,7 @@ export default function PlanCard({
 		.filter((feature): feature is string => Boolean(feature));
 	if (timeline && items.length < 4) items.push(t('timeline', { timeline }));
 
-	const serviceType = service.serviceType as ServiceType | null;
+	const serviceType = service.serviceType;
 	const href = `/services/${serviceType?.slug || 'other'}/${service.slug}`;
 	const number = String(index + 1).padStart(2, '0');
 	const decor = DECOR[index % DECOR.length];

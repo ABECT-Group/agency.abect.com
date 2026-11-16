@@ -4,6 +4,7 @@ import { getAllPosts, getAllCategories, getCategoryBySlug, getPostsByCategory } 
 import BlogPage from '@/client/modules/blog/BlogPage/BlogPage';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
+import { toCardPost } from '@/client/lib/cards';
 
 export const dynamicParams = true;
 
@@ -134,8 +135,8 @@ export default async function CategoryPage({ params }: Params) {
 
 			<BlogPage
 				locale={locale}
-				posts={posts}
-				allPosts={allPosts}
+				posts={posts.map(toCardPost)}
+				allPosts={allPosts.map(toCardPost)}
 				categories={categories}
 				currentCategory={category}
 			/>

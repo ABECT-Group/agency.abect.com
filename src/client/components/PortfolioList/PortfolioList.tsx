@@ -1,12 +1,12 @@
 'use client';
 
 import { CSSProperties, JSX } from 'react';
-import type { Portfolio } from '@/payload-types';
+import type { CardPortfolio } from '@/client/lib/cards';
 import PortfolioCard from '../PortfolioCard/PortfolioCard';
 import './PortfolioList.scss';
 
 interface PortfolioListProps {
-	projects: Portfolio[];
+	projects: CardPortfolio[];
 	locale: string;
 	/** Колонок на десктопі (2 або 3) */
 	startRows?: number;

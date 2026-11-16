@@ -14,9 +14,13 @@ import { SITE_URL } from "@/client/config/site";
 
 import "./globals.scss";
 
+// Моноширинний — лише для блоків коду в статтях: без preload (не конкурує з LCP-картинкою), swap — текст
+// одразу видно системним моноширинним (ISS-053)
 const victorMono = Victor_Mono({
   variable: "--font-victor-mono",
   subsets: ["cyrillic", "latin"],
+  display: "swap",
+  preload: false,
 });
 
 // Основний шрифт сайту (globals.scss → `*`). Self-hosted через next/font — працює з CSP font-src 'self'.

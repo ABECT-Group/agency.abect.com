@@ -48,6 +48,10 @@ const nextConfig = {
   output: 'standalone',
   // Не розкривати стек у заголовку X-Powered-By
   poweredByHeader: false,
+  // Оптимізовані next/image кешуються тиждень (за замовчуванням 4 години) — ISS-051
+  images: {
+    minimumCacheTTL: 604800,
+  },
   // Next 16: proxy отримує URL з хостом `localhost`, а rewrite порівнюється з URL на основі
   // HOSTNAME (у Docker — 0.0.0.0). Хости не збігаються → rewrite next-intl (/about → /ua/about)
   // трактується як зовнішній і проксіюється по мережі (307-цикл / 500). Ця опція передає в proxy
@@ -58,6 +62,18 @@ const nextConfig = {
       {
         source: '/((?!admin).*)',
         headers: securityHeaders,
+      },
+      // Кешування (ISS-051). Медіа з CMS Payload віддавав без Cache-Control — браузер перевантажував
+      // обкладинки щоразу. Нове завантаження в Payload отримує нове ім'я файлу (суфікс), тож доба +
+      // фонове оновлення безпечні. Файли заявок (/api/lead-files) сюди не потрапляють — вони приватні.
+      {
+        source: '/api/media/file/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+      },
+      // Статика з public/ (Next віддає її з max-age=0). Імена без хешу: змінюючи файл — давати нове ім'я.
+      {
+        source: '/:dir(images|icons)/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' }],
       },
       // Превʼю / тестове середовище: заборонити індексацію всього сайту (разом з адмінкою й API)
       ...(isPreview
@@ -76,4 +92,17 @@ const nextConfig = {
 }
 
 // Обгортаємо обидва плагіни (у правильному порядку)
-export default withPayload(withNextIntl(nextConfig), { devBundleServerPackages: false })
+const config = withPayload(withNextIntl(nextConfig), { devBundleServerPackages: false })
+
+// withPayload додає для ВСІХ адрес `Accept-CH` / `Critical-CH: Sec-CH-Prefers-Color-Scheme` (тема адмінки).
+// Через Critical-CH Chrome перезапускає перший запит кожного відвідувача сайту (внутрішній 307 на ту саму
+// адресу, ~0,6–0,8 с у Lighthouse) — обмежуємо це правило адмінкою, де тема справді потрібна.
+const payloadHeaders = config.headers
+config.headers = async () =>
+  (await payloadHeaders()).map((rule) =>
+    rule.source === '/:path*' && rule.headers.some((header) => header.key === 'Critical-CH')
+      ? { ...rule, source: '/admin/:path*' }
+      : rule
+  )
+
+export default config

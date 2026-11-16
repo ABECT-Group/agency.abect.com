@@ -1,12 +1,12 @@
 'use client';
 
 import { CSSProperties, JSX } from 'react';
-import type { Service } from '@/payload-types';
+import type { CardService } from '@/client/lib/cards';
 import PlanCard, { type PlanVariant } from '../PlanCard/PlanCard';
 import './ServicesList.scss';
 
 interface ServicesListProps {
-	services: Service[];
+	services: CardService[];
 	/** Варіант цін для послуг, що мають конструктор (перемикач — у батьківському компоненті) */
 	variant?: PlanVariant;
 	/** Плавна зміна вмісту карток при перемиканні (після першого перемикання) */

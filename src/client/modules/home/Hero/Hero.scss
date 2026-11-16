@@ -24,7 +24,7 @@
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
-	background-image: url('/images/bg/glow-hero.svg'), url('/images/bg/stripe-hero.png');
+	background-image: url('/images/bg/glow-hero.svg'), var(--stripe-hero);
 	background-repeat: no-repeat, repeat-x;
 	background-size: 1622px 1622px, 43px 100%;
 	// Світіння по центру висоти hero — щоб при 100vh лишалось за ноутбуком
@@ -294,7 +294,7 @@
 	}
 
 	.hero__bg {
-		background-image: url('/images/bg/glow-hero-mobile.svg'), url('/images/bg/stripe-hero.png');
+		background-image: url('/images/bg/glow-hero-mobile.svg'), var(--stripe-hero);
 		background-size: 1361px 1361px, 43px 100%;
 		background-position: center -251px, 0 0;
 	}

@@ -1,12 +1,12 @@
 'use client';
 
 import { JSX } from 'react';
-import type { Post } from '@/payload-types';
+import type { CardPost } from '@/client/lib/cards';
 import BlogCard from '../BlogCard/BlogCard';
 import './BlogList.scss';
 
 interface BlogListProps {
-	posts: Post[];
+	posts: CardPost[];
 	locale: string;
 	startRows?: number;
 }

@@ -4,12 +4,14 @@
  *   IMPORT_URL=https://agency.abect.com IMPORT_EMAIL=you@example.com IMPORT_PASSWORD=... npm run import:blog
  *   (без IMPORT_URL — локальний http://localhost:3000; IMPORT_DIR — інша тека зі статтями)
  *
- * Що робить для кожного content/blog-drafts/*.md:
+ * Що робить для кожного content/blog-drafts/*.md (українська версія):
  * - пропускає, якщо стаття з таким slug уже є (повторний запуск нічого не дублює);
  * - вантажить обкладинку (covers/<slug>.png) у «Медіа»;
  * - перетворює Markdown у формат редактора Lexical (H2/H3, абзаци, списки, цитати, **жирний**, *курсив*, посилання);
  * - створює статтю: status = draft, автор — той, хто залогінився, категорія — за slug, дата — зараз.
- * Публікує людина в адмінці після перевірки. Скрипт нічого не видаляє й не змінює наявних записів.
+ * Далі — англійські версії з content/blog-drafts/en/*.md (той самий slug): додає локаль en до статті,
+ * лише якщо англійського заголовка ще немає (наявні переклади не перезаписує).
+ * Публікує людина в адмінці після перевірки. Скрипт нічого не видаляє; змінює лише порожню англійську локаль.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
@@ -142,7 +144,7 @@ type Article = {
   body: string
 }
 
-function parseArticle(file: string): Article {
+function parseArticle(file: string, requireCategory = true): Article {
   const source = readFileSync(file, 'utf8').replace(/\r\n/g, '\n')
   const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(source)
   if (!match) throw new Error(`${file}: немає блоку --- з метаданими`)
@@ -151,7 +153,9 @@ function parseArticle(file: string): Article {
     const kv = /^(\w+):\s*(.*)$/.exec(line)
     if (kv) meta[kv[1]] = kv[2].trim()
   }
-  for (const key of ['slug', 'title', 'description', 'category', 'metaTitle', 'metaDescription', 'metaKeywords']) {
+  const required = ['slug', 'title', 'description', 'metaTitle', 'metaDescription', 'metaKeywords']
+  if (requireCategory) required.push('category')
+  for (const key of required) {
     if (!meta[key]) throw new Error(`${file}: не заповнено «${key}»`)
   }
   return {
@@ -159,7 +163,7 @@ function parseArticle(file: string): Article {
     slug: meta.slug,
     title: meta.title,
     description: meta.description,
-    category: meta.category,
+    category: meta.category || '',
     tags: (meta.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
     metaTitle: meta.metaTitle,
     metaDescription: meta.metaDescription,
@@ -201,7 +205,7 @@ async function main() {
     .sort()
     .map((name) => path.join(DIR, name))
   if (!files.length) throw new Error(`У ${DIR} немає .md файлів`)
-  const articles = files.map(parseArticle)
+  const articles = files.map((file) => parseArticle(file))
 
   console.log(`Сайт: ${BASE}\nСтатей у теці: ${articles.length}`)
 
@@ -250,7 +254,42 @@ async function main() {
     console.log(`+ чернетка ${label} → ${BASE}/admin/collections/posts/${created.doc.id}`)
   }
 
-  console.log('Готово. Перевірте чернетки в адмінці й опублікуйте (статус «Опубліковано»).')
+  // ---------------- Англійські версії
+  const enDir = path.join(DIR, 'en')
+  const enFiles = existsSync(enDir)
+    ? readdirSync(enDir)
+        .filter((name) => name.endsWith('.md'))
+        .sort()
+        .map((name) => parseArticle(path.join(enDir, name), false))
+    : []
+  for (const article of enFiles) {
+    const label = `«${article.title}» (en)`
+    const found = await api<{ docs: { id: string; title?: string | null }[] }>(
+      `/api/posts?where[slug][equals]=${encodeURIComponent(article.slug)}&limit=1&depth=0&locale=en&fallback-locale=none`
+    )
+    const post = found.docs[0]
+    if (!post) {
+      console.log(`– пропущено ${label}: немає статті зі slug «${article.slug}»`)
+      continue
+    }
+    if (post.title) {
+      console.log(`– пропущено ${label}: англійська версія вже є`)
+      continue
+    }
+    await api(`/api/posts/${post.id}?locale=en`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: article.title,
+        description: article.description,
+        content: markdownToLexical(article.body),
+        seo: { metaTitle: article.metaTitle, metaDescription: article.metaDescription, metaKeywords: article.metaKeywords },
+      }),
+    })
+    console.log(`+ англійська версія ${label} → ${BASE}/admin/collections/posts/${post.id}?locale=en`)
+  }
+
+  console.log('Готово. Перевірте чернетки в адмінці (обидві мови) й опублікуйте (статус «Опубліковано»).')
 }
 
 main().catch((error: Error) => {
