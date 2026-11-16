@@ -35,8 +35,9 @@ yarn-debug.log*
 .idea
 .claude
 
-# media
+# media / файли заявок
 /media
+/lead-files
 
 # vercel
 .vercel

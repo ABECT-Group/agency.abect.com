@@ -87,7 +87,7 @@ git push origin main
 | container | `agency-abect-frontend` |
 | env_file | `../secrets/.env.frontend` |
 | ports | `127.0.0.1:3333:3000` — лише для nginx |
-| volumes | `./media:/app/media` (власник — uid 1000; скрипт виставляє його сам) |
+| volumes | `./media:/app/media`, `./lead-files:/app/lead-files` — файли заявок окремо від публічних медіа (власник обох — uid 1000; скрипт виставляє його сам) |
 | networks | external-мережа, через яку видно MongoDB |
 | limits | 2 CPU / 2 GB |
 
@@ -142,5 +142,5 @@ server {
 ## Бекапи
 
 - **База:** щоночі разом з іншими базами на сервері (налаштовано на рівні сервера, поза репозиторієм).
-- **`media/`** (файли з адмінки): `scripts/backup-media.sh` за cron, архіви зберігаються 7 днів.
+- **`media/` і `lead-files/`** (файли з адмінки й вкладення заявок): `scripts/backup-media.sh` за cron, архіви зберігаються 7 днів.
 - Відновлюючи базу з дампу, обмежуйте відновлення лише БД `agency-abect` (`--nsInclude='agency-abect.*'`): MongoDB на сервері спільна.

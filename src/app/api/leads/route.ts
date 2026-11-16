@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayload } from 'payload';
 import type { DataFromCollectionSlug } from 'payload';
@@ -203,7 +204,8 @@ function safeFileName(original: string, extension: string): string {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 60);
-  return `lead-${Date.now()}-${base || 'file'}.${extension}`;
+  // Випадковий суфікс: імʼя файлу не можна вгадати перебором (захист у глибину до access-перевірок)
+  return `lead-${Date.now()}-${randomBytes(8).toString('hex')}-${base || 'file'}.${extension}`;
 }
 
 /** Перевіряє файл із форми. Повертає вкладення або текст помилки для користувача. */

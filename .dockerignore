@@ -41,6 +41,7 @@ Thumbs.db
 # Media (if storing locally)
 media/*
 !media/.gitkeep
+lead-files
 
 # Docker
 Dockerfile

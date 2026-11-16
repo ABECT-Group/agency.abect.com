@@ -23,7 +23,9 @@ export const LEAD_FILE_MAX_SIZE = 10 * 1024 * 1024
  * - читати й завантажувати — лише залогіненим (Payload віддає файл через /api/lead-files/file/…
  *   з перевіркою доступу; у public/ і напряму через nginx вони не потрапляють);
  * - створювати — лише через POST /api/leads (Local API з overrideAccess після перевірок типу й розміру).
- * Файли лежать у media/lead-files — у тому ж змонтованому томі, що й медіа (і потрапляють у бекап).
+ * ⚠️ Файли лежать в ОКРЕМІЙ теці `lead-files/` (окремий том Docker), а НЕ всередині `media/`:
+ *    колекція Media публічна, і її файловий роут віддає будь-який файл зі свого staticDir,
+ *    включно з підтеками (`/api/media/file/lead-files%2F<імʼя>` віддавав файли заявок без логіну).
  */
 export const LeadFiles: CollectionConfig = {
   slug: 'lead-files',
@@ -40,7 +42,7 @@ export const LeadFiles: CollectionConfig = {
     delete: adminOnly,
   },
   upload: {
-    staticDir: 'media/lead-files',
+    staticDir: 'lead-files',
     mimeTypes: LEAD_FILE_MIME_TYPES,
   },
   fields: [],

@@ -36,6 +36,8 @@ services:
       - "127.0.0.1:3333:3000"
     volumes:
       - ./media:/app/media
+      # Файли заявок — ОКРЕМО від media/: Media публічна, і її роут віддає й підтеки staticDir
+      - ./lead-files:/app/lead-files
     networks:
       - mongodb-net
     deploy:
