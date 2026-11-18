@@ -171,6 +171,16 @@
 	}
 }
 
+// Вузькі телефони (iPhone SE, 320–400px): довгі слова капсом («НАЛАШТУВАННЯ», «БАГАТОСТОРІНКОВИЙ»)
+// при 30px не вміщались і обрізались — розмір від ширини екрана, а як запасний варіант — перенос слова
+@media (max-width: 480px) {
+	.page-hero__title {
+		font-size: clamp(21px, 7.4vw, 30px);
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.page-hero__bg,
 	.page-hero__breadcrumbs,

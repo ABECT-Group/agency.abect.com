@@ -1,0 +1,320 @@
+/* Віджет калькулятора — кнопка праворуч унизу + панель, як чат підтримки (стиль сайту: скло, синій градієнт) */
+
+.calc-widget {
+	position: fixed;
+	right: 24px;
+	// --calc-widget-lift — висота банера cookie, коли він перекриває низ праворуч (телефон)
+	bottom: calc(24px + var(--calc-widget-lift, 0px));
+	transition: bottom 0.3s ease;
+	// Нижче хедера й модалки заявки (1000) і банера cookie (999)
+	z-index: 990;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 14px;
+	pointer-events: none;
+
+	> * {
+		pointer-events: auto;
+	}
+}
+
+// Кнопка: кругла, градієнт CTA, світіння; поява — знизу з масштабом
+.calc-widget__button {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 62px;
+	height: 62px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 50%;
+	background: var(--cta-gradient);
+	box-shadow: 0 10px 30px rgba(0, 55, 239, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+	color: var(--white);
+	cursor: pointer;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(16px) scale(0.8);
+	transition:
+		opacity 0.35s ease,
+		transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 0.3s ease,
+		visibility 0s linear 0.45s;
+
+	.calc-widget--visible & {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		transition:
+			opacity 0.35s ease,
+			transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+			box-shadow 0.3s ease,
+			visibility 0s;
+	}
+
+	// М'яка «пульсація» кільця — привертає увагу, поки панель закрита
+	&::after {
+		content: "";
+		position: absolute;
+		inset: -1px;
+		border-radius: 50%;
+		box-shadow: 0 0 0 0 rgba(0, 73, 254, 0.55);
+		animation: calc-widget-pulse 2.8s ease-out infinite;
+		pointer-events: none;
+	}
+
+	.calc-widget--open &::after {
+		animation: none;
+	}
+
+	@media (hover: hover) {
+		&:hover {
+			box-shadow: 0 14px 38px rgba(0, 55, 239, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+			transform: translateY(-2px);
+		}
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--white);
+		outline-offset: 3px;
+	}
+}
+
+@keyframes calc-widget-pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(0, 73, 254, 0.5);
+	}
+
+	70%,
+	100% {
+		box-shadow: 0 0 0 16px rgba(0, 73, 254, 0);
+	}
+}
+
+// Підказка «Вітаю, давай прорахуємо…» — скляна «бульбашка» над кнопкою, хрестик у колі — лівий верхній кут
+.calc-widget__greeting {
+	position: relative;
+	max-width: 260px;
+	animation: calc-widget-greeting-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.calc-widget__greeting-text {
+	display: block;
+	width: 100%;
+	padding: 14px 18px;
+	border: 1px solid var(--card-glass-border, rgba(255, 255, 255, 0.14));
+	border-radius: 16px 16px 4px 16px;
+	background: rgba(10, 12, 40, 0.92);
+	backdrop-filter: blur(16px);
+	box-shadow: 0 16px 40px rgba(0, 10, 60, 0.5);
+	color: var(--white);
+	font: inherit;
+	font-size: 15px;
+	line-height: 1.45;
+	text-align: left;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+	}
+}
+
+.calc-widget__greeting-close {
+	position: absolute;
+	top: -10px;
+	left: -10px;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 50%;
+	background: #14163a;
+	color: var(--white);
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background: #23266a;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+	}
+}
+
+@keyframes calc-widget-greeting-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.96);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+// Панель — над кнопкою, як вікно чату (поза потоком: закрита не займає місця й не зсуває підказку).
+// Вкладено в .calc-widget — інакше глобальний .glass (position: relative) перебиває position: absolute
+.calc-widget .calc-widget__panel {
+	--glass-bg: rgba(8, 10, 32, 0.94);
+	--glass-blur: 20px;
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 14px);
+	display: flex;
+	flex-direction: column;
+	width: min(440px, calc(100vw - 48px));
+	height: min(680px, calc(100dvh - 140px));
+	overflow: hidden;
+	border-radius: 20px;
+	box-shadow: 0 30px 80px rgba(0, 10, 60, 0.6);
+	outline: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(16px) scale(0.97);
+	transform-origin: bottom right;
+	transition:
+		opacity 0.25s ease,
+		transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+		visibility 0s linear 0.35s;
+
+}
+
+// Відкрита панель (3 класи — сильніше за базовий селектор вище)
+.calc-widget.calc-widget--open .calc-widget__panel {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition:
+		opacity 0.25s ease,
+		transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+		visibility 0s;
+}
+
+.calc-widget__header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px 16px 14px 18px;
+	border-bottom: 1px solid var(--card-divider, rgba(255, 255, 255, 0.08));
+}
+
+.calc-widget__icon {
+	display: grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--cta-gradient);
+	color: var(--white);
+}
+
+.calc-widget__title {
+	flex: 1;
+	margin: 0;
+	color: var(--white);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.calc-widget__close {
+	display: grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 50%;
+	background: transparent;
+	color: var(--white);
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--logo-mark);
+		outline-offset: 2px;
+	}
+}
+
+.calc-widget__body {
+	flex: 1;
+	min-height: 0;
+	padding: 14px 16px 18px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+}
+
+.calc-widget__loading {
+	height: 100%;
+	min-height: 200px;
+	border-radius: 14px;
+	background: linear-gradient(100deg, rgba(255, 255, 255, 0.03) 30%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 70%);
+	background-size: 200% 100%;
+	animation: calc-widget-loading 1.2s linear infinite;
+}
+
+@keyframes calc-widget-loading {
+	to {
+		background-position: -200% 0;
+	}
+}
+
+// Телефон: кнопка ближче до краю, панель — на весь екран (над хедером)
+@media (max-width: 640px) {
+	.calc-widget {
+		right: 16px;
+		bottom: calc(16px + var(--calc-widget-lift, 0px));
+	}
+
+	.calc-widget__button {
+		width: 56px;
+		height: 56px;
+	}
+
+	.calc-widget--open {
+		z-index: 1001;
+	}
+
+	.calc-widget .calc-widget__panel {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100dvh;
+		border-radius: 0;
+		transform-origin: bottom center;
+	}
+
+	// Кнопка поверх відкритої панелі не потрібна — закривається хрестиком у шапці панелі
+	.calc-widget--open .calc-widget__button {
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.calc-widget__button,
+	.calc-widget__panel,
+	.calc-widget__greeting {
+		transition: none;
+		animation: none;
+	}
+
+	.calc-widget__button::after {
+		animation: none;
+	}
+}

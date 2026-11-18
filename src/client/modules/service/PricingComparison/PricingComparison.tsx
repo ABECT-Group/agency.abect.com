@@ -2,7 +2,7 @@
 
 import { CSSProperties, JSX } from 'react';
 import { useTranslations } from 'next-intl';
-import type { CardService } from '@/client/lib/cards';
+import { serviceVariants, type CardService } from '@/client/lib/cards';
 import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
 import PlanCard from '@/client/components/PlanCard/PlanCard';
 import './PricingComparison.scss';
@@ -16,7 +16,7 @@ interface PricingComparisonProps {
 export default function PricingComparison({ service }: PricingComparisonProps): JSX.Element {
 	const t = useTranslations('ServiceDetail.pricing');
 	const tVariants = useTranslations('HomePage.Services.variants');
-	const variants = service.hasWebliumOption ? (['custom', 'weblium'] as const) : (['custom'] as const);
+	const variants = serviceVariants(service);
 
 	return (
 		<section className="pricing-comparison" aria-labelledby="pricing-title">
@@ -24,7 +24,7 @@ export default function PricingComparison({ service }: PricingComparisonProps): 
 				<SectionHeading
 					id="pricing-title"
 					size="md"
-					title={service.hasWebliumOption ? t('title') : t('singleTitle')}
+					title={variants.length > 1 ? t('title') : t('singleTitle')}
 					subtitle={t('subtitle')}
 				/>
 

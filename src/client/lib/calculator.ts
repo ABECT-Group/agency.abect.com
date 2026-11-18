@@ -1,5 +1,6 @@
 import type { CalculatorConfig } from '@/payload-types';
 import { payloadFetch } from './payload-fetch';
+import type { CalculatorConfig as CalculatorComponentConfig } from '@/client/components/Calculator/CalculatorContext';
 
 /**
  * Отримує конфігурацію калькулятора з CMS.
@@ -153,3 +154,46 @@ export const defaultCalculatorConfig = {
     minimumOrderPrice: 5000,
   },
 };
+
+// Порожній масив у CMS (global створено, але списки не заповнені) = «не задано»:
+// `[] || default` дає `[]`, і калькулятор лишався без типів проєкту — далі першого кроку не пройти.
+function orDefault<A, B>(value: A[] | null | undefined, fallback: B[]): Array<A | B> {
+  return value && value.length > 0 ? value : fallback;
+}
+
+/** Global «Калькулятор» з CMS → конфіг компонента Calculator (null → undefined, порожні списки → дефолти). Сторінка /calculator і віджет. */
+export function toCalculatorConfig(apiConfig: Awaited<ReturnType<typeof getCalculatorConfig>>): CalculatorComponentConfig {
+  if (!apiConfig) return defaultCalculatorConfig;
+
+  return {
+    projectTypes: orDefault(apiConfig.projectTypes, defaultCalculatorConfig.projectTypes).map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      description: p.description ?? undefined,
+      icon: p.icon ?? undefined,
+      hasWebliumOption: p.hasWebliumOption ?? false,
+      webliumBasePrice: p.webliumBasePrice ?? undefined,
+      customBasePrice: p.customBasePrice,
+    })),
+    pagesConfig: apiConfig.pagesConfig || defaultCalculatorConfig.pagesConfig,
+    additionalServices: orDefault(apiConfig.additionalServices, defaultCalculatorConfig.additionalServices).map((s) => ({
+      slug: s.slug,
+      name: s.name,
+      description: s.description ?? undefined,
+      price: s.price,
+      icon: s.icon ?? undefined,
+    })),
+    urgencyOptions: orDefault(apiConfig.urgencyOptions, defaultCalculatorConfig.urgencyOptions).map((u) => ({
+      slug: u.slug,
+      name: u.name,
+      description: u.description ?? undefined,
+      coefficient: u.coefficient,
+      timelineText: u.timelineText ?? undefined,
+    })),
+    generalSettings: {
+      currency: apiConfig.generalSettings?.currency || defaultCalculatorConfig.generalSettings.currency,
+      showPriceFrom: apiConfig.generalSettings?.showPriceFrom ?? defaultCalculatorConfig.generalSettings.showPriceFrom,
+      minimumOrderPrice: apiConfig.generalSettings?.minimumOrderPrice ?? defaultCalculatorConfig.generalSettings.minimumOrderPrice,
+    },
+  };
+}

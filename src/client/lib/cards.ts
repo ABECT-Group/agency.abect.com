@@ -30,6 +30,7 @@ export type CardService = Pick<
 	| 'title'
 	| 'shortDescription'
 	| 'featured'
+	| 'webliumOnly'
 	| 'hasWebliumOption'
 	| 'webliumPrice'
 	| 'webliumPriceCurrency'
@@ -59,6 +60,7 @@ export const toCardService = (service: Service): CardService => ({
 	title: service.title,
 	shortDescription: service.shortDescription,
 	featured: service.featured,
+	webliumOnly: service.webliumOnly,
 	hasWebliumOption: service.hasWebliumOption,
 	webliumPrice: service.webliumPrice,
 	webliumPriceCurrency: service.webliumPriceCurrency,
@@ -76,6 +78,16 @@ export const toCardService = (service: Service): CardService => ({
 	customDescription: service.customDescription,
 	serviceType: toCardServiceType(service.serviceType)
 });
+
+/** Варіант послуги: «Розробка кодом» або «На конструкторі» (Weblium) */
+export type ServiceVariant = 'custom' | 'weblium';
+
+/**
+ * Які варіанти має послуга: лише конструктор (webliumOnly) → ['weblium'];
+ * є варіант на Weblium → ['custom', 'weblium']; інакше → ['custom'].
+ */
+export const serviceVariants = (service: Pick<Service, 'webliumOnly' | 'hasWebliumOption'>): ServiceVariant[] =>
+	service.webliumOnly ? ['weblium'] : service.hasWebliumOption ? ['custom', 'weblium'] : ['custom'];
 
 /** Послуги з поля-зв'язку (relatedServices): лише заповнені документи */
 export const toCardServices = (list: unknown): CardService[] =>

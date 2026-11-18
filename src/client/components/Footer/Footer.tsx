@@ -27,8 +27,8 @@ export default function Footer() {
 	const contactInfo = [
 		{
 			icon: <Mail />,
-			href: 'mailto:support@agency.abect.com',
-			text: 'support@agency.abect.com',
+			href: 'mailto:agency@abect.com',
+			text: 'agency@abect.com',
 			type: 'email'
 		},
 		{

@@ -3,56 +3,38 @@
 import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Portfolio } from '@/payload-types';
-import RichTextWithAnchors from '@/client/components/RichText/RichText';
-import RichTextHeadings from '@/client/components/RichTextHeadings/RichTextHeadings';
-import './ProjectContent.scss';
+import ContentWithToc from '@/client/components/ContentWithToc/ContentWithToc';
 
 interface ProjectContentProps {
 	/** Лише текст кейсу й поля для мікророзмітки — не весь документ (ISS-049) */
 	project: Pick<Portfolio, 'content' | 'title' | 'shortDescription' | 'projectDate'>;
+	/** Обкладинка кейсу — першою в картці тексту */
+	cover?: { url?: string | null; width?: number | null; height?: number | null } | null;
 	author?: string;
 }
 
-export default function ProjectContent({
-	project,
-	author = "ABECT Studio"
-}: ProjectContentProps): JSX.Element {
+// Текст кейсу зі змістом — спільний блок зі статтею блогу (ContentWithToc)
+export default function ProjectContent({ project, cover, author = 'ABECT Studio' }: ProjectContentProps): JSX.Element {
 	const t = useTranslations('ProjectDetail.sidebar');
 
 	return (
-		<section
-			className='project-content'
-			itemScope
-			itemType="https://schema.org/Article"
-		>
-			<div className="container container--design">
-				<div className="project-content__wrapper">
-					<aside
-						className="project-content__sidebar"
-						role="complementary"
-						aria-label="Table of contents"
-					>
-						<RichTextHeadings content={project.content} title={t('tableOfContents')} />
-					</aside>
-
-					<article
-						className="project-content__article"
-						itemProp="articleBody"
-					>
-						<meta itemProp="headline" content={project.title} />
-						<meta itemProp="description" content={project.shortDescription} />
-						<meta itemProp="datePublished" content={project.projectDate} />
-						<meta itemProp="dateModified" content={project.projectDate} />
-						{author && (
-							<span itemProp="author" itemScope itemType="https://schema.org/Organization" style={{ display: 'none' }}>
-								<meta itemProp="name" content={author} />
-							</span>
-						)}
-
-						<RichTextWithAnchors data={project.content} />
-					</article>
-				</div>
-			</div>
-		</section>
+		<ContentWithToc
+			content={project.content}
+			tocTitle={t('tableOfContents')}
+			cover={cover?.url ? { ...cover, url: cover.url, alt: project.title } : undefined}
+			meta={
+				<>
+					<meta itemProp="headline" content={project.title} />
+					<meta itemProp="description" content={project.shortDescription} />
+					<meta itemProp="datePublished" content={project.projectDate} />
+					<meta itemProp="dateModified" content={project.projectDate} />
+					{author && (
+						<span itemProp="author" itemScope itemType="https://schema.org/Organization" style={{ display: 'none' }}>
+							<meta itemProp="name" content={author} />
+						</span>
+					)}
+				</>
+			}
+		/>
 	);
 }

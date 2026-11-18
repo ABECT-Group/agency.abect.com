@@ -35,18 +35,12 @@
 	}
 
 	/* Section Title */
+	// Заголовки секцій — без іконок (рішення розробника 2026-11-18)
 	&__section-title {
-		display: flex;
-		align-items: center;
-		gap: 12px;
 		font-size: 28px;
 		font-weight: 700;
 		margin-bottom: 24px;
 		color: var(--white);
-
-		svg {
-			color: var(--accent);
-		}
 	}
 
 	/* Contact Info Section */
@@ -68,7 +62,7 @@
 
 	&__info-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
 		gap: 20px;
 	}
 
@@ -124,6 +118,8 @@
 	}
 
 	&__info-value {
+		// Довга пошта на вузькому екрані переноситься, а не вилазить за картку
+		overflow-wrap: anywhere;
 		font-size: 16px;
 		font-weight: 600;
 		color: var(--white);
@@ -175,6 +171,8 @@
 	}
 
 	&__hours-time {
+		// Не розривати час і номер телефону («027-58-» / «19» на 320px)
+		white-space: nowrap;
 		font-size: 16px;
 		color: var(--accent);
 		font-weight: 600;
@@ -199,7 +197,7 @@
 
 	&__social-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 		gap: 20px;
 	}
 
@@ -255,6 +253,8 @@
 	}
 
 	&__social-username {
+		// Не розривати час і номер телефону («027-58-» / «19» на 320px)
+		white-space: nowrap;
 		font-size: 14px;
 		color: rgba(255, 255, 255, 0.6);
 	}
@@ -328,7 +328,7 @@
 
 		&__info-grid,
 		&__social-grid {
-			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 		}
 	}
 }
@@ -415,5 +415,12 @@
 				height: 20px;
 			}
 		}
+	}
+}
+
+// iPhone SE (320px): номер Viber без переносу ширший за картку — трохи менший шрифт
+@media (max-width: 360px) {
+	.contacts-page__social-username {
+		font-size: 12.5px;
 	}
 }

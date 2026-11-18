@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
-import { getCalculatorConfig, defaultCalculatorConfig } from '@/client/lib/calculator';
+import { getCalculatorConfig, toCalculatorConfig } from '@/client/lib/calculator';
 import Calculator, { CalculatorProvider, CalculatorConfig } from '@/client/components/Calculator';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
@@ -74,49 +74,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-// Порожній масив у CMS (global створено, але списки не заповнені) = «не задано»:
-// `[] || default` дає `[]`, і калькулятор лишався без типів проєкту — далі першого кроку не пройти.
-function orDefault<A, B>(value: A[] | null | undefined, fallback: B[]): Array<A | B> {
-  return value && value.length > 0 ? value : fallback;
-}
-
-// Helper to transform API config to CalculatorConfig (converts null to undefined)
-function transformConfig(apiConfig: Awaited<ReturnType<typeof getCalculatorConfig>>): CalculatorConfig {
-  if (!apiConfig) return defaultCalculatorConfig;
-
-  return {
-    projectTypes: orDefault(apiConfig.projectTypes, defaultCalculatorConfig.projectTypes).map((p) => ({
-      slug: p.slug,
-      name: p.name,
-      description: p.description ?? undefined,
-      icon: p.icon ?? undefined,
-      hasWebliumOption: p.hasWebliumOption ?? false,
-      webliumBasePrice: p.webliumBasePrice ?? undefined,
-      customBasePrice: p.customBasePrice,
-    })),
-    pagesConfig: apiConfig.pagesConfig || defaultCalculatorConfig.pagesConfig,
-    additionalServices: orDefault(apiConfig.additionalServices, defaultCalculatorConfig.additionalServices).map((s) => ({
-      slug: s.slug,
-      name: s.name,
-      description: s.description ?? undefined,
-      price: s.price,
-      icon: s.icon ?? undefined,
-    })),
-    urgencyOptions: orDefault(apiConfig.urgencyOptions, defaultCalculatorConfig.urgencyOptions).map((u) => ({
-      slug: u.slug,
-      name: u.name,
-      description: u.description ?? undefined,
-      coefficient: u.coefficient,
-      timelineText: u.timelineText ?? undefined,
-    })),
-    generalSettings: {
-      currency: apiConfig.generalSettings?.currency || defaultCalculatorConfig.generalSettings.currency,
-      showPriceFrom: apiConfig.generalSettings?.showPriceFrom ?? defaultCalculatorConfig.generalSettings.showPriceFrom,
-      minimumOrderPrice: apiConfig.generalSettings?.minimumOrderPrice ?? defaultCalculatorConfig.generalSettings.minimumOrderPrice,
-    },
-  };
-}
-
 // Server Component
 export default async function CalculatorPage({ params }: Params) {
   const { locale } = await params;
@@ -127,7 +84,7 @@ export default async function CalculatorPage({ params }: Params) {
   const apiConfig = await getCalculatorConfig(locale);
 
   // Use API config or default (with proper type transformation)
-  const config: CalculatorConfig = transformConfig(apiConfig);
+  const config: CalculatorConfig = toCalculatorConfig(apiConfig);
 
   return (
     <>

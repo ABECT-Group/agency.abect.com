@@ -116,21 +116,7 @@
 	border-color: var(--form-error-border);
 }
 
-// «Обрати послугу»: темний фон і трикутник праворуч, як у макеті (226:36, 226:38)
-.discuss__select {
-	padding-right: 52px;
-	background:
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='8' viewBox='0 0 15 8'%3E%3Cpath d='M7.36 0 14.72 8H0z' fill='%23fff'/%3E%3C/svg%3E")
-			right 20px center / 15px 8px no-repeat,
-		var(--form-select-bg);
-	cursor: pointer;
-	appearance: none;
-
-	option {
-		background: var(--black);
-		color: var(--white);
-	}
-}
+// «Обрати послугу» — кастомний список (components/Select), стилі там
 
 .discuss__textarea {
 	height: 115px;
@@ -301,6 +287,15 @@
 		width: 160px;
 	}
 
+	// Вузькі телефони (iPhone SE): заголовок займає всю ширину — об'єкт вище й менший, щоб не закривав текст
+	@media (max-width: 480px) {
+		.discuss__decor {
+			top: -118px;
+			left: -50px;
+			width: 120px;
+		}
+	}
+
 	.discuss__title {
 		font-size: 26px;
 	}
@@ -320,11 +315,6 @@
 		height: 50px;
 		padding: 0 16px;
 		font-size: 16px; // ≥ 16px — iOS не масштабує сторінку при фокусі
-	}
-
-	.discuss__select {
-		padding-right: 44px;
-		background-position: right 16px center, 0 0;
 	}
 
 	.discuss__textarea {

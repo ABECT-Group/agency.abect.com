@@ -1,135 +1,50 @@
 'use client';
 
 import { JSX } from 'react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { Calendar, Clock, Eye, User } from 'lucide-react';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
+import PageHero from '@/client/components/PageHero/PageHero';
 import type { CardPost } from '@/client/lib/cards';
-import './ArticleHero.scss';
 
 interface ArticleHeroProps {
 	post: CardPost;
 	locale: string;
 }
 
+// Шапка статті — як у кейсу портфоліо (ProjectHero): PageHero (крихти, назва, опис, теги); обкладинка — у блоці тексту
 export default function ArticleHero({ post, locale }: ArticleHeroProps): JSX.Element {
 	const t = useTranslations('ArticleDetail');
 
-	// Отримуємо URL зображення
-	const cover = post.cover;
-	const imageUrl = cover?.url || '/images/placeholder-blog.jpg';
-
-	// Отримуємо автора
-	// Автор може прийти лише як id (без доступу до users) або без імені — тоді «ABECT», а не «undefined undefined»
-	const author = post.author;
-	const authorName = [author?.firstName, author?.lastName].filter(Boolean).join(' ') || 'ABECT';
-
-	// Отримуємо категорію
 	const category = post.category;
 
-	// Форматуємо дату
-	const formattedDate = new Date(post.date).toLocaleDateString(
-		locale === 'ua' ? 'uk-UA' : 'en-US',
-		{ year: 'numeric', month: 'long', day: 'numeric' }
-	);
-
-	// Конвертуємо секунди в хвилини
+	const formattedDate = new Date(post.date).toLocaleDateString(locale === 'en' ? 'en-US' : 'uk-UA', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
 	const readTimeMinutes = Math.ceil(post.readTime / 60);
 
+	const tags = [category?.name, formattedDate, `${readTimeMinutes} ${t('minRead')}`].filter(
+		(tag): tag is string => Boolean(tag)
+	);
+
 	return (
-		<section className="article-hero">
-			<div className="container">
-				<div className="article-hero__wrapper">
-					<Breadcrumbs
-						chapter='blog'
-						categorySlug={category?.slug}
-						categoryName={category?.name}
-						slug={post.title}
-					/>
-
-					{/* Hero Content */}
-					<div className="article-hero__content">
-						{/* Cover Image */}
-						<div className="article-hero__image">
-							<Image
-								src={imageUrl}
-								alt={post.title}
-								width={1200}
-								height={600}
-								priority
-								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-								className="article-hero__image--img"
-							/>
-						</div>
-
-						{/* Hero Info */}
-						<div className="article-hero__info">
-							{/* Meta badges */}
-							<div className="article-hero__meta">
-								{category && (
-									<span className="article-hero__category">
-										{category.name}
-									</span>
-								)}
-								{post.featured && (
-									<span className="article-hero__featured" title={t('featured')}>
-										★ {t('featured')}
-									</span>
-								)}
-							</div>
-
-							{/* Title */}
-							<h1 className="article-hero__title">{post.title}</h1>
-
-							{/* Description */}
-							<p className="article-hero__description">{post.description}</p>
-
-							{/* Tags */}
-							{post.tags && post.tags.length > 0 && (
-								<div className="article-hero__tags">
-									{post.tags.map((tagObj, index) => (
-										<span key={index} className="article-hero__tag">
-											#{tagObj.tag}
-										</span>
-									))}
-								</div>
-							)}
-
-							{/* Details bar */}
-							<div className="article-hero__details">
-								<div className="article-hero__detail">
-									<User size={16} />
-									<span className="article-hero__detail-value">{authorName}</span>
-								</div>
-
-								<div className="article-hero__detail">
-									<Calendar size={16} />
-									<span className="article-hero__detail-value">
-										<time dateTime={post.date}>{formattedDate}</time>
-									</span>
-								</div>
-
-								<div className="article-hero__detail">
-									<Clock size={16} />
-									<span className="article-hero__detail-value">
-										{readTimeMinutes} {t('minRead')}
-									</span>
-								</div>
-
-								{post.viewCount !== null && post.viewCount !== undefined && (
-									<div className="article-hero__detail">
-										<Eye size={16} />
-										<span className="article-hero__detail-value">
-											{post.viewCount} {t('views')}
-										</span>
-									</div>
-								)}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
+		<PageHero
+			className="article-hero"
+			title={post.title}
+			subtitle={post.description}
+			breadcrumbs={
+				<Breadcrumbs chapter="blog" categorySlug={category?.slug} categoryName={category?.name} slug={post.title} />
+			}
+			actions={
+				<ul className="page-hero__tags">
+					{tags.map((tag) => (
+						<li key={tag} className="page-hero__tag glass">
+							{tag === formattedDate ? <time dateTime={post.date}>{tag}</time> : tag}
+						</li>
+					))}
+				</ul>
+			}
+		/>
 	);
 }

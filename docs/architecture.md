@@ -53,6 +53,7 @@
 - Дані — через `payloadFetch()` (`src/client/lib/payload-fetch.ts`): `fetch` до **власного** Payload REST на `http://127.0.0.1:$PORT` з `next: { tags: ['all'] }` і `cache: 'force-cache'`. Помилка запиту **кидається**, тож сторінка з помилкою не кешується.
 - **On-demand revalidation:** кожна колекція та global мають хуки `afterChange`/`afterDelete` → `revalidateAll()` (`src/hooks/revalidate.ts`, `revalidateTag('all', { expire: 0 })`). Будь-яка зміна в адмінці скидає кеш усіх сторінок; наступний запит отримує свіжі дані.
 - `/thx` — `force-dynamic` (залежить від query). `sitemap.xml` — `force-dynamic` (Local API на кожен запит).
+- **Layout** (`[locale]/layout.tsx`) на кожній сторінці бере global «Калькулятор» (`getCalculatorConfig` → `toCalculatorConfig`, той самий кеш `'all'`) для віджета калькулятора (`components/CalculatorWidget`). Помилка CMS тут **ловиться** — віджет працює на дефолтах із `lib/calculator.ts`, сторінка не падає. Код калькулятора вантажиться в браузер лише при відкритті віджета (`next/dynamic`).
 
 ### Локалі — важливий нюанс
 

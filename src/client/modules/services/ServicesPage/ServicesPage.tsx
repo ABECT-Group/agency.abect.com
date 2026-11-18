@@ -4,7 +4,7 @@ import { JSX, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
 import type { ServiceType } from '@/payload-types';
-import type { CardService } from '@/client/lib/cards';
+import { serviceVariants, type CardService } from '@/client/lib/cards';
 import ServicesFilter from '../ServicesFilter/ServicesFilter';
 import ServicesList from '@/client/components/ServicesList/ServicesList';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
@@ -34,10 +34,9 @@ export default function ServicesPage({
 	const [variant, setVariant] = useState<PlanVariant>('custom');
 	const [switched, setSwitched] = useState(false);
 
-	// Перемикач «кодом / на конструкторі» фільтрує: на конструкторі — лише послуги з цим варіантом
-	// (раніше змінювались тільки ціни в тих самих картках). «Кодом» є в кожної послуги.
-	const byVariant = (list: CardService[]) =>
-		variant === 'weblium' ? list.filter((service) => service.hasWebliumOption) : list;
+	// Перемикач «кодом / на конструкторі» фільтрує: показуються лише послуги з обраним варіантом
+	// (послуги «лише на конструкторі» — тільки в «На конструкторі»)
+	const byVariant = (list: CardService[]) => list.filter((service) => serviceVariants(service).includes(variant));
 	const visibleServices = byVariant(services);
 	const servicesForCounting = byVariant(allServices || services);
 
@@ -57,7 +56,7 @@ export default function ServicesPage({
 
 	const pageTitle = currentType ? currentType.name : t('title');
 	const pageSubtitle = currentType ? currentType.description : t('subtitle');
-	const hasToggle = (allServices || services).some((service) => service.hasWebliumOption);
+	const hasToggle = (allServices || services).some((service) => serviceVariants(service).includes('weblium'));
 
 	return (
 		<>

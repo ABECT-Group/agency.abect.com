@@ -5,36 +5,38 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
 import type { CardPost } from '@/client/lib/cards';
 import BlogList from '@/client/components/BlogList/BlogList';
-import './RelatedArticles.scss';
+import SectionHeading from '@/client/components/SectionHeading/SectionHeading';
+import '@/client/modules/project/RelatedProjects/RelatedProjects.scss';
 
 interface RelatedArticlesProps {
 	posts: CardPost[];
 	locale: string;
 }
 
+// «Схожі статті» — як «Схожі проєкти»: заголовок нового дизайну з посиланням праворуч і картки
 export default function RelatedArticles({ posts, locale }: RelatedArticlesProps): JSX.Element | null {
 	const t = useTranslations('ArticleDetail.related');
 
-	if (!posts || posts.length === 0) {
-		return null;
-	}
+	if (!posts || posts.length === 0) return null;
 
 	return (
-		<section className="related-articles">
-			{/* Контейнер — як у решти секцій: без нього сітка карток тягнулась від краю до краю екрана */}
+		<section className="related-projects" aria-labelledby="related-articles-title">
 			<div className="container container--design">
-				<header className="related-articles__header">
-					<h2 className="related-articles__title">{t('title')}</h2>
-					<p className="related-articles__subtitle">{t('subtitle')}</p>
-				</header>
+				<SectionHeading
+					id="related-articles-title"
+					size="md"
+					title={t('title')}
+					subtitle={t('subtitle')}
+					aside={
+						<Link href="/blog" className="pill-btn pill-btn--outline">
+							{t('viewAll')}
+						</Link>
+					}
+				/>
 
-				<BlogList posts={posts} locale={locale} startRows={3} />
-
-				<footer className="related-articles__footer">
-					<Link href="/blog" className="cta cta-secondary">
-						{t('viewAll')}
-					</Link>
-				</footer>
+				<div className="related-projects__list">
+					<BlogList posts={posts} locale={locale} startRows={3} />
+				</div>
 			</div>
 		</section>
 	);

@@ -26,7 +26,8 @@ export default function Header() {
 			{ href: '/about', section: 'about' },
 			{ href: '/portfolio', section: 'portfolio' },
 			{ href: '/blog', section: 'blog' },
-			{ href: '/contacts', section: 'contacts' }
+			{ href: '/contacts', section: 'contacts' },
+			{ href: '/calculator', section: 'calculator' }
 		],
 		[]
 	);

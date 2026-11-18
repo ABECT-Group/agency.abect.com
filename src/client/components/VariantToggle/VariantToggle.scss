@@ -5,7 +5,8 @@
 	--glass-blur: 12px;
 	display: flex;
 	width: fit-content;
-	padding: 2px 7px;
+	// Однаковий відступ з усіх боків — «пігулка» доходить до краю й зліва / справа (було 2px 7px)
+	padding: 2px;
 	border-radius: 30px;
 }
 

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/client/i18n/navigation';
 import { createThxToken, isValidContact, submitLead } from '@/client/lib/leads';
 import FloatingDecor from '@/client/components/FloatingDecor/FloatingDecor';
+import Select from '@/client/components/Select/Select';
 import './DiscussProject.scss';
 
 /** Група послуг для списку (тип послуги з CMS → послуги цього типу) */
@@ -181,37 +182,15 @@ export default function DiscussProject({ serviceGroups }: DiscussProjectProps): 
 							</div>
 
 							<div className="discuss__field discuss__field--select">
-								<label className="discuss__sr" htmlFor="discuss-service">
-									{t('serviceLabel')}
-								</label>
-								<select
+								<Select
 									id="discuss-service"
-									className="discuss__input discuss__select"
-									name="service"
 									value={serviceSlug}
-									onChange={(event) => setServiceSlug(event.target.value)}
+									onChange={setServiceSlug}
+									groups={[...serviceGroups, { options: [{ value: OTHER, label: t('serviceOther') }] }]}
+									placeholder={t('servicePlaceholder')}
+									ariaLabel={t('serviceLabel')}
 									disabled={loading}
-								>
-									<option value="">{t('servicePlaceholder')}</option>
-									{serviceGroups.map((group) =>
-										group.label ? (
-											<optgroup key={group.label} label={group.label}>
-												{group.options.map((option) => (
-													<option key={option.value} value={option.value}>
-														{option.label}
-													</option>
-												))}
-											</optgroup>
-										) : (
-											group.options.map((option) => (
-												<option key={option.value} value={option.value}>
-													{option.label}
-												</option>
-											))
-										)
-									)}
-									<option value={OTHER}>{t('serviceOther')}</option>
-								</select>
+								/>
 							</div>
 
 							<div className="discuss__field">

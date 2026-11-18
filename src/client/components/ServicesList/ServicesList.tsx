@@ -1,7 +1,7 @@
 'use client';
 
 import { CSSProperties, JSX } from 'react';
-import type { CardService } from '@/client/lib/cards';
+import { serviceVariants, type CardService } from '@/client/lib/cards';
 import PlanCard, { type PlanVariant } from '../PlanCard/PlanCard';
 import './ServicesList.scss';
 
@@ -33,8 +33,8 @@ export default function ServicesList({
 					<PlanCard
 						service={service}
 						index={index}
-						// Послуга без конструктора показує свій основний варіант
-						variant={service.hasWebliumOption ? variant : 'custom'}
+						// Якщо в послуги немає обраного варіанта — показується той, що є (лише кодом / лише конструктор)
+						variant={serviceVariants(service).includes(variant) ? variant : serviceVariants(service)[0]}
 						accent={index % 3 === 1}
 						animateSwap={animateSwap}
 						showDetails={showDetails}

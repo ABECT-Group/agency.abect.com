@@ -19,9 +19,11 @@ import './Calculator.scss';
 
 interface CalculatorContentProps {
   config: CalculatorConfig;
+  /** Компактний вигляд для віджета: без заголовка сторінки (H1) і контейнера — заголовок дає панель */
+  compact?: boolean;
 }
 
-function CalculatorContent({ config }: CalculatorContentProps): JSX.Element {
+function CalculatorContent({ config, compact = false }: CalculatorContentProps): JSX.Element {
   const t = useTranslations('Calculator');
   const tForm = useTranslations('ContactForm');
   const router = useRouter();
@@ -79,13 +81,15 @@ function CalculatorContent({ config }: CalculatorContentProps): JSX.Element {
   };
 
   return (
-    <div className="calculator">
-      <div className="container">
-        <header className="calculator__header">
-          <span className="calculator__badge">{t('badge')}</span>
-          <h1 className="calculator__title">{t('title')}</h1>
-          <p className="calculator__subtitle">{t('subtitle')}</p>
-        </header>
+    <div className={`calculator${compact ? ' calculator--compact' : ''}`}>
+      <div className={compact ? undefined : 'container'}>
+        {!compact && (
+          <header className="calculator__header">
+            <span className="calculator__badge">{t('badge')}</span>
+            <h1 className="calculator__title">{t('title')}</h1>
+            <p className="calculator__subtitle">{t('subtitle')}</p>
+          </header>
+        )}
 
         <div className="calculator__card">
           <div className="calculator__card-top">
@@ -120,6 +124,6 @@ function CalculatorContent({ config }: CalculatorContentProps): JSX.Element {
   );
 }
 
-export default function Calculator({ config }: { config: CalculatorConfig }): JSX.Element {
-  return <CalculatorContent config={config} />;
+export default function Calculator({ config, compact = false }: { config: CalculatorConfig; compact?: boolean }): JSX.Element {
+  return <CalculatorContent config={config} compact={compact} />;
 }

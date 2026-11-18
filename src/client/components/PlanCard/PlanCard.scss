@@ -316,6 +316,30 @@
 	}
 }
 
+// Вузькі телефони (iPhone SE): довга назва одним словом («Багатосторінковий») залазила під декор —
+// менші об'єкти, менше місця під них і трохи менший шрифт назви
+@media (max-width: 400px) {
+	.plan-card__title {
+		max-width: calc(100% - 60px);
+		font-size: 13px;
+	}
+
+	.plan-card__decor--drip {
+		right: 8px;
+		width: 92px;
+	}
+
+	.plan-card__decor--blob {
+		width: 124px;
+	}
+
+	.plan-card__decor--spiral {
+		top: 14px;
+		left: calc(100% - 40px);
+		width: 92px;
+	}
+}
+
 @media (max-width: 380px) {
 	.plan-card__actions .arrow-btn__label {
 		min-width: 0;

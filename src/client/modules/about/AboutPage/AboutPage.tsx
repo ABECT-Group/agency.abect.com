@@ -10,7 +10,7 @@ import Process from '@/client/modules/home/Process/Process';
 import AboutStory from '../AboutStory/AboutStory';
 import AboutTeam from '../AboutTeam/AboutTeam';
 import AboutClients from '../AboutClients/AboutClients';
-import AboutCTA from '../AboutCTA/AboutCTA';
+import CtaSection from '@/client/components/CtaSection/CtaSection';
 import './AboutPage.scss';
 
 interface AboutPageProps {
@@ -48,7 +48,7 @@ export default function AboutPage({ locale: _locale }: AboutPageProps): JSX.Elem
 					cta={null}
 				/>
 				<AboutClients />
-				<AboutCTA />
+				<CtaSection namespace="AboutPage" />
 			</div>
 			<ScrollReveal />
 		</>

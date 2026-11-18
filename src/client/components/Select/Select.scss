@@ -1,0 +1,187 @@
+/* Кастомний випадний список: кнопка як поля форми + скляний список (стиль навігації хедера) */
+
+.select {
+	position: relative;
+	width: 100%;
+}
+
+.select__trigger {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	height: 54px;
+	padding: 0 20px;
+	border: 1px solid var(--white);
+	border-radius: 10px;
+	background: var(--form-select-bg);
+	color: var(--white);
+	font: inherit;
+	font-size: 18px;
+	line-height: 28px;
+	text-align: left;
+	cursor: pointer;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+	&:hover {
+		border-color: rgba(117, 161, 250, 0.7);
+	}
+
+	&:focus-visible,
+	.select--open & {
+		outline: none;
+		border-color: var(--logo-mark);
+		box-shadow: 0 0 0 3px var(--accent-alpha-10);
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
+}
+
+.select__trigger--placeholder .select__value {
+	color: var(--form-placeholder);
+}
+
+.select__value {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.select__arrow {
+	flex-shrink: 0;
+	color: var(--white);
+	transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+
+	// У закритому стані трикутник — вниз (як у макеті 226:38), у відкритому — вгору
+	transform: rotate(180deg);
+
+	.select--open & {
+		transform: rotate(0deg);
+	}
+}
+
+// Вкладено в .select — інакше глобальний .glass (position: relative) перебиває position: absolute
+.select .select__list {
+	--glass-bg: rgba(10, 12, 40, 0.92);
+	--glass-blur: 18px;
+	position: absolute;
+	top: calc(100% + 8px);
+	left: 0;
+	right: 0;
+	z-index: 20;
+	max-height: 320px;
+	margin: 0;
+	padding: 6px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	border-radius: 14px;
+	box-shadow: 0 20px 50px rgba(0, 10, 60, 0.55);
+	list-style: none;
+	scrollbar-width: thin;
+
+	// Закритий список — прихований і для скрінрідерів (visibility), але з анімацією появи
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-6px) scale(0.98);
+	transform-origin: top center;
+	transition:
+		opacity 0.2s ease,
+		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+		visibility 0s linear 0.25s;
+
+	.select--open & {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		transition:
+			opacity 0.2s ease,
+			transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+			visibility 0s;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+}
+
+.select__group + .select__group,
+.select__option + .select__group,
+.select__group + .select__option {
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px solid var(--card-divider, rgba(255, 255, 255, 0.08));
+}
+
+.select__group-label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px 4px;
+	color: var(--logo-mark);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+
+	&::before {
+		content: "";
+		width: 6px;
+		height: 5px;
+		background: var(--logo-mark);
+	}
+}
+
+.select__option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 44px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	color: var(--hero-text);
+	font-size: 16px;
+	line-height: 1.35;
+	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.select__option--active {
+	background: rgba(117, 161, 250, 0.14);
+	color: var(--white);
+}
+
+.select__option--selected {
+	color: var(--white);
+	font-weight: 600;
+}
+
+.select__check {
+	flex-shrink: 0;
+	color: var(--logo-mark);
+}
+
+@media (max-width: 768px) {
+	.select__trigger {
+		height: 50px;
+		padding: 0 16px;
+		font-size: 16px; // ≥ 16px — iOS не масштабує сторінку при фокусі
+	}
+
+	.select .select__list {
+		max-height: 280px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.select__arrow,
+	.select__list {
+		transition: none;
+	}
+}

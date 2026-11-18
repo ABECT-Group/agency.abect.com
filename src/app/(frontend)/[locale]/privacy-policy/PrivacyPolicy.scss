@@ -72,7 +72,10 @@
 
     &__content {
       h1 {
-        font-size: 28px;
+        // «конфіденційності» шрифтом Unbounded 28px ширше за 320px — розмір від ширини екрана, плюс перенос як запасний варіант
+        font-size: clamp(21px, 6.8vw, 28px);
+        overflow-wrap: break-word;
+        hyphens: auto;
       }
 
       h2 {

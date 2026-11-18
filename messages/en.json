@@ -266,13 +266,13 @@
 	},
 	"AboutPage": {
 		"seo": {
-			"title": "About Us — ABECT | Ukrainian Web Studio",
-			"description": "ABECT is a Ukrainian web studio that creates quality web solutions for business. Learn about our team, work approach, and values.",
-			"keywords": "about us, web studio, development team, ABECT, about company"
+			"title": "About ABECT — Ukrainian Website Development Studio",
+			"description": "ABECT is a Ukrainian web studio: development, design and marketing. 2.5+ years on the market, 40+ projects for businesses in Ukraine and Europe. Meet the team.",
+			"keywords": "ABECT web studio, Ukrainian web studio, website development team, website development Ukraine, web studio for business"
 		},
 		"hero": {
-			"title": "We create digital products that work",
-			"subtitle": "ABECT is a Ukrainian web studio that transforms ideas into functional websites and applications for business",
+			"title": "ABECT Web Studio — Websites That Work for Business",
+			"subtitle": "A Ukrainian team of developers, designers and marketers. For over 2.5 years we have been building landing pages, corporate websites, online stores and web apps for businesses in Ukraine and Europe.",
 			"button": "Discuss Project"
 		},
 		"story": {
@@ -345,6 +345,7 @@
 		"logo": "ABECT",
 		"nav": {
 			"services": "Services",
+			"calculator": "Calculator",
 			"about": "About",
 			"portfolio": "Portfolio",
 			"blog": "Blog",
@@ -352,6 +353,7 @@
 		},
 		"navTitles": {
 			"services": "Our services and offerings",
+			"calculator": "Estimate the cost of your website",
 			"about": "Information about our company",
 			"portfolio": "Portfolio of our projects",
 			"blog": "Our blog",
@@ -396,6 +398,13 @@
 		"english": "English",
 		"loading": "Loading...",
 		"cta": "Contact Us",
+		"CalculatorWidget": {
+			"open": "Open the website cost calculator",
+			"close": "Close the calculator",
+			"title": "Website cost calculator",
+			"greeting": "Hi! Let’s estimate the cost of your website",
+			"closeGreeting": "Close the hint"
+		},
 		"BlogCard": {
 			"readArticle": "Read article",
 			"featured": "Featured",
@@ -444,8 +453,8 @@
 	},
 	"PortfolioPage": {
 		"listTitle": "Projects",
-		"title": "Our Portfolio",
-		"subtitle": "Over 50 successful web development, design and marketing projects for businesses",
+		"title": "Portfolio & Website Development Case Studies",
+		"subtitle": "Real projects for businesses in Ukraine and the EU: corporate websites, online stores and landing pages — custom-coded or built on Weblium. Each case covers the client’s task and our solution.",
 		"breadcrumbHome": "Home",
 		"breadcrumbPortfolio": "Portfolio",
 		"filter": {
@@ -462,14 +471,14 @@
 		"noResultsDescription": "Try changing the filter or view all works",
 		"viewAllButton": "Show All",
 		"seo": {
-			"title": "ABECT Web Studio Portfolio | Our Works and Cases",
-			"description": "ABECT web development portfolio: completed websites, designs and marketing cases. Over 50 successful projects for Ukrainian and European businesses.",
-			"keywords": "web studio portfolio, website development cases, website examples, design portfolio, web development examples, ABECT works, completed websites"
+			"title": "ABECT Portfolio — Website Development Case Studies",
+			"description": "Website development case studies by ABECT: corporate websites, online stores and landing pages for businesses in Ukraine and the EU — coded or on Weblium.",
+			"keywords": "web studio portfolio, website development case studies, business website examples, online store examples, corporate website examples, Weblium website examples, ABECT"
 		}
 	},
 	"ServicesPage": {
-		"title": "Our Services",
-		"subtitle": "Comprehensive solutions for your business growth online",
+		"title": "Turnkey Website Development: Services & Prices",
+		"subtitle": "Landing pages, corporate websites, online stores and web apps for business — custom-coded or built on Weblium. Every service lists its price, timeline and scope of work.",
 		"filter": {
 			"title": "Services Filter",
 			"ariaLabel": "Filter services by category",
@@ -484,9 +493,9 @@
 		"noResultsDescription": "Try changing the filter or view all services",
 		"viewAllButton": "Show All",
 		"seo": {
-			"title": "ABECT Web Studio Services | Website Development, Design, Marketing",
-			"description": "Professional ABECT services: Next.js and WordPress website development, web design, SEO promotion, contextual advertising. Full cycle from idea to result.",
-			"keywords": "web studio services, website development, web design, SEO promotion, contextual advertising, landing page creation, online store, corporate website"
+			"title": "Turnkey Website Development — Services & Prices | ABECT",
+			"description": "ABECT services: turnkey landing pages, corporate websites, online stores and web apps — coded or on Weblium. Price, timeline and scope for each service.",
+			"keywords": "turnkey website development, website development cost, order a landing page, online store development, corporate website, Weblium website, web design, ABECT web studio"
 		}
 	},
 	"ProjectDetail": {
@@ -521,6 +530,11 @@
 			"title": "Related Projects",
 			"subtitle": "Other works that might interest you",
 			"viewAll": "View All Projects"
+		},
+		"cta": {
+			"title": "Want a result like this?",
+			"text": "Describe your task — we will propose a solution and estimate the cost and timeline. We reply within a day.",
+			"button": "Discuss a project"
 		}
 	},
 	"ServiceDetail": {
@@ -581,8 +595,8 @@
 		"calculator": "Calculator"
 	},
 	"BlogPage": {
-		"title": "Blog",
-		"subtitle": "Useful articles about web development, design and marketing",
+		"title": "Blog on Website Development & Digital Marketing",
+		"subtitle": "Practical guides for business owners: how to launch a website or online store, what it costs, and how to set up ads, SEO and analytics — in plain words from the ABECT team.",
 		"showingResults": "Showing articles: {count}",
 		"viewAllButton": "View all",
 		"noResults": "No articles found",
@@ -594,9 +608,9 @@
 			"selectAriaLabel": "Select category"
 		},
 		"seo": {
-			"title": "ABECT Blog | Articles about Web Development and Marketing",
-			"description": "Read our articles about web development, design and digital marketing. Useful tips and case studies from the ABECT team.",
-			"keywords": "blog, articles, web development, design, marketing, SEO, Next.js, React"
+			"title": "ABECT Blog — Website Development, SEO & Ads",
+			"description": "Practical articles on building websites and online stores, SEO, Google Ads, analytics and automation for business. Tips and checklists from ABECT web studio.",
+			"keywords": "website development blog, SEO articles, Google Ads, online store, web design, digital marketing for business, ABECT"
 		}
 	},
 	"ArticleDetail": {
@@ -607,6 +621,11 @@
 			"title": "Related Articles",
 			"subtitle": "Read more useful content",
 			"viewAll": "All articles"
+		},
+		"cta": {
+			"title": "Need a website that brings in customers?",
+			"text": "Tell us about your business — we will suggest the right website format and estimate the cost and timeline. We reply within a day.",
+			"button": "Discuss a project"
 		}
 	},
 	"ContactForm": {
@@ -725,8 +744,8 @@
 		}
 	},
 	"ContactsPage": {
-		"title": "Contacts",
-		"subtitle": "Contact us in any way convenient for you. We are always happy to answer your questions!",
+		"title": "Contact ABECT Web Studio",
+		"subtitle": "Let’s discuss your website: message us on Telegram, email agency@abect.com or call. We reply within a day, and the consultation is free.",
 		"contactInfo": "Contact Information",
 		"email": "Email",
 		"phone": "Phone",
@@ -739,9 +758,9 @@
 		"ctaText": "Leave a request and we will contact you within an hour to discuss the details of your project",
 		"ctaButton": "Leave Request",
 		"seo": {
-			"title": "ABECT Contacts | Contact the Web Studio",
-			"description": "ABECT web studio contact information. Phones, email, social media. Contact us to discuss your project!",
-			"keywords": "ABECT contacts, contact web studio, web studio phone, ABECT email, write to web studio"
+			"title": "Contact ABECT — Order a Website from Our Studio",
+			"description": "Contact ABECT web studio: Telegram, phone, email agency@abect.com. We will discuss your website and estimate the cost — we reply within a day.",
+			"keywords": "ABECT contacts, order a website, contact web studio, website development consultation, web studio phone, agency@abect.com"
 		}
 	}
 }

@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getServiceBySlug, getRelatedServices } from '@/client/lib/services';
+import { serviceVariants } from '@/client/lib/cards';
 import ServiceDetail from '@/client/modules/service/ServiceDetail';
 import type { Media, ServiceType } from '@/payload-types';
 import { SITE_URL } from '@/client/config/site';
@@ -128,18 +129,18 @@ export default async function ServicePage({ params }: Params) {
 							url: SITE_URL
 						},
 						offers: [
-							service.hasWebliumOption && service.webliumPrice ? {
+							serviceVariants(service).includes('weblium') && service.webliumPrice ? {
 								'@type': 'Offer',
 								name: 'Weblium Option',
 								price: service.webliumPrice,
 								priceCurrency: service.webliumPriceCurrency || 'UAH'
 							} : null,
-							{
+							serviceVariants(service).includes('custom') && service.customPrice != null ? {
 								'@type': 'Offer',
 								name: 'Custom Development',
 								price: service.customPrice,
-								priceCurrency: service.customPriceCurrency
-							}
+								priceCurrency: service.customPriceCurrency || 'UAH'
+							} : null
 						].filter(Boolean),
 						category: serviceType.name,
 						url: locale === 'ua'

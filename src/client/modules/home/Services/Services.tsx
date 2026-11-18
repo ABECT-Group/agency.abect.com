@@ -13,7 +13,8 @@ interface ServicesProps {
 // «Послуги та ціни» — Figma «ABECT», Desktop 6. Картки — featured-послуги з CMS (перші три).
 export default async function Services({ locale }: ServicesProps): Promise<JSX.Element | null> {
 	const t = await getTranslations('HomePage.Services');
-	const services = (await getFeaturedServices(locale)).slice(0, 3);
+	// До 4 кандидатів: ServicePlans показує перші 3, що мають обраний варіант («лише на конструкторі» ховається в «кодом»)
+	const services = await getFeaturedServices(locale);
 
 	// Без послуг у CMS секцію не показуємо
 	if (services.length === 0) return null;

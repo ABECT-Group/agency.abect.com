@@ -170,6 +170,10 @@ export interface Service {
    */
   featured?: boolean | null;
   /**
+   * Послуга існує тільки на конструкторі Weblium (без розробки кодом): заповнюються лише поля Weblium; у перемикачі «Розробка кодом / На конструкторі» вона показується тільки в «На конструкторі»
+   */
+  webliumOnly?: boolean | null;
+  /**
    * Чи доступний варіант на конструкторі Weblium
    */
   hasWebliumOption?: boolean | null;
@@ -203,8 +207,8 @@ export interface Service {
   /**
    * Вартість кастомної розробки
    */
-  customPrice: number;
-  customPriceCurrency: 'UAH' | 'USD' | 'EUR';
+  customPrice?: number | null;
+  customPriceCurrency?: ('UAH' | 'USD' | 'EUR') | null;
   /**
    * Необовʼязково. На головній — праворуч від основної ціни: «від 5 400 грн» (якщо основна валюта не UAH)
    */
@@ -216,15 +220,17 @@ export interface Service {
   /**
    * Наприклад: "2-3 тижні"
    */
-  customTimeline: string;
-  customFeatures: {
-    feature?: string | null;
-    id?: string | null;
-  }[];
+  customTimeline?: string | null;
+  customFeatures?:
+    | {
+        feature?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Короткий опис переваг кастомної розробки
    */
-  customDescription: string;
+  customDescription?: string | null;
   /**
    * Що таке, для кого, які завдання вирішує
    */
@@ -699,6 +705,7 @@ export interface ServicesSelect<T extends boolean = true> {
   serviceType?: T;
   order?: T;
   featured?: T;
+  webliumOnly?: T;
   hasWebliumOption?: T;
   webliumPrice?: T;
   webliumPriceCurrency?: T;

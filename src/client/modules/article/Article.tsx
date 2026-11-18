@@ -3,6 +3,8 @@ import type { Post } from '@/payload-types';
 import ArticleHero from './ArticleHero/ArticleHero';
 import ArticleContent from './ArticleContent/ArticleContent';
 import RelatedArticles from './RelatedArticles/RelatedArticles';
+import CtaSection from '@/client/components/CtaSection/CtaSection';
+import ScrollReveal from '@/client/components/ScrollReveal/ScrollReveal';
 import { toCardPost } from '@/client/lib/cards';
 
 interface ArticleProps {
@@ -19,8 +21,11 @@ export default function Article({ post, relatedPosts, locale }: ArticleProps): J
 			<ArticleHero post={card} locale={locale} />
 			<ArticleContent
 				post={{ content: post.content, title: post.title, description: post.description, date: post.date, updatedAt: post.updatedAt, author: card.author }}
+				cover={card.cover}
 			/>
+			<CtaSection namespace="ArticleDetail" />
 			<RelatedArticles posts={relatedPosts.map(toCardPost)} locale={locale} />
+			<ScrollReveal />
 		</main>
 	);
 }

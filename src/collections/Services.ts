@@ -2,6 +2,17 @@ import type { CollectionConfig } from 'payload'
 import { revalidateAll } from '../hooks/revalidate'
 import { authenticated, publishedOrAuthenticated } from '../access'
 
+// Послуга «лише на конструкторі» (webliumOnly): поля варіанту «кодом» приховані й необовʼязкові,
+// поля Weblium — показані. Інакше поля Weblium — лише якщо є варіант на Weblium.
+const isWebliumOnly = (data: Record<string, unknown> | undefined): boolean => data?.webliumOnly === true
+const showWeblium = (data: Record<string, unknown>): boolean => data?.hasWebliumOption === true || isWebliumOnly(data)
+const showCustom = (data: Record<string, unknown>): boolean => !isWebliumOnly(data)
+const isEmpty = (value: unknown): boolean =>
+  value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)
+/** Обовʼязкове поле варіанту «кодом», крім послуг «лише на конструкторі» */
+const requiredUnlessWebliumOnly = (value: unknown, { data }: { data: Partial<Record<string, unknown>> }): true | string =>
+  isWebliumOnly(data as Record<string, unknown>) || !isEmpty(value) ? true : 'Обовʼязкове поле (або увімкніть «Лише на конструкторі»)'
+
 export const Services: CollectionConfig = {
   slug: 'services',
   labels: { singular: 'Послуга', plural: 'Послуги' },
@@ -93,11 +104,22 @@ export const Services: CollectionConfig = {
     
     // ============ PRICING - WEBLIUM ============
     {
+      name: 'webliumOnly',
+      type: 'checkbox',
+      label: 'Лише на конструкторі',
+      defaultValue: false,
+      admin: {
+        description:
+          'Послуга існує тільки на конструкторі Weblium (без розробки кодом): заповнюються лише поля Weblium; у перемикачі «Розробка кодом / На конструкторі» вона показується тільки в «На конструкторі»',
+      },
+    },
+    {
       name: 'hasWebliumOption',
       type: 'checkbox',
       label: 'Є варіант на Weblium',
       defaultValue: true,
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Чи доступний варіант на конструкторі Weblium',
       },
     },
@@ -107,7 +129,7 @@ export const Services: CollectionConfig = {
       label: 'Ціна Weblium',
       min: 0,
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
         description: 'Вартість варіанту на Weblium',
       },
     },
@@ -122,7 +144,7 @@ export const Services: CollectionConfig = {
       ],
       defaultValue: 'UAH',
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
       },
     },
     {
@@ -131,7 +153,7 @@ export const Services: CollectionConfig = {
       label: 'Ціна в гривнях (Weblium)',
       min: 0,
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
         description: 'Необовʼязково. На головній — праворуч від основної ціни: «від 3 600 грн» (якщо основна валюта не UAH)',
       },
     },
@@ -141,7 +163,7 @@ export const Services: CollectionConfig = {
       localized: true,
       label: 'Додаткові витрати (Weblium)',
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
         description: 'Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)',
       },
     },
@@ -151,7 +173,7 @@ export const Services: CollectionConfig = {
       localized: true,
       label: 'Термін виконання (Weblium)',
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
         description: 'Наприклад: "5-7 днів"',
       },
     },
@@ -161,7 +183,7 @@ export const Services: CollectionConfig = {
       label: 'Що входить (Weblium)',
       localized: true,
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
       },
       fields: [
         {
@@ -177,7 +199,7 @@ export const Services: CollectionConfig = {
       localized: true,
       label: 'Опис варіанту Weblium',
       admin: {
-        condition: (data) => data.hasWebliumOption === true,
+        condition: (data) => showWeblium(data),
         description: 'Короткий опис переваг Weblium варіанту',
       },
     },
@@ -186,10 +208,11 @@ export const Services: CollectionConfig = {
     {
       name: 'customPrice',
       type: 'number',
-      required: true,
+      validate: requiredUnlessWebliumOnly,
       label: 'Ціна Custom',
       min: 0,
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Вартість кастомної розробки',
       },
     },
@@ -198,6 +221,9 @@ export const Services: CollectionConfig = {
       type: 'select',
       label: 'Валюта (Custom)',
       required: true,
+      admin: {
+        condition: (data) => showCustom(data),
+      },
       options: [
         { label: 'UAH', value: 'UAH' },
         { label: 'USD', value: 'USD' },
@@ -211,6 +237,7 @@ export const Services: CollectionConfig = {
       label: 'Ціна в гривнях (Custom)',
       min: 0,
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Необовʼязково. На головній — праворуч від основної ціни: «від 5 400 грн» (якщо основна валюта не UAH)',
       },
     },
@@ -220,25 +247,30 @@ export const Services: CollectionConfig = {
       localized: true,
       label: 'Додаткові витрати (Custom)',
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Необовʼязково. Наприклад: «$22 — домен, хостинг» (у картці над кнопками)',
       },
     },
     {
       name: 'customTimeline',
       type: 'text',
-      required: true,
+      validate: requiredUnlessWebliumOnly,
       localized: true,
       label: 'Термін виконання (Custom)',
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Наприклад: "2-3 тижні"',
       },
     },
     {
       name: 'customFeatures',
       type: 'array',
-      required: true,
+      validate: requiredUnlessWebliumOnly,
       label: 'Що входить (Custom)',
       localized: true,
+      admin: {
+        condition: (data) => showCustom(data),
+      },
       fields: [
         {
           name: 'feature',
@@ -250,10 +282,11 @@ export const Services: CollectionConfig = {
     {
       name: 'customDescription',
       type: 'textarea',
-      required: true,
+      validate: requiredUnlessWebliumOnly,
       localized: true,
       label: 'Опис кастомного варіанту',
       admin: {
+        condition: (data) => showCustom(data),
         description: 'Короткий опис переваг кастомної розробки',
       },
     },

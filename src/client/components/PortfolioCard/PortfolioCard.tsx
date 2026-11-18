@@ -34,10 +34,8 @@ export default function PortfolioCard({ project, locale, eager = false }: Portfo
 				href={`/portfolio/${project.slug}`}
 				className="portfolio-card__link"
 			>
-				{/* Фото вписується повністю (contain); порожні смуги — розмита крихітна копія того ж фото
-				    (32px через next/image: кілька КБ і не стає LCP-елементом, як сирий JPG у CSS-фоні) */}
+				{/* Фото на всю рамку (cover) */}
 				<span className="portfolio-card__image">
-					<Image src={imageUrl} alt="" aria-hidden="true" fill sizes="32px" quality={40} priority={eager} className="portfolio-card__backdrop" />
 					<Image
 						src={imageUrl}
 						alt={project.title}

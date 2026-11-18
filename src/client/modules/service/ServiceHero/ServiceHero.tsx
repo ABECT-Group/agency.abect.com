@@ -20,7 +20,8 @@ export default function ServiceHero({ service, serviceType }: ServiceHeroProps):
 	const t = useTranslations('ServiceDetail');
 
 	const type = serviceType || service.serviceType;
-	const tags = [type?.name, service.customTimeline && `${t('timeline')}: ${service.customTimeline}`].filter(
+	const timeline = service.webliumOnly ? service.webliumTimeline : service.customTimeline;
+	const tags = [type?.name, timeline && `${t('timeline')}: ${timeline}`].filter(
 		(tag): tag is string => Boolean(tag)
 	);
 

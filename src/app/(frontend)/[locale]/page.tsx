@@ -93,7 +93,7 @@ export default async function HomePage({ params }: Params) {
 		name: 'ABECT',
 		url: SITE_URL,
 		logo: `${SITE_URL}/seo/og.jpg`,
-		email: 'support@agency.abect.com',
+		email: 'agency@abect.com',
 		telephone: '+380980275819',
 		priceRange: '₴₴',
 		serviceType: 'Web Development',

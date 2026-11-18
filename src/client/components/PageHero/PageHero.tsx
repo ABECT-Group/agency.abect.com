@@ -17,13 +17,16 @@ type PageHeroProps = {
  * фон — смуги й синє світіння, як у hero; заголовок H1 — Unbounded капсом, ліворуч;
  * під блоком — синя смуга, як під hero головної. Серверний компонент.
  */
+// Тире не переноситься на початок рядка (назви з CMS: «VELOX RIDE — продаж…»): пробіл перед ним — нерозривний
+const keepDashWithWord = (text: string): string => text.replace(/ ([—–]) /g, '\u00a0$1 ');
+
 export default function PageHero({ title, subtitle, breadcrumbs, actions, className = '' }: PageHeroProps): JSX.Element {
 	return (
 		<section className={`page-hero ${className}`.trim()}>
 			<div className="page-hero__bg" aria-hidden="true" />
 			<div className="container container--design page-hero__inner">
 				{breadcrumbs && <div className="page-hero__breadcrumbs">{breadcrumbs}</div>}
-				<h1 className="page-hero__title">{title}</h1>
+				<h1 className="page-hero__title">{typeof title === 'string' ? keepDashWithWord(title) : title}</h1>
 				{subtitle && <p className="page-hero__subtitle">{subtitle}</p>}
 				{actions && <div className="page-hero__actions">{actions}</div>}
 			</div>

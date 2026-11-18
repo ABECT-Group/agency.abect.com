@@ -4,7 +4,7 @@ import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/client/components/Breadcrumbs/Breadcrumbs';
 import PageHero from '@/client/components/PageHero/PageHero';
-import { Send, Mail, Phone, Clock } from 'lucide-react';
+import { Send, Mail, Phone } from 'lucide-react';
 import './ContactsPage.scss';
 
 interface ContactsPageProps {
@@ -33,8 +33,8 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 		{
 			icon: <Mail size={28} />,
 			label: t('email'),
-			value: 'support@agency.abect.com',
-			href: 'mailto:support@agency.abect.com',
+			value: 'agency@abect.com',
+			href: 'mailto:agency@abect.com',
 			type: 'email'
 		},
 		{
@@ -77,7 +77,6 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 							itemType="https://schema.org/ContactPoint"
 						>
 							<h2 className="contacts-page__section-title">
-								<Mail size={28} />
 								{t('contactInfo')}
 							</h2>
 
@@ -107,7 +106,6 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 							itemType="https://schema.org/OpeningHoursSpecification"
 						>
 							<h2 className="contacts-page__section-title">
-								<Clock size={28} />
 								{t('workingHours')}
 							</h2>
 
@@ -127,7 +125,6 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 						{/* Социальные сети */}
 						<div className="contacts-page__social">
 							<h2 className="contacts-page__section-title">
-								<Send size={28} />
 								{t('socialMedia')}
 							</h2>
 

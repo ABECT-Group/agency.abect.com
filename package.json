@@ -13,6 +13,9 @@
     "pl": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "import:blog": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/import-blog-drafts.ts",
     "seed:services": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-services.ts",
+    "seed:test": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-test-local.ts",
+    "service:weblium-only": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/service-to-weblium-only.ts",
+    "posts:contacts": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/posts-update-contacts.ts",
     "seed:services:extra": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-services-extra.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "typecheck": "tsc --noEmit"

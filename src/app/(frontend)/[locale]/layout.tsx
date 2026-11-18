@@ -9,6 +9,8 @@ import Footer from "@/client/components/Footer/Footer";
 import CookieBanner from "@/client/components/CookieBanner";
 import Analytics from "@/client/components/Analytics/Analytics";
 import { ModalProvider } from "@/client/providers/ModalProvider";
+import CalculatorWidget from "@/client/components/CalculatorWidget/CalculatorWidget";
+import { getCalculatorConfig, toCalculatorConfig } from "@/client/lib/calculator";
 import { Metadata } from "next";
 import { SITE_URL } from "@/client/config/site";
 
@@ -87,6 +89,15 @@ export default async function LocaleLayout({
 
   const langCode = locale === 'ua' ? 'uk' : locale;
 
+  // Конфіг для віджета калькулятора (той самий запит і кеш, що на /calculator). Помилка CMS не валить
+  // сторінку — віджет працює на дефолтах із коду.
+  let calculatorConfig = toCalculatorConfig(null);
+  try {
+    calculatorConfig = toCalculatorConfig(await getCalculatorConfig(locale));
+  } catch (error) {
+    console.error('[layout] calculator config:', error);
+  }
+
   return (
     <html lang={langCode}>
       <body className={`${victorMono.variable} ${montserrat.variable} ${unbounded.variable}`}>
@@ -95,6 +106,7 @@ export default async function LocaleLayout({
             <Header />
             {children}
             <Footer />
+            <CalculatorWidget config={calculatorConfig} />
             <CookieBanner locale={locale} />
             <Analytics />
           </ModalProvider>

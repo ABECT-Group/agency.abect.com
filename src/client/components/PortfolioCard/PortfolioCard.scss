@@ -39,29 +39,16 @@
 .portfolio-card__image {
 	position: relative;
 	display: block;
-	// Пропорція рамки — з макета (370 / 231.25). Обкладинки в CMS різні (760×475, 1200×630), тому фото
-	// не обрізається: вписується повністю (contain), а порожні смуги заповнює розмита копія (--cover).
-	aspect-ratio: 370 / 231.25;
+	// Рамка 370 / 200 (рішення розробника 2026-11-18); фото розтягнуте на всю рамку (cover) — без розмитих смуг
+	aspect-ratio: 370 / 200;
 	overflow: hidden;
 	border-bottom: 1px solid var(--card-border);
 	border-radius: 10px;
 	background: var(--portfolio-card-bg);
 
 	img {
-		z-index: 1;
-		object-fit: contain;
-		object-position: center;
-	}
-
-	// Розмита копія під фото: заповнює смуги, коли пропорція обкладинки інша
-	img.portfolio-card__backdrop {
-		z-index: 0;
-		inset: -24px !important;
-		width: calc(100% + 48px) !important;
-		height: calc(100% + 48px) !important;
 		object-fit: cover;
-		filter: blur(18px) brightness(0.55) saturate(1.2);
-		pointer-events: none;
+		object-position: center;
 	}
 }
 
@@ -84,8 +71,10 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	height: 28px;
-	padding: 0 12px;
+	// Не фіксована висота: довга категорія («Контекстна реклама та маркетинг») на вузькій картці — у 2 рядки всередині пігулки
+	min-height: 28px;
+	padding: 4px 12px;
+	line-height: 1.3;
 	border: 1px solid var(--hero-chip-border);
 	border-radius: 30px;
 	background: var(--hero-chip-bg);
@@ -94,6 +83,7 @@
 
 	&::before {
 		content: "";
+		flex-shrink: 0;
 		width: 6px;
 		height: 5px;
 		background: var(--logo-mark);

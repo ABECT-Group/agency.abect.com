@@ -1,0 +1,68 @@
+/* Текст зі змістом — стаття блогу й кейс портфоліо: блок до 1240px, липкий зміст ліворуч + текст у картці */
+.content-toc {
+	margin: 64px 0 0;
+
+	&__wrapper {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+		gap: 24px;
+		align-items: start;
+		max-width: 1240px;
+		margin: 0 auto;
+
+		// Без заголовків у тексті змісту немає — текст на всю ширину блоку
+		&:has(.content-toc__sidebar:empty) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	// Колонка змісту на всю висоту тексту — інакше position: sticky змісту не має де «їхати»
+	&__sidebar {
+		align-self: stretch;
+	}
+
+	&__sidebar:empty {
+		display: none;
+	}
+
+	&__article {
+		min-width: 0;
+		padding: 36px 40px;
+		border: 1px solid var(--card-border);
+		border-radius: 12px;
+		background: var(--card-surface);
+	}
+
+	// Обкладинка — верхня частина картки тексту: без рамки, до країв картки (компенсує padding картки),
+	// заокруглення — як у картки зверху
+	&__cover {
+		overflow: hidden;
+		margin: -36px -40px 32px;
+		border-radius: 11px 11px 0 0;
+		background: var(--portfolio-card-bg);
+
+		img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	@media (max-width: 1024px) {
+		&__wrapper {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		margin-top: 40px;
+
+		&__article {
+			padding: 22px 18px;
+		}
+
+		&__cover {
+			margin: -22px -18px 22px;
+		}
+	}
+}

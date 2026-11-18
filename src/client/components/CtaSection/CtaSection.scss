@@ -1,9 +1,9 @@
-/* Заклик до дії — скляний блок по центру */
-.about-cta {
+/* Заклик до дії — скляний блок по центру («Про нас», перед схожими статтями й проєктами) */
+.cta-section {
 	padding: 80px 0 40px;
 }
 
-.about-cta__box {
+.cta-section__box {
 	--glass-bg: var(--card-surface-accent);
 	--glass-blur: 14px;
 	display: flex;
@@ -15,7 +15,7 @@
 	text-align: center;
 }
 
-.about-cta__title {
+.cta-section__title {
 	color: var(--white);
 	font-size: 32px;
 	font-weight: 700;
@@ -24,14 +24,14 @@
 	text-transform: uppercase;
 }
 
-.about-cta__text {
+.cta-section__text {
 	max-width: 640px;
 	color: var(--section-text);
 	font-size: 17px;
 	line-height: 1.6;
 }
 
-.about-cta__contacts {
+.cta-section__contacts {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -39,7 +39,7 @@
 	margin-bottom: 6px;
 }
 
-.about-cta__link {
+.cta-section__link {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -58,23 +58,23 @@
 }
 
 @media (max-width: 768px) {
-	.about-cta {
+	.cta-section {
 		padding-top: 56px;
 	}
 
-	.about-cta__box {
+	.cta-section__box {
 		padding: 32px 18px;
 	}
 
-	.about-cta__title {
+	.cta-section__title {
 		font-size: 22px;
 	}
 
-	.about-cta__text {
+	.cta-section__text {
 		font-size: 15px;
 	}
 
-	.about-cta .arrow-btn {
+	.cta-section .arrow-btn {
 		width: 100%;
 
 		.arrow-btn__label {
