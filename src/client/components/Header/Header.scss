@@ -307,7 +307,8 @@
 		height: 100vh;
 		height: 100dvh;
 		margin: 0;
-		padding: clamp(84px, 13vh, 114px) 20px 32px;
+		// Зверху — висота рядка хедера (60px) + запас; знизу — з урахуванням «чубчика» / home-індикатора
+		padding: 76px 20px calc(24px + env(safe-area-inset-bottom, 0px));
 		overflow-y: auto;
 		// Прокрутка всередині меню не «протікає» на сторінку
 		overscroll-behavior: contain;
@@ -326,10 +327,12 @@
 		}
 	}
 
-	// У мобільному меню список без капсули-скла
+	// У мобільному меню список без капсули-скла. margin-block: auto — список по центру між хедером і кнопкою
+	// (кнопка «Замовити сайт» притиснута донизу); якщо не вміщається — меню прокручується
 	.header__nav.glass {
 		width: 100%;
 		max-width: 336px;
+		margin-block: auto;
 		padding: 0;
 		background: none;
 		box-shadow: none;
@@ -377,7 +380,8 @@
 		display: flex;
 		align-items: center;
 		width: 100%;
-		margin-top: clamp(24px, 5vh, 56px);
+		// Мінімальний відступ від списку (на низьких екранах); зазвичай простір дає margin-block: auto списку
+		margin-top: 24px;
 		padding: 0;
 		border: none;
 		background: none;
