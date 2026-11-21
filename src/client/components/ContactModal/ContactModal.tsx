@@ -214,7 +214,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps): JS
               onChange={(e) => setContact(e.target.value)}
               placeholder={t('contactPlaceholder')}
               disabled={formState === 'loading'}
-              autoComplete="tel email"
+              autoComplete="on"
             />
             {contactError && <span className="contact-modal__field-error">{contactError}</span>}
           </div>

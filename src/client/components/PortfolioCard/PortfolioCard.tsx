@@ -43,6 +43,8 @@ export default function PortfolioCard({ project, locale, eager = false }: Portfo
 						sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 420px"
 						itemProp="image"
 						priority={eager}
+						// Перший ряд — кандидат на LCP: preload з високим пріоритетом (Lighthouse «LCP request discovery»)
+						fetchPriority={eager ? 'high' : undefined}
 					/>
 				</span>
 

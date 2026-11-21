@@ -61,16 +61,15 @@
       }
     }
 
+    // Список — на всю ширину картки, як інші кроки (одна колонка вмісту: нічого не «вилазить»)
     &--list {
-      max-width: 560px;
-      margin: 0 auto;
+      width: 100%;
     }
   }
 
   // Slider
   &__slider {
-    max-width: 520px;
-    margin: 0 auto;
+    margin: 0;
     padding: 20px 0 8px;
 
     &-value {
@@ -167,8 +166,7 @@
 
   // Summary (contact step)
   &__summary {
-    max-width: 500px;
-    margin: 0 auto 24px;
+    margin: 0 0 24px;
     padding: 20px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border-subtle);
@@ -218,8 +216,7 @@
 
   // Form fields (contact step)
   &__form {
-    max-width: 500px;
-    margin: 0 auto;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;

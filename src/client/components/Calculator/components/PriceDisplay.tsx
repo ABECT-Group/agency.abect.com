@@ -3,6 +3,7 @@
 import { JSX, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCalculator } from '../CalculatorContext';
+import { currencyLabel, formatPrice } from '../format';
 import './PriceDisplay.scss';
 
 export default function PriceDisplay(): JSX.Element {
@@ -48,10 +49,10 @@ export default function PriceDisplay(): JSX.Element {
               <span className="calculator-price__from">{t('priceFrom')}</span>
             )}
             <span className="calculator-price__amount">
-              {displayPrice.toLocaleString('uk-UA')}
+              {formatPrice(displayPrice)}
             </span>
             <span className="calculator-price__currency">
-              {state.config?.generalSettings.currency || t('currency')}
+              {currencyLabel(state.config?.generalSettings.currency, t('currency'))}
             </span>
           </div>
         </div>

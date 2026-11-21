@@ -1,7 +1,8 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { getCalculatorConfig, toCalculatorConfig } from '@/client/lib/calculator';
-import Calculator, { CalculatorProvider, CalculatorConfig } from '@/client/components/Calculator';
+import type { CalculatorConfig } from '@/client/components/Calculator';
+import CalculatorPageView from '@/client/modules/calculator/CalculatorPage/CalculatorPage';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/client/config/site';
 
@@ -84,7 +85,7 @@ export default async function CalculatorPage({ params }: Params) {
   const apiConfig = await getCalculatorConfig(locale);
 
   // Use API config or default (with proper type transformation)
-  const config: CalculatorConfig = toCalculatorConfig(apiConfig);
+  const config: CalculatorConfig = toCalculatorConfig(apiConfig, locale);
 
   return (
     <>
@@ -149,9 +150,7 @@ export default async function CalculatorPage({ params }: Params) {
         }}
       />
 
-      <CalculatorProvider initialConfig={config}>
-        <Calculator config={config} />
-      </CalculatorProvider>
+      <CalculatorPageView config={config} />
     </>
   );
 }

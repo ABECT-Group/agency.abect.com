@@ -25,7 +25,8 @@ export default function AboutPage({ locale: _locale }: AboutPageProps): JSX.Elem
 	const t = useTranslations('AboutPage');
 
 	return (
-		<>
+		// <main> — головний вміст сторінки (landmark для скрінрідерів; flex-колонка, як body — розкладка та сама)
+		<main className="page-main">
 			<PageHero
 				title={t('hero.title')}
 				subtitle={t('hero.subtitle')}
@@ -51,6 +52,6 @@ export default function AboutPage({ locale: _locale }: AboutPageProps): JSX.Elem
 				<CtaSection namespace="AboutPage" />
 			</div>
 			<ScrollReveal />
-		</>
+		</main>
 	);
 }

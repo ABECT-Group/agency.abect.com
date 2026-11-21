@@ -91,9 +91,9 @@ export default async function LocaleLayout({
 
   // Конфіг для віджета калькулятора (той самий запит і кеш, що на /calculator). Помилка CMS не валить
   // сторінку — віджет працює на дефолтах із коду.
-  let calculatorConfig = toCalculatorConfig(null);
+  let calculatorConfig = toCalculatorConfig(null, locale);
   try {
-    calculatorConfig = toCalculatorConfig(await getCalculatorConfig(locale));
+    calculatorConfig = toCalculatorConfig(await getCalculatorConfig(locale), locale);
   } catch (error) {
     console.error('[layout] calculator config:', error);
   }

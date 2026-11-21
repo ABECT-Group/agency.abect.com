@@ -17,7 +17,7 @@
 
   &__percent {
     font-size: 13px;
-    color: var(--accent);
+    color: var(--logo-mark); // контраст ≥ 4.5:1 на темному фоні (var(--accent) — нижче норми, Lighthouse)
     font-weight: 600;
   }
 

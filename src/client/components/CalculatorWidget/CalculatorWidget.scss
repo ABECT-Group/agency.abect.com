@@ -8,9 +8,9 @@
 	transition: bottom 0.3s ease;
 	// Нижче хедера й модалки заявки (1000) і банера cookie (999)
 	z-index: 990;
+	// Підказка — ліворуч від кнопки, по центру її висоти (раніше стояла над кнопкою, і поруч лишалась порожнеча)
 	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
+	align-items: center;
 	gap: 14px;
 	pointer-events: none;
 
@@ -94,7 +94,7 @@
 // Підказка «Вітаю, давай прорахуємо…» — скляна «бульбашка» над кнопкою, хрестик у колі — лівий верхній кут
 .calc-widget__greeting {
 	position: relative;
-	max-width: 260px;
+	max-width: min(260px, calc(100vw - 110px));
 	animation: calc-widget-greeting-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -250,13 +250,15 @@
 	}
 }
 
+// Тіло — колонка: калькулятор розтягується на всю висоту (кнопки внизу), довгий крок — прокручується
 .calc-widget__body {
+	display: flex;
 	flex: 1;
+	flex-direction: column;
 	min-height: 0;
 	padding: 14px 16px 18px;
 	overflow-y: auto;
 	overscroll-behavior: contain;
-	scrollbar-width: thin;
 }
 
 .calc-widget__loading {

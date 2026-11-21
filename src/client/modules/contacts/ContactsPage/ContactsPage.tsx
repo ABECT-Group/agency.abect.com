@@ -51,7 +51,8 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 	];
 
 	return (
-		<>
+		// <main> — головний вміст сторінки (landmark для скрінрідерів; flex-колонка, як body — розкладка та сама)
+		<main className="page-main">
 			<PageHero
 				title={t('title')}
 				subtitle={t('subtitle')}
@@ -158,6 +159,6 @@ export default function ContactsPage({ locale: _locale }: ContactsPageProps): JS
 					</div>
 				</div>
 			</section>
-		</>
+		</main>
 	);
 }

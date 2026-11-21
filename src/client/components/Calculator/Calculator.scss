@@ -62,7 +62,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 
     .calculator-progress {
       flex: 1;
@@ -116,9 +116,14 @@
     text-align: center;
   }
 
+  // Від прогрес-бару до заголовка кроку — 32px на ПК, 24px на телефоні
   &__content {
-    margin-top: 8px;
+    margin-top: 32px;
     min-height: 320px;
+
+    @media (max-width: 768px) {
+      margin-top: 24px;
+    }
 
     @media (max-width: 480px) {
       min-height: 240px;
@@ -126,17 +131,49 @@
   }
 }
 
-// Віджет (CalculatorWidget): калькулятор у вузькій панелі — без відступів сторінки й окремої картки
+// Сторінка /calculator: секція після hero — без відступу під хедер і висоти на весь екран;
+// при переході з кнопки «Почати розрахунок» заголовок не ховається під фіксованим хедером
+.calculator--section {
+  min-height: 0;
+  padding: 80px 0 40px;
+  scroll-margin-top: 40px;
+
+  @media (max-width: 768px) {
+    padding: 56px 0 24px;
+  }
+}
+
+// Віджет (CalculatorWidget): калькулятор у вузькій панелі — без відступів сторінки й окремої картки.
+// Займає всю висоту панелі: коли питання коротке, «Назад / Далі» (і ціна над ними) — притиснуті до низу
 .calculator--compact {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
   padding: 0;
   min-height: 0;
 
+  > div {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+  }
+
   .calculator__card {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
     padding: 4px 0 0;
     border: none;
     border-radius: 0;
     background: none;
     backdrop-filter: none;
+  }
+
+  // Вузька панель — як на телефоні: 24px від прогрес-бару
+  .calculator__content {
+    flex: 1 0 auto;
+    min-height: 0;
+    margin-top: 24px;
   }
 
   .calculator-step__title {

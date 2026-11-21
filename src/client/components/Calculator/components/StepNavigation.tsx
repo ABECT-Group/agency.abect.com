@@ -51,7 +51,7 @@ export default function StepNavigation({ onSubmit }: StepNavigationProps): JSX.E
         {state.isSubmitting ? (
           <>
             <Loader2 size={20} className="calculator-nav__spinner" />
-            <span>{t('loadingButton') || 'Відправляємо...'}</span>
+            <span>{t('loadingButton')}</span>
           </>
         ) : (
           <>

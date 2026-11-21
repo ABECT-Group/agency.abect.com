@@ -1,52 +1,48 @@
 # ABECT — Ukrainian Web Studio
 
-ABECT is a Ukrainian web development agency specializing in custom websites, landing pages, and e-commerce solutions for businesses in Ukraine and Europe (Poland, Germany, Czech Republic).
+> ABECT is a Ukrainian web development studio. We build landing pages, corporate websites, online stores and web apps — on the Weblium website builder (fast and affordable) or with custom code on Next.js (unique design, no platform limits) — for businesses in Ukraine and Europe. The site is available in Ukrainian (default) and English.
 
 ## Contact
 
-- Website: https://agency.abect.com
-- Email: agency@abect.com
-- Telegram: https://t.me/abect_agency
-- Phone: +380 98 027 5819
+- [Website](https://agency.abect.com)
+- [Email: agency@abect.com](mailto:agency@abect.com)
+- [Telegram](https://t.me/abect_agency)
+- [Phone: +380 98 027 5819](tel:+380980275819)
 
-## Services & Pricing
+## Services
 
-- **Landing page**: from ₴10,000 (7–10 days, custom development)
-- **Corporate website**: from ₴25,000 (14–21 days)
-- **E-commerce / online store**: from ₴40,000 (30–45 days)
-- **Weblium-based website**: from ₴6,000 (3–7 days, budget option)
-- **Google Ads / contextual advertising**: from ₴8,000/month
-- **SEO optimization**: from ₴5,000/month
+- Landing page — from $120: one-page website for a product, service or ad campaign
+- Multi-page / corporate website — from $300: company website with service pages and navigation
+- Online store — from $450: catalog, cart, payments, delivery integrations
+- Website on Weblium — budget option on a website builder; texts and photos can be edited without a developer
+- Web apps — custom functionality, user accounts, integrations (custom code only)
+- Design: website and logo design
+- Promotion: ad campaigns for the launched website
 
-Additional services: copywriting, design, CRM integration, multilingual support.
+Prices are "from" values shown on the homepage; the exact cost of a specific project is shown by the online calculator and fixed in an estimate after a short brief. Domain and hosting are paid separately.
 
-## Technologies
+## Website cost calculator
 
-- Next.js 15, React 19, TypeScript
-- Payload CMS 3 (headless)
-- Custom SCSS, no UI libraries
-- Deployed on VPS with nginx
+- [Website cost calculator (UA)](https://agency.abect.com/calculator)
+- [Website cost calculator (EN)](https://agency.abect.com/en/calculator)
 
-## Geographic Coverage
+How the price is calculated: base price (project type × platform: Weblium or custom code; includes one page) + a fixed amount for each additional page + fixed prices of selected extra services (SEO optimization, copywriting, multilingual support, CRM / payment integrations, animations, technical support), multiplied by an urgency coefficient (urgent — higher, flexible timeline — discount), but not less than the minimum order. The result is the lower limit of the budget; after the request the team prepares an exact estimate with a timeline.
 
-Primary: Ukraine (Kyiv, Lviv, Kharkiv, Odesa, Dnipro)
-International: Poland, Germany, Czech Republic, other EU countries
+## Key pages
 
-## Languages
+- [Home](https://agency.abect.com): services, prices from, portfolio, FAQ ([EN](https://agency.abect.com/en))
+- [Services](https://agency.abect.com/services): website development on Weblium or custom code, design, promotion ([EN](https://agency.abect.com/en/services))
+- [Portfolio](https://agency.abect.com/portfolio): case studies with tasks and results ([EN](https://agency.abect.com/en/portfolio))
+- [Blog](https://agency.abect.com/blog): guides on websites, e-commerce and ads ([EN](https://agency.abect.com/en/blog))
+- [About](https://agency.abect.com/about): team and approach ([EN](https://agency.abect.com/en/about))
+- [Contacts](https://agency.abect.com/contacts) ([EN](https://agency.abect.com/en/contacts))
+- [Privacy Policy](https://agency.abect.com/privacy-policy)
+- [Sitemap](https://agency.abect.com/sitemap.xml)
 
-- Ukrainian (primary)
-- English
+## How we work
 
-## About
+Brief → structure and design → development (Weblium or Next.js + Payload CMS) → mobile adaptation, technical SEO, SSL and Google registration → launch on the client's domain and handover of access → support on request. Lead forms on our websites send notifications to Telegram.
 
-ABECT builds fast, SEO-optimized websites with clean code and no WordPress bloat. All projects are built from scratch with attention to performance, accessibility, and conversion.
+## Geography
 
-## Key Pages
-
-- Homepage: https://agency.abect.com
-- Services: https://agency.abect.com/services
-- Portfolio: https://agency.abect.com/portfolio
-- Blog: https://agency.abect.com/blog
-- Cost calculator: https://agency.abect.com/calculator
-- Contacts: https://agency.abect.com/contacts
-- Privacy Policy: https://agency.abect.com/privacy-policy
+Ukraine and Europe; communication in Ukrainian and English.

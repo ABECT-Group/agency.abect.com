@@ -42,6 +42,7 @@ export default function ContentWithToc({ content, tocTitle, meta, cover }: Conte
 									width={cover.width || 1600}
 									height={cover.height || 1000}
 									priority
+									fetchPriority="high"
 									sizes="(max-width: 1024px) 100vw, 900px"
 									itemProp="image"
 								/>

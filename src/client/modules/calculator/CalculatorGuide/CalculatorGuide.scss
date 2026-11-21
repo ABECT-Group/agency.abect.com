@@ -1,0 +1,42 @@
+/* SEO-текст під калькулятором: колонка тексту до 880px (як текст статті), далі — FAQ */
+.calculator-guide {
+	margin: 0;
+	padding: 40px 0 100px;
+
+	&__inner {
+		max-width: 880px;
+		margin: 0 auto;
+	}
+
+	&__text {
+		margin-top: 24px;
+
+		h3:first-of-type {
+			margin-top: 32px;
+		}
+	}
+
+	&__intro {
+		font-size: 18px;
+	}
+
+	&__faq {
+		margin-top: 72px;
+
+		.faq-list {
+			margin-top: 28px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		padding: 24px 0 72px;
+
+		&__intro {
+			font-size: 16px;
+		}
+
+		&__faq {
+			margin-top: 48px;
+		}
+	}
+}

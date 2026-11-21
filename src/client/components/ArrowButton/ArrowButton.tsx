@@ -5,7 +5,7 @@ import './ArrowButton.scss';
 
 type ArrowButtonProps = {
 	children: ReactNode;
-	/** Посилання; без нього — кнопка, що відкриває форму заявки (глобальний обробник data-open-modal) */
+	/** Посилання (або якір на цій сторінці — «#id»); без нього — кнопка, що відкриває форму заявки (глобальний обробник data-open-modal) */
 	href?: string;
 	/** Зовнішнє посилання (інший сайт) — відкривається в новій вкладці */
 	external?: boolean;
@@ -40,6 +40,15 @@ export default function ArrowButton({
 	if (href && external) {
 		return (
 			<a href={href} className={classes} aria-label={ariaLabel} target="_blank" rel="noopener noreferrer">
+				{content}
+			</a>
+		);
+	}
+
+	// Якір на цій же сторінці — звичайне посилання (Link з next-intl додав би до нього локаль і шлях)
+	if (href?.startsWith('#')) {
+		return (
+			<a href={href} className={classes} aria-label={ariaLabel}>
 				{content}
 			</a>
 		);

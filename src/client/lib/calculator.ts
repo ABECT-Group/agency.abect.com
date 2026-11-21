@@ -13,7 +13,8 @@ export async function getCalculatorConfig(locale: string = 'uk'): Promise<Calcul
 }
 
 /**
- * Дефолтна конфігурація калькулятора (використовується якщо API недоступний)
+ * Дефолтна конфігурація калькулятора (використовується, якщо global у CMS не заповнений або API недоступний).
+ * Тексти — українською; англійські — у DEFAULT_TEXTS_EN нижче (інакше EN-версія сайту показувала б українські назви).
  */
 export const defaultCalculatorConfig = {
   projectTypes: [
@@ -155,18 +156,59 @@ export const defaultCalculatorConfig = {
   },
 };
 
+/** Англійські тексти дефолтної конфігурації — за slug (ціни й коефіцієнти ті самі) */
+const DEFAULT_TEXTS_EN: Record<string, { name: string; description: string; timelineText?: string }> = {
+  landing: { name: 'Landing Page', description: 'One-page website for a product or service' },
+  corporate: { name: 'Corporate Website', description: 'Multi-page website for a company' },
+  shop: { name: 'Online Store', description: 'Full-featured e-commerce store' },
+  webapp: { name: 'Web App', description: 'Complex web application with custom functionality' },
+  seo: { name: 'SEO Optimization', description: 'Basic SEO setup for search engines' },
+  copywriting: { name: 'Copywriting', description: 'Writing texts for the website' },
+  multilang: { name: 'Multilingual', description: 'Support for several languages' },
+  integrations: { name: 'Integrations', description: 'CRM, payment systems, external APIs' },
+  animations: { name: 'Animations', description: 'Interactive elements and micro-animations' },
+  support: { name: 'Technical Support', description: 'Support and maintenance after launch' },
+  urgent: { name: 'Urgent', description: 'As soon as possible', timelineText: 'up to 2 weeks' },
+  standard: { name: 'Standard', description: 'Regular timeline', timelineText: '2–4 weeks' },
+  relaxed: { name: 'No rush', description: 'We can take our time', timelineText: '1–2 months' },
+  undefined: { name: 'Not decided yet', description: 'Not known yet', timelineText: 'By agreement' },
+};
+
+/** Дефолтна конфігурація мовою сторінки (`ua` / `en` — локаль маршруту) */
+export function getDefaultCalculatorConfig(locale: string = 'ua'): typeof defaultCalculatorConfig {
+  if (locale !== 'en') return defaultCalculatorConfig;
+  const tr = <T extends { slug: string; name: string; description: string; timelineText?: string }>(item: T): T => {
+    const en = DEFAULT_TEXTS_EN[item.slug];
+    if (!en) return item;
+    return { ...item, name: en.name, description: en.description, ...(en.timelineText ? { timelineText: en.timelineText } : {}) };
+  };
+  return {
+    ...defaultCalculatorConfig,
+    projectTypes: defaultCalculatorConfig.projectTypes.map(tr),
+    additionalServices: defaultCalculatorConfig.additionalServices.map(tr),
+    urgencyOptions: defaultCalculatorConfig.urgencyOptions.map(tr),
+  };
+}
+
 // Порожній масив у CMS (global створено, але списки не заповнені) = «не задано»:
 // `[] || default` дає `[]`, і калькулятор лишався без типів проєкту — далі першого кроку не пройти.
 function orDefault<A, B>(value: A[] | null | undefined, fallback: B[]): Array<A | B> {
   return value && value.length > 0 ? value : fallback;
 }
 
-/** Global «Калькулятор» з CMS → конфіг компонента Calculator (null → undefined, порожні списки → дефолти). Сторінка /calculator і віджет. */
-export function toCalculatorConfig(apiConfig: Awaited<ReturnType<typeof getCalculatorConfig>>): CalculatorComponentConfig {
-  if (!apiConfig) return defaultCalculatorConfig;
+/**
+ * Global «Калькулятор» з CMS → конфіг компонента Calculator (null → undefined, порожні списки → дефолти мовою сторінки).
+ * Сторінка /calculator і віджет. `locale` — локаль маршруту (`ua` / `en`).
+ */
+export function toCalculatorConfig(
+  apiConfig: Awaited<ReturnType<typeof getCalculatorConfig>>,
+  locale: string = 'ua'
+): CalculatorComponentConfig {
+  const defaults = getDefaultCalculatorConfig(locale);
+  if (!apiConfig) return defaults;
 
   return {
-    projectTypes: orDefault(apiConfig.projectTypes, defaultCalculatorConfig.projectTypes).map((p) => ({
+    projectTypes: orDefault(apiConfig.projectTypes, defaults.projectTypes).map((p) => ({
       slug: p.slug,
       name: p.name,
       description: p.description ?? undefined,
@@ -175,15 +217,15 @@ export function toCalculatorConfig(apiConfig: Awaited<ReturnType<typeof getCalcu
       webliumBasePrice: p.webliumBasePrice ?? undefined,
       customBasePrice: p.customBasePrice,
     })),
-    pagesConfig: apiConfig.pagesConfig || defaultCalculatorConfig.pagesConfig,
-    additionalServices: orDefault(apiConfig.additionalServices, defaultCalculatorConfig.additionalServices).map((s) => ({
+    pagesConfig: apiConfig.pagesConfig || defaults.pagesConfig,
+    additionalServices: orDefault(apiConfig.additionalServices, defaults.additionalServices).map((s) => ({
       slug: s.slug,
       name: s.name,
       description: s.description ?? undefined,
       price: s.price,
       icon: s.icon ?? undefined,
     })),
-    urgencyOptions: orDefault(apiConfig.urgencyOptions, defaultCalculatorConfig.urgencyOptions).map((u) => ({
+    urgencyOptions: orDefault(apiConfig.urgencyOptions, defaults.urgencyOptions).map((u) => ({
       slug: u.slug,
       name: u.name,
       description: u.description ?? undefined,
@@ -191,9 +233,9 @@ export function toCalculatorConfig(apiConfig: Awaited<ReturnType<typeof getCalcu
       timelineText: u.timelineText ?? undefined,
     })),
     generalSettings: {
-      currency: apiConfig.generalSettings?.currency || defaultCalculatorConfig.generalSettings.currency,
-      showPriceFrom: apiConfig.generalSettings?.showPriceFrom ?? defaultCalculatorConfig.generalSettings.showPriceFrom,
-      minimumOrderPrice: apiConfig.generalSettings?.minimumOrderPrice ?? defaultCalculatorConfig.generalSettings.minimumOrderPrice,
+      currency: apiConfig.generalSettings?.currency || defaults.generalSettings.currency,
+      showPriceFrom: apiConfig.generalSettings?.showPriceFrom ?? defaults.generalSettings.showPriceFrom,
+      minimumOrderPrice: apiConfig.generalSettings?.minimumOrderPrice ?? defaults.generalSettings.minimumOrderPrice,
     },
   };
 }

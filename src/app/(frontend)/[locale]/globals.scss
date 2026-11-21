@@ -164,12 +164,55 @@ html {
 	scroll-padding-top: 50px;
 }
 
+/*
+ * Прокрутка в стилі сайту — для сторінки й усіх прокручуваних блоків (віджет калькулятора, список селекту, фільтри):
+ * тонкий заокруглений «повзунок» кольору логотипа на прозорій доріжці.
+ * Chrome / Edge / Safari — ::-webkit-scrollbar (Chrome ігнорує його, якщо в елемента задано scrollbar-width / -color,
+ * тому стандартні властивості — лише для Firefox). Блоки з прихованою прокруткою (scrollbar-width: none) не зачіпає.
+ */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	border: 2px solid transparent;
+	border-radius: 8px;
+	background: rgba(117, 161, 250, 0.45) padding-box;
+
+	&:hover {
+		background-color: rgba(117, 161, 250, 0.75);
+	}
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+@supports (-moz-appearance: none) {
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(117, 161, 250, 0.5) transparent;
+	}
+}
+
 /* Фон сайту — суцільний чорний, як у новому дизайні (Figma «ABECT», Desktop 6); світіння — у секціях */
 body {
 	background: var(--black);
 	min-height: 100vh;
 	min-height: 100dvh;
 	display: flex;
+	flex-direction: column;
+}
+
+/* <main> внутрішніх сторінок — flex-колонка, як body: секції всередині розкладаються так само, як без обгортки */
+.page-main {
+	display: flex;
+	flex: 1 0 auto;
 	flex-direction: column;
 }
 

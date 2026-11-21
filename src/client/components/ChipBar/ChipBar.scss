@@ -4,13 +4,18 @@
 	min-width: 0;
 }
 
-.chip-bar__list {
+.chip-bar__track {
 	--glass-bg: var(--toggle-glass-bg);
 	--glass-blur: 12px;
-	display: flex;
-	gap: 4px;
 	width: fit-content;
 	max-width: 100%;
+	border-radius: 30px;
+}
+
+// Прокручується лише список (на телефоні — вбік); заокруглення обрізає пункти по краях скла
+.chip-bar__list {
+	display: flex;
+	gap: 4px;
 	padding: 4px;
 	overflow-x: auto;
 	border-radius: 30px;

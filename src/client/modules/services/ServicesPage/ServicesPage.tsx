@@ -59,7 +59,8 @@ export default function ServicesPage({
 	const hasToggle = (allServices || services).some((service) => serviceVariants(service).includes('weblium'));
 
 	return (
-		<>
+		// <main> — головний вміст сторінки (landmark для скрінрідерів; flex-колонка, як body — розкладка та сама)
+		<main className="page-main">
 			<PageHero
 				title={pageTitle}
 				subtitle={pageSubtitle}
@@ -110,6 +111,6 @@ export default function ServicesPage({
 				</div>
 			</section>
 			<ScrollReveal />
-		</>
+		</main>
 	);
 }

@@ -4,12 +4,14 @@ import { JSX } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/client/i18n/navigation';
 import { useCalculator } from '../CalculatorContext';
+import { currencyLabel, formatPrice } from '../format';
 import { isValidContact } from '@/client/lib/leads';
 import './Steps.scss';
 
 export default function ContactStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.contact');
   const tForm = useTranslations('ContactForm');
+  const tCalc = useTranslations('Calculator');
   const { state, setName, setContact, setMessage, setPrivacyAccepted } = useCalculator();
 
   const nameError = state.name.length > 0 && state.name.length < 2;
@@ -59,7 +61,7 @@ export default function ContactStep(): JSX.Element {
         </div>
         <div className="calculator-step__summary-row calculator-step__summary-row--total">
           <span>{t('summaryPrice')}:</span>
-          <strong>{t('summaryPriceFrom')} {state.estimatedPrice.toLocaleString('uk-UA')} {state.config?.generalSettings.currency || 'грн'}</strong>
+          <strong>{t('summaryPriceFrom')} {formatPrice(state.estimatedPrice)} {currencyLabel(state.config?.generalSettings.currency, tCalc('currency'))}</strong>
         </div>
       </div>
 
@@ -88,7 +90,7 @@ export default function ContactStep(): JSX.Element {
             value={state.contact}
             onChange={(e) => setContact(e.target.value)}
             placeholder={tForm('contactPlaceholder')}
-            autoComplete="tel email"
+            autoComplete="on"
           />
           {contactError && (
             <span className="calculator-step__field-error">{tForm('validation.contactInvalid')}</span>

@@ -19,60 +19,16 @@
   &--selected {
     border-color: var(--accent);
     background: var(--accent-alpha-10);
+    box-shadow: 0 0 0 1px var(--accent), 0 8px 24px rgba(55, 93, 251, 0.18);
 
-    .option-card__radio {
-      border-color: var(--accent);
-    }
-
-    .option-card__checkbox {
-      background: var(--accent);
-      border-color: var(--accent);
+    .option-card__title {
+      color: var(--white);
     }
   }
 
   &--disabled {
     opacity: 0.4;
     cursor: not-allowed;
-  }
-
-  &__radio {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    border: 2px solid var(--border-subtle);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-
-    &-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: opt-scale-in 0.2s ease;
-
-      @keyframes opt-scale-in {
-        from { transform: scale(0); }
-        to { transform: scale(1); }
-      }
-    }
-  }
-
-  &__checkbox {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    border: 2px solid var(--border-subtle);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    color: var(--white);
   }
 
   &__icon {
@@ -124,10 +80,6 @@
     padding: 24px 20px;
     text-align: center;
     gap: 0;
-
-    .option-card__radio {
-      display: none;
-    }
 
     .option-card__icon {
       width: 64px;
@@ -194,10 +146,9 @@
       animation: opt-scale-in 0.2s ease;
     }
   }
+}
 
-  &--checkbox {
-    .option-card__radio {
-      display: none;
-    }
-  }
+@keyframes opt-scale-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
 }

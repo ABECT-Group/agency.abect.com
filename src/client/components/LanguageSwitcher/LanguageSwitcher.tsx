@@ -7,8 +7,8 @@ import './LanguageSwitcher.scss';
 
 // Підписи як у макеті.
 const languages = [
-	{ code: 'ua', lang: 'uk', labelKey: 'ukrainian', label: <>Ua</> },
-	{ code: 'en', lang: 'en', labelKey: 'english', label: <><span className="language-switcher__e">E</span>n</> }
+	{ code: 'ua', lang: 'uk', labelKey: 'ukrainian', short: 'Ua', label: <>Ua</> },
+	{ code: 'en', lang: 'en', labelKey: 'english', short: 'En', label: <><span className="language-switcher__e">E</span>n</> }
 ] as const;
 
 export default function LanguageSwitcher() {
@@ -32,7 +32,8 @@ export default function LanguageSwitcher() {
 						locale={item.code}
 						hrefLang={item.lang}
 						className={`language-switcher__option${isActive ? ' active' : ''}`}
-						aria-label={t(item.labelKey)}
+						// Доступна назва містить видимий текст («Ua — Українська»): вимога WCAG 2.5.3 (Lighthouse label-content-name-mismatch)
+						aria-label={`${item.short} — ${t(item.labelKey)}`}
 						aria-current={locale === item.code ? 'true' : undefined}
 						onClick={() => setPending({ from: locale, to: item.code })}
 					>

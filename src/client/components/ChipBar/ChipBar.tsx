@@ -27,31 +27,35 @@ type ChipBarProps = {
 export default function ChipBar({ items, ariaLabel, className = '' }: ChipBarProps): JSX.Element {
 	return (
 		<nav className={`chip-bar ${className}`.trim()} aria-label={ariaLabel}>
-			<ul className="chip-bar__list glass">
-				{items.map((item) => {
-					const content = (
-						<>
-							{item.label}
-							{item.count !== undefined && <span className="chip-bar__count">{item.count}</span>}
-						</>
-					);
-					const classes = `chip-bar__item${item.active ? ' chip-bar__item--active' : ''}`;
+			{/* Скло — на нерухомій обгортці, прокручується лише список: інакше обідок скла (::before)
+			    і фон їхали разом із пунктами й накладались на «пігулки» */}
+			<div className="chip-bar__track glass">
+				<ul className="chip-bar__list">
+					{items.map((item) => {
+						const content = (
+							<>
+								{item.label}
+								{item.count !== undefined && <span className="chip-bar__count">{item.count}</span>}
+							</>
+						);
+						const classes = `chip-bar__item${item.active ? ' chip-bar__item--active' : ''}`;
 
-					return (
-						<li key={item.key}>
-							{item.href ? (
-								<Link href={item.href} className={classes} aria-current={item.active ? 'page' : undefined}>
-									{content}
-								</Link>
-							) : (
-								<button type="button" className={classes} aria-pressed={item.active} onClick={item.onClick}>
-									{content}
-								</button>
-							)}
-						</li>
-					);
-				})}
-			</ul>
+						return (
+							<li key={item.key}>
+								{item.href ? (
+									<Link href={item.href} className={classes} aria-current={item.active ? 'page' : undefined}>
+										{content}
+									</Link>
+								) : (
+									<button type="button" className={classes} aria-pressed={item.active} onClick={item.onClick}>
+										{content}
+									</button>
+								)}
+							</li>
+						);
+					})}
+				</ul>
+			</div>
 		</nav>
 	);
 }

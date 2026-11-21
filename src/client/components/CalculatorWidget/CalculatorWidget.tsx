@@ -113,6 +113,19 @@ export default function CalculatorWidget({ config }: { config: CalculatorConfig 
 		if (returnFocus) buttonRef.current?.focus();
 	}, []);
 
+	// Телефон: панель на весь екран — сторінка під нею не прокручується (як у модалці заявки)
+	useEffect(() => {
+		if (!open || !window.matchMedia('(max-width: 640px)').matches) return;
+		const html = document.documentElement;
+		const prev = { html: html.style.overflow, body: document.body.style.overflow };
+		html.style.overflow = 'hidden';
+		document.body.style.overflow = 'hidden';
+		return () => {
+			html.style.overflow = prev.html;
+			document.body.style.overflow = prev.body;
+		};
+	}, [open]);
+
 	// Esc — закрити; фокус — у панель при відкритті
 	useEffect(() => {
 		if (!open) return;
@@ -131,7 +144,8 @@ export default function CalculatorWidget({ config }: { config: CalculatorConfig 
 			className={`calc-widget${visible ? ' calc-widget--visible' : ''}${open ? ' calc-widget--open' : ''}`}
 			style={bannerOffset ? ({ '--calc-widget-lift': `${bannerOffset}px` } as CSSProperties) : undefined}
 		>
-			{greeting && !open && (
+			{/* Лише разом із кнопкою: на головній кнопка ховається на першому екрані — підказка теж */}
+			{greeting && visible && !open && (
 				<div className="calc-widget__greeting" role="status">
 					<button type="button" className="calc-widget__greeting-close" onClick={dismissGreeting} aria-label={t('closeGreeting')}>
 						<X size={14} aria-hidden="true" />

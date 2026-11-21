@@ -14,11 +14,11 @@ export default function PagesStep(): JSX.Element {
 
   // Labels for slider
   const getLabel = (value: number): string => {
-    if (value <= 3) return 'Міні';
-    if (value <= 7) return 'Стандарт';
-    if (value <= 15) return 'Розширений';
-    if (value <= 30) return 'Великий';
-    return 'Корпоративний';
+    if (value <= 3) return t('sizes.mini');
+    if (value <= 7) return t('sizes.standard');
+    if (value <= 15) return t('sizes.extended');
+    if (value <= 30) return t('sizes.large');
+    return t('sizes.corporate');
   };
 
   const progress = ((state.pagesCount - min) / (max - min)) * 100;

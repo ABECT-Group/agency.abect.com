@@ -67,19 +67,29 @@
     }
   }
 
+  // Телефон: «Назад» і «Далі» — в один рядок: «Назад» за шириною тексту, «Далі» — решта рядка
+  // (на першому кроці «Назад» немає — «Далі» на всю ширину; довгий текст переноситься, а не вилазить)
   @media (max-width: 480px) {
-    flex-direction: column-reverse;
     gap: 10px;
 
     &__btn {
-      width: 100%;
       justify-content: center;
+      min-width: 0;
+      height: auto;
+      min-height: 44px;
+      padding: 8px 14px;
+      text-align: center;
 
-      &--back:disabled {
-        display: none;
+      &--back {
+        flex: 0 0 auto;
+
+        &:disabled {
+          display: none;
+        }
       }
 
       &--next {
+        flex: 1 1 0;
         margin-left: 0;
       }
     }

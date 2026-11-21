@@ -165,7 +165,7 @@ export default function DiscussProject({ serviceGroups }: DiscussProjectProps): 
 									className={`discuss__input${errors.contact ? ' discuss__input--error' : ''}`}
 									type="text"
 									name="contact"
-									autoComplete="tel email"
+									autoComplete="on"
 									placeholder={t('contactPlaceholder')}
 									value={contact}
 									onChange={(event) => setContact(event.target.value)}

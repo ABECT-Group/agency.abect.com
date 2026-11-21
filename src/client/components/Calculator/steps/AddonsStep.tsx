@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useCalculator } from '../CalculatorContext';
 import OptionCard from '../components/OptionCard';
+import { currencyLabel, formatPrice } from '../format';
 import './Steps.scss';
 
 // Icon mapping
@@ -35,7 +36,9 @@ const iconMap: Record<string, JSX.Element> = {
 
 export default function AddonsStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.addons');
+  const tCalc = useTranslations('Calculator');
   const { state, toggleService } = useCalculator();
+  const currency = currencyLabel(state.config?.generalSettings.currency, tCalc('currency'));
 
   return (
     <div className="calculator-step">
@@ -56,7 +59,7 @@ export default function AddonsStep(): JSX.Element {
               selected={state.additionalServices.includes(service.slug)}
               onClick={() => toggleService(service.slug)}
               variant="checkbox"
-              price={`+${service.price.toLocaleString('uk-UA')} грн`}
+              price={`+${formatPrice(service.price)} ${currency}`}
             />
           ))}
       </div>

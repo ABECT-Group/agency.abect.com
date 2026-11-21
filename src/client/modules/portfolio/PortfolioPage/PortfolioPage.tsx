@@ -36,7 +36,8 @@ export default function PortfolioPage({ locale, initialProjects }: PortfolioPage
 	);
 
 	return (
-		<>
+		// <main> — головний вміст сторінки (landmark для скрінрідерів; flex-колонка, як body — розкладка та сама)
+		<main className="page-main">
 			<PageHero title={t('title')} subtitle={t('subtitle')} breadcrumbs={<Breadcrumbs chapter="portfolio" />} />
 			<section className="portfolio-page" itemScope itemType="https://schema.org/CollectionPage">
 				{/* Назва й опис сторінки для schema.org (видимі — у PageHero) */}
@@ -78,6 +79,6 @@ export default function PortfolioPage({ locale, initialProjects }: PortfolioPage
 				</div>
 			</section>
 			<ScrollReveal />
-		</>
+		</main>
 	);
 }

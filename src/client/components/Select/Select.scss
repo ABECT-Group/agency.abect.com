@@ -81,7 +81,6 @@
 	border-radius: 14px;
 	box-shadow: 0 20px 50px rgba(0, 10, 60, 0.55);
 	list-style: none;
-	scrollbar-width: thin;
 
 	// Закритий список — прихований і для скрінрідерів (visibility), але з анімацією появи
 	opacity: 0;
@@ -93,21 +92,23 @@
 		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
 		visibility 0s linear 0.25s;
 
-	.select--open & {
-		opacity: 1;
-		visibility: visible;
-		transform: none;
-		transition:
-			opacity 0.2s ease,
-			transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-			visibility 0s;
-	}
-
 	ul {
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
+}
+
+// Відкритий список. Не `.select--open &` усередині `.select .select__list`: це дає
+// `.select--open .select .select__list` (клас шукається в предка) — і список ніколи не з'являвся
+.select.select--open .select__list {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition:
+		opacity 0.2s ease,
+		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+		visibility 0s;
 }
 
 .select__group + .select__group,

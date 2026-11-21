@@ -35,17 +35,7 @@ export default function OptionCard({
       disabled={disabled}
       aria-pressed={selected}
     >
-      {/* Selection indicator */}
-      {variant === 'checkbox' ? (
-        <div className="option-card__checkbox">
-          {selected && <Check size={16} />}
-        </div>
-      ) : (
-        <div className="option-card__radio">
-          {selected && <div className="option-card__radio-dot" />}
-        </div>
-      )}
-
+      {/* Без чекбокса / радіо: вибір показує сама картка (рамка й фон, --selected); стан для скрінрідера — aria-pressed */}
       {/* Icon */}
       {icon && <div className="option-card__icon">{icon}</div>}
 

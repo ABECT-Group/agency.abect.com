@@ -391,6 +391,14 @@
 		"rights": "All rights reserved.",
 		"privacyPolicy": "Privacy Policy"
 	},
+	"CookieBanner": {
+		"title": "We use cookies",
+		"text": "Only for analytics (Google Analytics, Microsoft Clarity) to make the site better.",
+		"policy": "Privacy Policy",
+		"accept": "Accept",
+		"decline": "Decline",
+		"ariaLabel": "Cookie consent"
+	},
 	"Common": {
 		"backToHome": "Back to home",
 		"language": "Language",
@@ -676,6 +684,7 @@
 			"platform": {
 				"title": "Which technology shall we use?",
 				"subtitle": "Weblium — fast and affordable, Custom — unique and limitless",
+				"customOnly": "Only custom development is available for this project type",
 				"weblium": {
 					"title": "Weblium",
 					"description": "Fast development on a builder with ready-made blocks"
@@ -688,7 +697,14 @@
 			"pages": {
 				"title": "How many pages are planned?",
 				"subtitle": "Move the slider to select the number of pages",
-				"pagesLabel": "pages"
+				"pagesLabel": "pages",
+				"sizes": {
+					"mini": "Mini",
+					"standard": "Standard",
+					"extended": "Extended",
+					"large": "Large",
+					"corporate": "Corporate"
+				}
 			},
 			"addons": {
 				"title": "What else do you need for the project?",
@@ -711,9 +727,9 @@
 			}
 		},
 		"seo": {
-			"title": "Website Cost Calculator | ABECT",
-			"description": "Calculate your website cost online. Landing page from $200, corporate website from $500, online store from $800.",
-			"keywords": "website cost calculator, calculate website price, web development cost, landing page price, online store cost"
+			"title": "Website Cost Calculator — Estimate Your Website Price | ABECT",
+			"description": "Estimate your website cost online: landing page, corporate website, online store or web app. Instant price and timeline, the calculation formula and answers to common questions.",
+			"keywords": "website cost calculator, how much does a website cost, website development price, landing page cost, online store cost, estimate website price"
 		}
 	},
 	"ThxPage": {
@@ -761,6 +777,110 @@
 			"title": "Contact ABECT — Order a Website from Our Studio",
 			"description": "Contact ABECT web studio: Telegram, phone, email agency@abect.com. We will discuss your website and estimate the cost — we reply within a day.",
 			"keywords": "ABECT contacts, order a website, contact web studio, website development consultation, web studio phone, agency@abect.com"
+		}
+	},
+	"CalculatorPage": {
+		"hero": {
+			"title": "Website Cost Calculator Online",
+			"subtitle": "Estimate the price of a landing page, corporate website, online store or web app in a few minutes: choose the project type, platform, number of pages and extra services — and instantly see the cost and timeline.",
+			"button": "Start calculation"
+		},
+		"calculatorTitle": "Calculate the cost of your website",
+		"guide": {
+			"title": "How the calculator works and what a website price is made of",
+			"intro": "The ABECT calculator shows an estimated website development cost before your first call with a manager. Its rates are set by our team — they are the base prices we use to build an estimate. The result helps you plan a budget, compare options and come to a consultation with concrete numbers.",
+			"sections": [
+				{
+					"title": "How we calculate the cost: the formula",
+					"text": [
+						"The price is built from five parts — the same way as in the estimate we prepare manually:"
+					],
+					"list": [
+						"Base price — depends on the project type (landing page, corporate website, online store, web app) and the platform. The base price already includes one page.",
+						"Pages — each additional page adds a fixed amount. A page on the Weblium builder costs less than in custom development.",
+						"Extra services — SEO optimization, copywriting, multilingual support, CRM and payment integrations, animations, technical support. Each has a fixed price added to the total.",
+						"Urgency — a coefficient applied to the whole amount: urgent development costs more because the team reschedules other work; a flexible timeline gives a discount.",
+						"Minimum order — if the total is below the minimum, the calculator shows the minimum project cost."
+					]
+				},
+				{
+					"title": "Weblium or custom code: which to choose",
+					"text": [
+						"Weblium is a website builder with ready-made blocks. A site on it launches faster and costs less, and you can edit texts and photos without a developer. It is a good choice for an ad landing page, a business card site or a small corporate website.",
+						"Custom development means unique design and code with no platform limits: fast loading, flexible SEO, complex catalogs, user accounts and integrations with any service. Web apps are available only this way. It costs more, but the site grows with your business without moving to another platform."
+					]
+				},
+				{
+					"title": "What affects the website price",
+					"text": [
+						"The calculator takes into account the main factors behind any website budget:"
+					],
+					"list": [
+						"scope — the number of pages and unique templates;",
+						"functionality — catalog, cart, payments, filters, user account;",
+						"content — whether texts and photos are ready or need to be created;",
+						"languages — each language means translation and separate SEO settings;",
+						"integrations — CRM, payment systems, delivery services, external APIs;",
+						"timeline — tight deadlines require more team resources."
+					]
+				},
+				{
+					"title": "What is included in the price",
+					"text": [
+						"The base price of every project covers everything needed for launch:"
+					],
+					"list": [
+						"custom design adapted for phones and tablets;",
+						"building the site on the chosen platform — Weblium or code;",
+						"lead forms with Telegram notifications, so no client gets lost;",
+						"SSL certificate, technical SEO and registering the site in Google;",
+						"launch on your domain and handover of all access."
+					]
+				},
+				{
+					"title": "Why the price is shown as \"from\"",
+					"text": [
+						"The calculator estimates a typical project of the chosen format. The final cost depends on details that cannot be covered in a few steps: design complexity, the number of unique blocks, integration specifics. So the result is the lower limit of the budget, and we fix the exact price in an estimate after a short brief. Domain and hosting are paid separately."
+					]
+				},
+				{
+					"title": "What happens after the calculation",
+					"text": [
+						"At the last step, leave your name and phone or email — the request with all selected options goes straight to our team. We will contact you, clarify the task, suggest the best format and prepare an exact estimate with a timeline. The calculation is not binding: you can simply check the cost and come back later — the calculator remembers your choices in this browser."
+					]
+				}
+			],
+			"faqTitle": "FAQ about website cost",
+			"faq": [
+				{
+					"q": "How accurate is the website cost calculator?",
+					"a": "It uses the same rates we start an estimate with, so it gives a realistic lower limit of the budget. The exact price depends on design, content and integrations and is fixed after a brief."
+				},
+				{
+					"q": "How much does a landing page, corporate website or online store cost?",
+					"a": "Choose the project type and platform in the calculator — it instantly shows the \"from\" price for that option. The most affordable path is a landing page on Weblium; the most expensive is a custom-built web app."
+				},
+				{
+					"q": "Are domain and hosting included?",
+					"a": "No, domain and hosting are paid separately. We will help you choose and set them up."
+				},
+				{
+					"q": "Why does urgent development cost more?",
+					"a": "To deliver faster, the team reschedules other work and runs several stages in parallel, so an urgency coefficient is applied to the total. If your timeline is flexible, the calculator gives a discount instead."
+				},
+				{
+					"q": "How long does website development take?",
+					"a": "The calculator shows an estimated timeline after you choose the urgency. It depends on scope and functionality: a landing page on a builder launches fastest, while an online store or a custom web app takes longer."
+				},
+				{
+					"q": "Can I change the options after the calculation?",
+					"a": "Yes. Go back to any step with the \"Back\" button or press \"Start Over\" — the price is recalculated instantly. At the consultation we will pick the best option for your budget together."
+				},
+				{
+					"q": "What if my type of website is not in the calculator?",
+					"a": "Choose the closest option or send a request via the \"Discuss Project\" form — we will estimate a non-standard project individually."
+				}
+			]
 		}
 	}
 }

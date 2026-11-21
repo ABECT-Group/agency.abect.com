@@ -5,14 +5,17 @@ import { useTranslations } from 'next-intl';
 import { Blocks, Code } from 'lucide-react';
 import { useCalculator } from '../CalculatorContext';
 import OptionCard from '../components/OptionCard';
+import { currencyLabel, formatPrice } from '../format';
 import './Steps.scss';
 
 export default function PlatformStep(): JSX.Element {
   const t = useTranslations('Calculator.steps.platform');
+  const tCalc = useTranslations('Calculator');
   const { state, setPlatform, dispatch, getSelectedProjectType } = useCalculator();
 
   const selectedProject = getSelectedProjectType();
   const hasWebliumOption = selectedProject?.hasWebliumOption ?? false;
+  const currency = currencyLabel(state.config?.generalSettings.currency, tCalc('currency'));
 
   const handleSelect = (platform: 'weblium' | 'custom') => {
     setPlatform(platform);
@@ -33,7 +36,7 @@ export default function PlatformStep(): JSX.Element {
         <div className="calculator-step__header">
           <h2 className="calculator-step__title">{t('title')}</h2>
           <p className="calculator-step__subtitle">
-            Для цього типу проекту доступна тільки Custom розробка
+            {t('customOnly')}
           </p>
         </div>
 
@@ -66,7 +69,7 @@ export default function PlatformStep(): JSX.Element {
           onClick={() => handleSelect('weblium')}
           variant="large"
           price={selectedProject?.webliumBasePrice
-            ? `від ${selectedProject.webliumBasePrice.toLocaleString('uk-UA')} грн`
+            ? `${tCalc('priceFrom')} ${formatPrice(selectedProject.webliumBasePrice)} ${currency}`
             : undefined
           }
         />
@@ -78,7 +81,7 @@ export default function PlatformStep(): JSX.Element {
           onClick={() => handleSelect('custom')}
           variant="large"
           price={selectedProject?.customBasePrice
-            ? `від ${selectedProject.customBasePrice.toLocaleString('uk-UA')} грн`
+            ? `${tCalc('priceFrom')} ${formatPrice(selectedProject.customBasePrice)} ${currency}`
             : undefined
           }
         />

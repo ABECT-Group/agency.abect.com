@@ -174,7 +174,7 @@
 		// Не розривати час і номер телефону («027-58-» / «19» на 320px)
 		white-space: nowrap;
 		font-size: 16px;
-		color: var(--accent);
+		color: var(--logo-mark); // контраст ≥ 4.5:1 (var(--accent) на чорному — 3.8, Lighthouse)
 		font-weight: 600;
 	}
 

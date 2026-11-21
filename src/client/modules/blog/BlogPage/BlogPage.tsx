@@ -57,7 +57,8 @@ export default function BlogPage({
 	const pageSubtitle = currentCategory ? currentCategory.description : t('subtitle');
 
 	return (
-		<>
+		// <main> — головний вміст сторінки (landmark для скрінрідерів; flex-колонка, як body — розкладка та сама)
+		<main className="page-main">
 			<PageHero
 				title={pageTitle}
 				subtitle={pageSubtitle}
@@ -116,6 +117,6 @@ export default function BlogPage({
 					<meta itemProp="numberOfItems" content={String(posts.length)} />
 				</div>
 			</section>
-		</>
+		</main>
 	);
 }

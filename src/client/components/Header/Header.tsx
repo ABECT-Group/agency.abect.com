@@ -152,11 +152,8 @@ export default function Header() {
 							/>
 						</nav>
 
-						{/* Лише в мобільному меню */}
+						{/* Лише в мобільному меню (мова — у рядку хедера, біля бургера) */}
 						<div className="header__menu-actions">
-							<div className="header__menu-controls">
-								<LanguageSwitcher />
-							</div>
 							<button
 								type="button"
 								data-open-modal
@@ -177,6 +174,11 @@ export default function Header() {
 						<button type="button" data-open-modal className="header__contact">
 							{tC('cta')}
 						</button>
+					</div>
+
+					{/* Лише на телефоні / планшеті: мова — у хедері біля бургера, видно й без відкриття меню */}
+					<div className="header__lang">
+						<LanguageSwitcher />
 					</div>
 
 					<button

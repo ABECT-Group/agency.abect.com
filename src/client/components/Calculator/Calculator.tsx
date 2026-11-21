@@ -1,6 +1,6 @@
 'use client';
 
-import { JSX } from 'react';
+import { JSX, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { RotateCcw } from 'lucide-react';
 import { useRouter } from '@/client/i18n/navigation';
@@ -21,13 +21,40 @@ interface CalculatorContentProps {
   config: CalculatorConfig;
   /** Компактний вигляд для віджета: без заголовка сторінки (H1) і контейнера — заголовок дає панель */
   compact?: boolean;
+  /**
+   * Сторінка /calculator: калькулятор — друга секція після hero (H1 у hero), тому заголовок — H2 з цим текстом,
+   * без бейджа й опису; id секції — ціль кнопки «Почати розрахунок»
+   */
+  sectionTitle?: string;
 }
 
-function CalculatorContent({ config, compact = false }: CalculatorContentProps): JSX.Element {
+function CalculatorContent({ config, compact = false, sectionTitle }: CalculatorContentProps): JSX.Element {
   const t = useTranslations('Calculator');
   const tForm = useTranslations('ContactForm');
   const router = useRouter();
   const { state, dispatch, reset } = useCalculator();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const prevStep = useRef(state.currentStep);
+
+  // Новий крок — прокрутити на його початок (інакше після «Далі» людина лишається внизу й не бачить питання).
+  // Віджет — прокручується тіло панелі; сторінка /calculator — вікно до верху картки (з запасом під хедер)
+  useEffect(() => {
+    if (prevStep.current === state.currentStep) return;
+    prevStep.current = state.currentStep;
+    const root = rootRef.current;
+    if (!root) return;
+    const behavior: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    const panelBody = root.closest<HTMLElement>('.calc-widget__body');
+    if (panelBody) {
+      panelBody.scrollTo({ top: 0, behavior });
+      return;
+    }
+    const card = root.querySelector<HTMLElement>('.calculator__card');
+    if (!card) return;
+    const top = card.getBoundingClientRect().top;
+    const headerOffset = 110;
+    if (top < headerOffset) window.scrollTo({ top: window.scrollY + top - headerOffset, behavior });
+  }, [state.currentStep]);
 
   const handleSubmit = async () => {
     dispatch({ type: 'SET_SUBMITTING', payload: true });
@@ -81,9 +108,18 @@ function CalculatorContent({ config, compact = false }: CalculatorContentProps):
   };
 
   return (
-    <div className={`calculator${compact ? ' calculator--compact' : ''}`}>
+    <div
+      ref={rootRef}
+      id={sectionTitle ? 'calculator-form' : undefined}
+      className={`calculator${compact ? ' calculator--compact' : ''}${sectionTitle ? ' calculator--section' : ''}`}
+    >
       <div className={compact ? undefined : 'container'}>
-        {!compact && (
+        {sectionTitle && (
+          <header className="calculator__header">
+            <h2 className="calculator__title">{sectionTitle}</h2>
+          </header>
+        )}
+        {!compact && !sectionTitle && (
           <header className="calculator__header">
             <span className="calculator__badge">{t('badge')}</span>
             <h1 className="calculator__title">{t('title')}</h1>
@@ -124,6 +160,6 @@ function CalculatorContent({ config, compact = false }: CalculatorContentProps):
   );
 }
 
-export default function Calculator({ config, compact = false }: { config: CalculatorConfig; compact?: boolean }): JSX.Element {
-  return <CalculatorContent config={config} compact={compact} />;
+export default function Calculator({ config, compact = false, sectionTitle }: CalculatorContentProps): JSX.Element {
+  return <CalculatorContent config={config} compact={compact} sectionTitle={sectionTitle} />;
 }

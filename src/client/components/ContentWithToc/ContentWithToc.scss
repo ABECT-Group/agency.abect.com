@@ -54,15 +54,21 @@
 		}
 	}
 
+	// Телефон: текст без картки (рамки, фону й відступів) — на всю ширину контейнера;
+	// обкладинка — окремим зображенням із заокругленням з усіх 4 боків (кейс і стаття однаково)
 	@media (max-width: 768px) {
 		margin-top: 40px;
 
 		&__article {
-			padding: 22px 18px;
+			padding: 0;
+			border: none;
+			border-radius: 0;
+			background: none;
 		}
 
 		&__cover {
-			margin: -22px -18px 22px;
+			margin: 0 0 22px;
+			border-radius: 12px;
 		}
 	}
 }
